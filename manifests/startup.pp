@@ -27,6 +27,10 @@
 #   How long to wait in seconds for a real-time system to shutdown. Defaults
 #   to 120 seconds.
 #
+# == Autorequires
+# This resource auto-requires the following resources:
+#  User[$user]
+#
 # == Examples
 #
 # Two real-time systems running under user rt
@@ -103,8 +107,8 @@ define antelope::startup (
 
   # array of directories that gets evaluated by the template
   $real_dirs = is_array($dirs) ? {
-    true => $dirs,
-    false = split($dirs, ','),
+    true  => $dirs,
+    false => split($dirs, ','),
   }
 
   ### Managed resources
