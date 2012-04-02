@@ -8,9 +8,9 @@
 #   The name of the init resource name, after /etc/init.d. Typically set to
 # "antelope". Defaults to the value of title - this is the namevar
 #
-# [*rtsystems*]
+# [*dirs*]
 #   List of directories containing real-time systems.
-# e.g. "/export/home/rt/rtsystems/usarray"
+# e.g. "/export/home/rt/dirs/usarray"
 #
 # [*user*]
 #   The username that the Antelope real-time systems should run as. Defaults
@@ -32,20 +32,20 @@
 # Two real-time systems running under user rt
 #    antelope::startup{
 #      'antelope':
-#        rtsystems => [ '/export/home/rt/rtsystems/usarray',
-#                      '/export/home/rt/rtsystems/roadnet', ],
+#        dirs => [ '/export/home/rt/dirs/usarray',
+#                      '/export/home/rt/dirs/roadnet', ],
 #    }
 #
 # A single real-time system running under user rtida
 #    antelope::startup{
 #      'antelope-rtida':
-#        rtsystems  => '/export/home/rtida/rtsystems/ida',
+#        dirs  => '/export/home/rtida/dirs/ida',
 #        user       => 'rt',
 #    }
 #
 define antelope::startup (
   $ensure       = 'present',
-  $rtsystems    = undef,
+  $dirs         = undef,
   $user         = 'rt',
   $servicename  = $title,
   $delay        = '0',
@@ -63,8 +63,8 @@ define antelope::startup (
     fail('antelope::startup ensure parameter must be absent or present')
   }
 
-  if ( $ensure == 'present' ) and ( $rtsystems == undef ) {
-    fail('antelope::startup - service enabled but no rtsystems specified')
+  if ( $ensure == 'present' ) and ( $dirs == undef ) {
+    fail('antelope::startup - service enabled but no dirs specified')
   }
 
   # Make sure we can handle the OS
@@ -92,6 +92,23 @@ define antelope::startup (
   # Determine the path to the init script on Solaris and RedHat/CentOS
   $initfilename = "/etc/init.d/${servicename}"
 
+  # declare relations based on desired behavior
+  if $ensure == 'present' {
+    File[$initfilename]  ~> Service[$servicename]
+    User[$user]          -> Service[$servicename]
+  } else {
+    Service[$servicename] -> File[$initfilename]
+    Service[$servicename] -> User[$user]
+  }
+
+  # array of directories that gets evaluated by the template
+  $real_dirs = is_array($dirs) ? {
+    true => $dirs,
+    false = split($dirs, ','),
+  }
+
+  ### Managed resources
+
   # Declare our resources without relationships
   # init script path for Solaris and Linux
   file { $initfilename :
@@ -99,6 +116,7 @@ define antelope::startup (
     mode    => '0755',
     content => template('antelope/S99antelope.erb'),
   }
+
   # On solaris we don't use SMF. We provide a bare init script which requires
   # manual creation of symlinks
   case $::operatingsystem {
@@ -130,19 +148,11 @@ define antelope::startup (
 
    default : { }
   }
-     
+
   service { $servicename:
     enable      => $service_enable,
     hasrestart  => false,
     hasstatus   => false;
   }
 
-  # declare relations based on desired behavior
-  if $ensure == 'present' {
-    File[$initfilename]  ~> Service[$servicename]
-    User[$user]          -> Service[$servicename]
-  } else {
-    Service[$servicename] -> File[$initfilename]
-    Service[$servicename] -> User[$user]
-  }
 }

@@ -26,13 +26,13 @@ if 0;
 #
 #  4) test it by executing "/etc/init.d/antelope start"  as root.
 
-@dirs = ( <% if rtsystems.is_a? Array -%>
-<% rtsystems.each_with_index do |rtsystem, index| -%>
+@dirs = ( <% if real_dirs.is_a? Array -%>
+<% real_dirs.each_with_index do |dir, index| -%>
 <% if index > 0 then -%>, <% end -%>
-<%= "\"#{rtsystem}\"" -%>
+<%= "\"#{dir}\"" -%>
 <% end -%>
-<%elsif rtsystems != '' -%>
-<%= "\"#{rtsystems}\"" -%>
+<%elsif real_dirs != '' -%>
+<%= "\"#{real_dirs}\"" -%>
 <% end -%> );    #actual directories of rtexec.pf, eg:
 		#      @dirs = ("/home/rt/knet", "/home/rt/anza") ; 
 $user = "<%= user %>" ;  # actual user that runs rtexec

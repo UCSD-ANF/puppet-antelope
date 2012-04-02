@@ -43,4 +43,14 @@ class antelope::params {
     },
     default => $::antelope_audit_only,
   }
+
+  $rtsystems = $::antelope_rtsystems ? {
+    ''      => undef,                  # Default value
+    default => $::antelope_rtsystems,
+  }
+
+  $service_name = $::antelope_service_name ? {
+    ''      => 'antelope',             # Default value
+    default => $::antelope_service_name,
+  }
 }
