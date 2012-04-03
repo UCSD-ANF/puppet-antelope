@@ -70,6 +70,7 @@ class antelope (
   $disable = $antelope::params::disable,
   $disableboot = $antelope::params::disableboot,
   $audit_only = $antelope::params::audit_only,
+  $dirs = $antelope::params::dirs,
   $instances = $antelope::params::instances,
   $version = $antelope::params::version,
   $user = $antelope::params::user,
