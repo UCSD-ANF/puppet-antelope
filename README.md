@@ -39,19 +39,24 @@ Geoff Davis <gadavis@ucsd.edu>
 ## Usage
 
 ### antelope
-Sets up a basic Antelope environment. The optional rtsystems parameter automatically configures antelope::instance resources.
 
-Basic instanciation of the Antelope class
+Sets up a basic Antelope environment. The optional dirs or instances parameters automatically configures antelope::instance resources.
+
+#### Basic usage of the Antelope class
 
      class { 'antelope': }
 
-Instanciation with a default antelope::instance set up to manage a real-time system
+#### With the dirs parameter
+
+This form creates a default antelope::instance set up to manage a real-time system as provided in the 'dirs' parameter
 
      class { 'antelope':
-       instances => '/rtsystems/default',
+       dirs => '/rtsystems/default',
      }
 
-The rtsystems parameter also takes a hash of hashes, which can be useful for configuring multiple instances with different users from an External Node Classifier
+#### With the instances Parameter
+
+The instances parameter, when used instead of dirs, takes a hash of hashes. This can be useful for configuring multiple instances with different users from an External Node Classifier without having to explicitely declare separate antelope::instance definitions.
 
      class { 'antelope':
        intances => {
