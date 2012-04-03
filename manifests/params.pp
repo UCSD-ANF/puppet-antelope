@@ -6,7 +6,11 @@ class antelope::params {
   #$install = $::antelope_install ? {
   #  ''      => 'base',                  # Default value
   #  default => $::antelope_install,
-  #}
+
+   # Make sure we can handle the OS
+  if ! ($::osfamily in ['Solaris', 'RedHat']) {
+    fail("This module does not yet work on $::operatingsystem")
+  } #}
 
   ### General variables that affect module's behaviour
   # They can be set at top scope level or in a ENC
@@ -44,13 +48,24 @@ class antelope::params {
     default => $::antelope_audit_only,
   }
 
-  $rtsystems = $::antelope_rtsystems ? {
+  $dirs = $::antelope_dirs ? {
     ''      => undef,                  # Default value
-    default => $::antelope_rtsystems,
+    default => $::antelope_dirs,
+  }
+
+  $instances = $::antelope_instances ? {
+    ''      => undef,                  # Default value
+    default => $::antelope_instances,
   }
 
   $service_name = $::antelope_service_name ? {
     ''      => 'antelope',             # Default value
     default => $::antelope_service_name,
   }
+
+  $user = $::antelope_user ? {
+    ''      => 'rt',
+    default => $::antelope_user,
+  }
+
 }

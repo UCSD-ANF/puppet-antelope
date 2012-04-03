@@ -6,7 +6,7 @@ class site::antelope {
   user { 'rt' : }
 
   class { 'antelope':
-    rtsystems    => {
+    instances    => {
       'antelope-single' => {
         'user'   => 'rt',
         'dirs'   => '/export/home/rt/rtsystems/single',
