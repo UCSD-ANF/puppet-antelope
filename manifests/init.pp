@@ -25,12 +25,11 @@
 #  *rtsystems* - What real-time systems should be managed as services
 #  This parameter can be specified several ways:
 #  As a string - This is either a single, or a comma separated list of
-#    directories containing real-time systems. An antelope::startup
-#    service called 'antelope' is created with the run-time user of
-#    'rt'
-#  As an array - list of directories containing real-time systems. A
-#    service called 'antelope' is created with the run-time user of
-#    'rt'
+#    directories containing real-time systems. An antelope::instance
+#    called $service_name is created with the run-time user of $user
+#  As an array - list of directories containing real-time systems. An
+#    antelope::instance called $service_name is created with the
+#    run-time user $user
 #  As a hash of hashes - The hash of hashes should be in the following
 #  format:
 #    {
@@ -51,7 +50,9 @@ class antelope (
   $disableboot = $antelope::params::disableboot,
   $audit_only = $antelope::params::audit_only,
   $rtsystems = $antelope::params::rtsystems,
-  $version = $antelope::params::version
+  $version = $antelope::params::version,
+  $user = $antelope::params::user,
+  $service_name = $antelope::params::service_name
 ) inherits antelope::params{
 
   include 'stdlib'
@@ -97,7 +98,7 @@ class antelope (
     },
   }
 
-  $manage_startup_enable = $antelope::rtsystems ? {
+  $manage_instance_ensure = $antelope::rtsystems ? {
     ''      => 'absent',
     default => $antelope::bool_disable ? {
       false => 'present',
@@ -124,16 +125,17 @@ class antelope (
   # We call the required subclass based on the install type
   #include "antelope::$install"
 
-  # Manage the antelope::startup services
+  # Manage the antelope::instances
   # Behavior varies depending on whether rtsystems is a hash or
   # string/array
   if is_hash($rtsystems) {
-    create_resources('antelope::startup', $rtsystems)
+    create_resources('antelope::instance', $rtsystems)
   } else {
     # single instance
-    antelope::startup { $antelope::service_name :
+    antelope::instance { $antelope::service_name :
+      user   => $antelope::user,
       dirs   => $antelope::rtsystems,
-      ensure => $antelope::manage_startup_enable,
+      ensure => $antelope::manage_instance_ensure,
     }
   }
 }

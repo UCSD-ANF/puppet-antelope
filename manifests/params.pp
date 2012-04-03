@@ -6,7 +6,11 @@ class antelope::params {
   #$install = $::antelope_install ? {
   #  ''      => 'base',                  # Default value
   #  default => $::antelope_install,
-  #}
+
+   # Make sure we can handle the OS
+  if ! ($::osfamily in ['Solaris', 'RedHat']) {
+    fail("This module does not yet work on $::operatingsystem")
+  } #}
 
   ### General variables that affect module's behaviour
   # They can be set at top scope level or in a ENC

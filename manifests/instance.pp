@@ -1,4 +1,4 @@
-# startup.pp
+# instance.pp
 
 # Install an Antelope init script for a list of real-time systems
 #
@@ -34,20 +34,20 @@
 # == Examples
 #
 # Two real-time systems running under user rt
-#    antelope::startup{
+#    antelope::instance{
 #      'antelope':
 #        dirs => [ '/export/home/rt/dirs/usarray',
 #                      '/export/home/rt/dirs/roadnet', ],
 #    }
 #
 # A single real-time system running under user rtida
-#    antelope::startup{
+#    antelope::instance{
 #      'antelope-rtida':
 #        dirs  => '/export/home/rtida/dirs/ida',
 #        user       => 'rt',
 #    }
 #
-define antelope::startup (
+define antelope::instance (
   $ensure       = 'present',
   $dirs         = undef,
   $user         = 'rt',
@@ -64,22 +64,19 @@ define antelope::startup (
   validate_string($delay)
 
   if ! ($ensure in [ 'present', 'absent' ]) {
-    fail('antelope::startup ensure parameter must be absent or present')
+    fail('antelope::instance ensure parameter must be absent or present')
   }
 
   if ( $ensure == 'present' ) and ( $dirs == undef ) {
-    fail('antelope::startup - service enabled but no dirs specified')
+    fail('antelope::instance - service enabled but no dirs specified')
   }
 
-  # Make sure we can handle the OS
-  if ! ($::operatingsystem in ['Solaris', 'redhat', 'CentOS']) {
-    fail("antelope::startup - This class does not yet work on $::operatingsystem")
-  }
+
 
   # Verify we have an integer value for $delay
   if ( $ensure == 'present' ) {
     if ! ( is_integer($delay)) {
-      fail("antelope::startup - delay parameter must be an integer")
+      fail("antelope::instance - delay parameter must be an integer")
     }
   }
 
