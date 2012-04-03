@@ -91,7 +91,7 @@ class antelope (
   #}
 
   # verify that dirs and instances weren't both specified
-  if ( $antelope::dirs && $antelope::instances ) {
+  if ( $antelope::dirs and $antelope::instances ) {
     fail("Can't specify both dirs and instances.")
   }
 
