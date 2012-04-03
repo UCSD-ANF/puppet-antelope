@@ -102,7 +102,6 @@ define antelope::startup (
     User[$user]          -> Service[$servicename]
   } else {
     Service[$servicename] -> File[$initfilename]
-    Service[$servicename] -> User[$user]
   }
 
   # array of directories that gets evaluated by the template
