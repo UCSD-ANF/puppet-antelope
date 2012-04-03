@@ -97,6 +97,14 @@ class antelope (
     },
   }
 
+  $manage_startup_enable = $antelope::rtsystems ? {
+    ''      => 'absent',
+    default => $antelope::bool_disable ? {
+      false => 'present',
+      true  => 'absent',
+    },
+  }
+
   $manage_file = $antelope::bool_absent ? {
     true    => 'absent',
     default => 'present',
@@ -124,7 +132,8 @@ class antelope (
   } else {
     # single instance
     antelope::startup { $antelope::service_name :
-      dirs => $rtsystems,
+      dirs   => $antelope::rtsystems,
+      ensure => $antelope::manage_startup_enable,
     }
   }
 }
