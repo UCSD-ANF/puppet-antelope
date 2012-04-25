@@ -134,14 +134,15 @@ class antelope (
   $manage_singleton_instance = $antelope::dirs ? {
     '' => $antelope::bool_disable ? {
       true    => true,
-      default => $antelope::bool_absent, 
+      default => $antelope::bool_absent,
     },
     default => true,
   }
 
   # We only manage the multiple instances if instances is defined.
-  # Since we can't enumerate any pre-existing Antelope::Instances that aren't
-  # named with the default service_name, we won't try to clean them up.
+  # Since we can't enumerate any pre-existing Antelope::Instances that
+  # aren't named with the default service_name, we won't try to clean
+  # them up.
   $manage_plural_instances = $antelope::instances
 
   $manage_instance_ensure = $antelope::dirs ? {
@@ -171,12 +172,12 @@ class antelope (
   # We call the required subclass based on the install type
   #include "antelope::$install"
 
-  # We manage antelope instances only if the 'instances' or 'dirs' parameters were
-  # provided.
+  # We manage antelope instances only if the 'instances' or 'dirs'
+  # parameters were provided.
   if $antelope::manage_plural_instances {
     create_resources('antelope::instance', $antelope::instances)
   }
-  
+
   if $antelope::manage_singleton_instance {
     antelope::instance { $antelope::service_name :
       user   => $antelope::user,
