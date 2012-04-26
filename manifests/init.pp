@@ -100,28 +100,20 @@ class antelope (
     validate_hash($antelope::instances)
   }
 
-  $bool_absent=$absent ? {
-    ''      => false,
-    true    => true,
-    false   => false,
-    default => str2bool($absent),
+  $bool_absent=is_string($absent) ? {
+    false => $absent,
+    true  => str2bool($absent),
   }
-  $bool_disable=$disable ? {
-    ''      => false,
-    true    => true,
-    false   => false,
+  $bool_disable=is_string($disable) ? {
+    false   => $disable,
     default => str2bool($disable),
   }
-  $bool_disableboot=$disableboot ? {
-    ''      => false,
-    true    => true,
-    false   => false,
+  $bool_disableboot=is_string($disableboot) ? {
+    false   => $disableboot,
     default => str2bool($disableboot),
   }
-  $bool_audit_only=$audit_only ? {
-    ''      => false,
-    true    => true,
-    false   => false,
+  $bool_audit_only=is_string($audit_only) ? {
+    false   => $audit_only,
     default => str2bool($audit_only),
   }
 
