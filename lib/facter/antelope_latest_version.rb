@@ -1,6 +1,6 @@
 # Fact: antelope_latest_version
 #
-# The latest_antelope_version is the highest version of Antelope
+# The antelope_latest_version is the highest version of Antelope
 # installed on the system. Typically is also the most-recent release
 #
 Facter.add(:antelope_latest_version) do

@@ -55,7 +55,7 @@
 # === Example
 #
 #    # Set the site.pf for the latest version of Antelope:
-#    antelope::versioned_site_pf( $::latest_antelope_version :
+#    antelope::versioned_site_pf( $::antelope_latest_version :
 #      mail_relay               => 'smtp.ucsd.edu',
 #      mail_domain              => 'ucsd.edu',
 #      default_seed_network     => 'TA',
