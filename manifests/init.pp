@@ -100,10 +100,30 @@ class antelope (
     validate_hash($antelope::instances)
   }
 
-  $bool_absent=any2bool($absent)
-  $bool_disable=any2bool($disable)
-  $bool_disableboot=any2bool($disableboot)
-  $bool_audit_only=any2bool($audit_only)
+  $bool_absent=$absent ? {
+    ''      => false,
+    true    => true,
+    false   => false,
+    default => str2bool($absent),
+  }
+  $bool_disable=$disable ? {
+    ''      => false,
+    true    => true,
+    false   => false,
+    default => str2bool($disable),
+  }
+  $bool_disableboot=$disableboot ? {
+    ''      => false,
+    true    => true,
+    false   => false,
+    default => str2bool($disableboot),
+  }
+  $bool_audit_only=$audit_only ? {
+    ''      => false,
+    true    => true,
+    false   => false,
+    default => str2bool($audit_only),
+  }
 
   $manage_package = $antelope::bool_absent ? {
     true  => 'absent',
