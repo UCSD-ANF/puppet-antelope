@@ -1,5 +1,5 @@
 : # use perl
-eval 'exec /opt/antelope/perl5.12.1-64/bin/perl -S $0 "$@"'
+eval 'exec /opt/antelope/<%= scope.lookupvar('::antelope_latest_perl') %>/bin/perl -S $0 "$@"'
 if 0;
 
 ##----------------------------------------------------------------------------

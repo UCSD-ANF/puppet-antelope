@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.3.1
+Version 0.4
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by Boulder Real-Time Technologies
@@ -16,7 +16,9 @@ Geoff Davis <gadavis@ucsd.edu>
 * create_resources library function. This ships with Puppet >= 2.7.x, but is also [https://github.com/puppetlabs/puppetlabs-create_resources](available as a module for 2.6 from:
 * [https:///github.com/example42/puppi](puppi module) for some additional parser functions.
 * [https://github.com/puppetlabs/puppetlabs-stdlib](stdlib module) from PuppetLabs. Ships with Puppet Enterprise, also available on the Module Forge and on Github
-* osfamily fact. Supported by Facter 1.6.1+. If you do not have facter 1.6.1 in your environment, the following manifests will provide the same functionality in site.pp (before declaring any node):
+* osfamily fact. Supported by Facter 1.6.1+.
+
+If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as osfamily. It should be placed in site.pp (before declaring any node):
 
     if ! $::osfamily {
       case $::operatingsystem {

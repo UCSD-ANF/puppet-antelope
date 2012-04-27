@@ -1,0 +1,3 @@
+Running these tests:
+
+puppet apply --noop --modulepath modules/ site_pf.pp

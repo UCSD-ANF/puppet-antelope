@@ -5,7 +5,7 @@ class site::antelope {
 
   user { 'rt' : }
 
-  class { 'antelope':
+  class { '::antelope':
     dirs => '/export/home/rt/rtsystems/foo',
   }
 
