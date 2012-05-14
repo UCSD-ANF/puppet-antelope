@@ -26,14 +26,14 @@ if 0;
 #
 #  4) test it by executing "/etc/init.d/antelope start"  as root.
 
-@dirs = ( <% if real_dirs.is_a? Array -%>
-<% real_dirs.each_with_index do |dir, index| -%>
-<% if index > 0 then -%>, <% end -%>
-<%= "\"#{dir}\"" -%>
-<% end -%>
-<%elsif real_dirs != '' -%>
-<%= "\"#{real_dirs}\"" -%>
-<% end -%> );    #actual directories of rtexec.pf, eg:
+<% if real_dirs.is_a? Array
+  dirsout = ''
+  dirsout = real_dirs.each{ |d| "\"#{d}\"" }.join(', ')
+elsif real_dirs != ''
+  dirsout = "\"#{real_dirs}\""
+end
+-%>
+@dirs = ( <%= dirsout %> );    #actual directories of rtexec.pf, eg:
 		#      @dirs = ("/home/rt/knet", "/home/rt/anza") ; 
 $user = "<%= user %>" ;  # actual user that runs rtexec
 @remote = () ;  # remote machines on which to run /etc/init.d/antelope (like @dirs above).
