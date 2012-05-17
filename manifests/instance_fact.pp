@@ -16,8 +16,9 @@ class antelope::instance_fact(
     order   => '00',
     content => '#!/usr/bin/perl
 my @instances = <DATA>;
-my $instances = join(",", chomp @instances);
-print "instance_fact=$instances\n";
+chomp @instances;
+my $instancestr = join(",", chomp @instances);
+print "antelope_instance_fact=$instancestr\n";
 __DATA__
 ',
   }
