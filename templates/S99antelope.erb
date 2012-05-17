@@ -28,7 +28,7 @@ if 0;
 
 <% if real_dirs.is_a? Array
   dirsout = ''
-  dirsout = real_dirs.each{ |d| "\"#{d}\"" }.join(', ')
+  dirsout = real_dirs.collect{ |d| "\"#{d}\"" }.join(', ')
 elsif real_dirs != ''
   dirsout = "\"#{real_dirs}\""
 end
