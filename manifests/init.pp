@@ -96,7 +96,7 @@ class antelope (
   $service_name         = $antelope::params::service_name,
   $manage_instance_fact = $antelope::params::manage_instance_fact,
   $facts_dir            = $antelope::params::facts_dir
-) inherits antelope::params{
+) inherits antelope::params {
 
   include 'stdlib'
 
@@ -216,7 +216,7 @@ class antelope (
       user        => $antelope::user,
       dirs        => $antelope::dirs,
       ensure      => $antelope::manage_instance_ensure,
-      manage_fact => $antelope::instance_fact,
+      manage_fact => $antelope::manage_instance_fact,
     }
   }
 
