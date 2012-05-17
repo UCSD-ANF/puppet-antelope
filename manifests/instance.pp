@@ -57,6 +57,7 @@ define antelope::instance (
 ) {
 
   require 'antelope::params'
+  include 'antelope::instance_fact'
   # Sanity test parameters
   validate_string($ensure)
   validate_string($user)
@@ -153,6 +154,13 @@ define antelope::instance (
     enable      => $service_enable,
     hasrestart  => false,
     hasstatus   => false;
+  }
+
+  concat::fragment { "${antelope::instance_fact::file}_${name}" :
+    ensure  => $file_ensure,
+    target  => $antelope::instance_fact::file,
+    order   => '20',
+    content => "${name}\n",
   }
 
 }

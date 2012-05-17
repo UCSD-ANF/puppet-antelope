@@ -68,4 +68,7 @@ class antelope::params {
     default => $::antelope_user,
   }
 
+  # Directory containing facts for the facts.d plugin (part of stdlib)
+  $facts_dir = '/etc/facter/facts.d'
+
 }

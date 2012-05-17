@@ -14,9 +14,10 @@ Geoff Davis <gadavis@ucsd.edu>
 
 * Puppet version >= 2.6.x
 * create_resources library function. This ships with Puppet >= 2.7.x, but is also [https://github.com/puppetlabs/puppetlabs-create_resources](available as a module for 2.6 from:
-* [https:///github.com/example42/puppi](puppi module) for some additional parser functions.
-* [https://github.com/puppetlabs/puppetlabs-stdlib](stdlib module) from PuppetLabs. Ships with Puppet Enterprise, also available on the Module Forge and on Github
+* [https:///github.com/example42/puppi](example42-puppi module) for some additional parser functions. GitHub only at this point
+* [https://github.com/puppetlabs/puppetlabs-stdlib](puppetlabs-stdlib module) from PuppetLabs. Ships with Puppet Enterprise, also available on the Module Forge and on Github
 * osfamily fact. Supported by Facter 1.6.1+.
+* [https://github.com/ripienaar/puppet-concat](ripienaar-concat module) - also available on the forge
 
 If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as osfamily. It should be placed in site.pp (before declaring any node):
 
