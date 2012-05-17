@@ -58,7 +58,7 @@ define antelope::instance (
   $servicename  = $title,
   $delay        = '0',
   $shutdownwait = '120',
-  $manage_fact  = false
+  $manage_fact  = '',
 ) {
 
   require 'antelope::params'
@@ -67,9 +67,15 @@ define antelope::instance (
   validate_string($user)
   validate_string($servicename)
   validate_string($delay)
-  validate_bool($manage_fact)
 
-  if $manage_fact {
+  $bool_manage_fact = $manage_fact ? {
+    true    => $manage_fact,
+    false   => $manage_fact,
+    ''      => $antelope::params::manage_instance_fact,
+    default => str2bool($manage_fact),
+  }
+
+  if $bool_manage_fact {
     include 'antelope::instance_fact'
   }
 
