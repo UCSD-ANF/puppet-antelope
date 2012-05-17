@@ -11,10 +11,16 @@
 #
 # Autorequires:
 #
-# Although nothing is autorequired directly from this class, if 'dirs'
-# or 'instances' are provided, the antelope::instance defined
-# type will autorequire several resources, including a User and the
-# directories passed to it
+# Although nothing is autorequired directly from this class, some
+# resources will be required if the 'dirs' or 'instances' parameters
+# are not null. In particular, the antelope::instance defined
+# type will autorequire several resources, including:
+# * the user that the antelope instance is to run as
+# * the directories that contain the real-time systems
+# * the directory that the antelope_instances fact should be installed
+#   into, if the manage_instance_fact parameter is set to true on this
+#   class, or if the manage_fact parameter is set to true on any
+#   declaration of antelope::instance
 #
 # Dependencies:
 #
@@ -24,20 +30,21 @@
 #  * example42-puppi as puppi
 #  * For puppet 2.6, puppetlabs-create_resources. 2.7 ships with that
 #  function in core
+#  * repienaar/concat if $instance_fact is true
 #
 # Parameters:
-#  *absent* - make sure that Antelope is not installed
+#  [*absent*] - make sure that Antelope is not installed
 #
-#  *debug* - Turn on some debugging options
+#  [*debug*] - Turn on some debugging options
 #
-#  *disable* - Don't start up any services. Removes init scripts
+#  [*disable*] - Don't start up any services. Removes init scripts
 #
-#  *disableboot* - installs init scripts but set's them to not start at
+#  [*disableboot*] - installs init scripts but set's them to not start at
 #   boot
 #
-#  *audit_only* - makes no changes to the system, just tracks changes
+#  [*audit_only*] - makes no changes to the system, just tracks changes
 #
-#  *dirs* - Directories to manage as Antelope rtsystems.
+#  [*dirs*] - Directories to manage as Antelope rtsystems.
 #  *Must be used exclusive of instances parameter.* This parameter can
 #  be specified several ways:
 #  As a string - This is either a single, or a comma separated list of
@@ -47,7 +54,7 @@
 #    antelope::instance called $service_name is created with the
 #    run-time user $user
 #
-#  *instances* - Creates one or more antelope::instance blocks
+#  [*instances*] - Creates one or more antelope::instance blocks
 #  *Must be used exclusive of dirs parameter.*
 #  This parameter should be provided as a hash of hashes. The keys of
 #    the outer hash are used as the instance name. Subkeys are any
@@ -59,22 +66,36 @@
 #        dirs => 'dirname' ,
 #      }
 #      'anotherservicename' = {
-#        user => 'rt2',
-#        dirs => [ 'foo', 'bar', 'baz' ],
+#        user        => 'rt2',
+#        dirs        => [ 'foo', 'bar', 'baz' ],
+#        manage_fact => false,
 #      }
 #    }
 #
+#  [*manage_instance_fact*] - if true, creates a fact in the facter
+#  facts.d directory (specified by the parameter $facts_dir) called
+#  antelope_instances. This fact will contain a comma separated list
+#  of antelope::instance names. Defaults to true.
+#
+#  [*facts_dir*] - path to the facts.d directory that is parsed by
+#  facter for externally provided facts. Defaults to
+#  "/etc/facter/facts.d". On Puppet Enterprise, it may make more sense
+#  to use /etc/puppetlabs/facter/facts.d. Note that this directory is
+#  auto-required if manage_instance_fact is true.
+#
 class antelope (
-  $absent = $antelope::params::absent,
-  $debug = $antelope::params::debug,
-  $disable = $antelope::params::disable,
-  $disableboot = $antelope::params::disableboot,
-  $audit_only = $antelope::params::audit_only,
-  $dirs = $antelope::params::dirs,
-  $instances = $antelope::params::instances,
-  $version = $antelope::params::version,
-  $user = $antelope::params::user,
-  $service_name = $antelope::params::service_name
+  $absent               = $antelope::params::absent,
+  $debug                = $antelope::params::debug,
+  $disable              = $antelope::params::disable,
+  $disableboot          = $antelope::params::disableboot,
+  $audit_only           = $antelope::params::audit_only,
+  $dirs                 = $antelope::params::dirs,
+  $instances            = $antelope::params::instances,
+  $version              = $antelope::params::version,
+  $user                 = $antelope::params::user,
+  $service_name         = $antelope::params::service_name,
+  $manage_instance_fact = $antelope::params::manage_instance_fact,
+  $facts_dir            = $antelope::params::facts_dir
 ) inherits antelope::params{
 
   include 'stdlib'
@@ -192,9 +213,10 @@ class antelope (
 
   if $antelope::manage_singleton_instance {
     antelope::instance { $antelope::service_name :
-      user   => $antelope::user,
-      dirs   => $antelope::dirs,
-      ensure => $antelope::manage_instance_ensure,
+      user        => $antelope::user,
+      dirs        => $antelope::dirs,
+      ensure      => $antelope::manage_instance_ensure,
+      manage_fact => $antelope::instance_fact,
     }
   }
 

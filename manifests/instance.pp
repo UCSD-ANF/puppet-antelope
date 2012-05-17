@@ -27,6 +27,10 @@
 #   How long to wait in seconds for a real-time system to shutdown. Defaults
 #   to 120 seconds.
 #
+# [*manage_fact*]
+#   If false, does not manage the facter fact antelope_instances.
+#   Defaults to true
+#
 # == Autorequires
 # This resource auto-requires the following resources:
 #  User[$user]
@@ -53,16 +57,21 @@ define antelope::instance (
   $user         = 'rt',
   $servicename  = $title,
   $delay        = '0',
-  $shutdownwait = '120'
+  $shutdownwait = '120',
+  $manage_fact  = false
 ) {
 
   require 'antelope::params'
-  include 'antelope::instance_fact'
   # Sanity test parameters
   validate_string($ensure)
   validate_string($user)
   validate_string($servicename)
   validate_string($delay)
+  validate_bool($manage_fact)
+
+  if $manage_fact {
+    include 'antelope::instance_fact'
+  }
 
   if ! ($ensure in [ 'present', 'absent' ]) {
     fail('antelope::instance ensure parameter must be absent or present')
@@ -156,11 +165,13 @@ define antelope::instance (
     hasstatus   => false;
   }
 
-  concat::fragment { "${antelope::instance_fact::file}_${name}" :
-    ensure  => $file_ensure,
-    target  => $antelope::instance_fact::file,
-    order   => '20',
-    content => "${name}\n",
+  if $manage_fact {
+    concat::fragment { "${antelope::instance_fact::file}_${name}" :
+      ensure  => $file_ensure,
+      target  => $antelope::instance_fact::file,
+      order   => '20',
+      content => "${name}\n",
+    }
   }
 
 }
