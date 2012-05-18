@@ -1,10 +1,10 @@
 # Autorequires: File[$facts_dir]
-class antelope::instance_fact(
+class antelope::service_fact(
   $facts_dir = $antelope::params::facts_dir
 ) inherits antelope::params {
   include concat::setup
 
-  $file = "${facts_dir}/antelope_instance_fact"
+  $file = "${facts_dir}/antelope_services"
 
   concat { $file:
     require => File[$facts_dir],
@@ -18,7 +18,7 @@ class antelope::instance_fact(
 my @instances = <DATA>;
 chomp @instances;
 my $instancestr = join(",", @instances);
-print "antelope_instances=$instancestr\n";
+print "antelope_services=$instancestr\n";
 __DATA__
 ',
   }

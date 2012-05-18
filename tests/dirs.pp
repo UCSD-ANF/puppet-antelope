@@ -5,7 +5,10 @@ class site::antelope {
 
   user { 'rt' : }
 
-  class { 'antelope':
+  file{'/etc/facter': ensure => present, }
+  -> file{'/etc/facter/facts.d': ensure => present, }
+
+  class { '::antelope':
     instances    => {
       'antelope-single' => {
         'user'   => 'rt',
