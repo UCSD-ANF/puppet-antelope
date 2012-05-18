@@ -5,6 +5,9 @@ class site::antelope {
 
   user { 'rt' : }
 
+  file{'/etc/facter': ensure => present, }
+  -> file{'/etc/facter/facts.d': ensure => present, }
+
   class { '::antelope':
     dirs => '/export/home/rt/rtsystems/foo',
   }
