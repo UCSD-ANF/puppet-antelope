@@ -80,9 +80,9 @@ class antelope::params {
 
   ### Controls whether or not we manage the antelope_instance fact
   # if true, requires the 'concat' module
-  $manage_instance_fact = $::antelope_manage_instance_fact ? {
+  $manage_service_fact = $::antelope_manage_service_fact ? {
     ''      => true,                   # Default value
-    default => $::antelope_manage_instance_fact,
+    default => $::antelope_manage_service_fact,
   }
 
 }

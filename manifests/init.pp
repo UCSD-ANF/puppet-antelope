@@ -17,8 +17,8 @@
 # type will autorequire several resources, including:
 # * the user that the antelope instance is to run as
 # * the directories that contain the real-time systems
-# * the directory that the antelope_instances fact should be installed
-#   into, if the manage_instance_fact parameter is set to true on this
+# * the directory that the antelope_services fact should be installed
+#   into, if the manage_service_fact parameter is set to true on this
 #   class, or if the manage_fact parameter is set to true on any
 #   declaration of antelope::instance
 #
@@ -72,16 +72,16 @@
 #      }
 #    }
 #
-#  [*manage_instance_fact*] - if true, creates a fact in the facter
+#  [*manage_service_fact*] - if true, creates a fact in the facter
 #  facts.d directory (specified by the parameter $facts_dir) called
-#  antelope_instances. This fact will contain a comma separated list
+#  antelope_services. This fact will contain a comma separated list
 #  of antelope::instance names. Defaults to true.
 #
 #  [*facts_dir*] - path to the facts.d directory that is parsed by
 #  facter for externally provided facts. Defaults to
 #  "/etc/facter/facts.d". On Puppet Enterprise, it may make more sense
 #  to use /etc/puppetlabs/facter/facts.d. Note that this directory is
-#  auto-required if manage_instance_fact is true.
+#  auto-required if manage_service_fact is true.
 #
 class antelope (
   $absent               = $antelope::params::absent,
@@ -94,7 +94,7 @@ class antelope (
   $version              = $antelope::params::version,
   $user                 = $antelope::params::user,
   $service_name         = $antelope::params::service_name,
-  $manage_instance_fact = $antelope::params::manage_instance_fact,
+  $manage_service_fact  = $antelope::params::manage_service_fact,
   $facts_dir            = $antelope::params::facts_dir
 ) inherits antelope::params {
 
@@ -216,7 +216,7 @@ class antelope (
       user        => $antelope::user,
       dirs        => $antelope::dirs,
       ensure      => $antelope::manage_instance_ensure,
-      manage_fact => $antelope::manage_instance_fact,
+      manage_fact => $antelope::manage_service_fact,
     }
   }
 

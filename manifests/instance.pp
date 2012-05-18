@@ -71,12 +71,12 @@ define antelope::instance (
   $bool_manage_fact = $manage_fact ? {
     true    => $manage_fact,
     false   => $manage_fact,
-    ''      => $antelope::params::manage_instance_fact,
+    ''      => $antelope::params::manage_service_fact,
     default => str2bool($manage_fact),
   }
 
   if $bool_manage_fact {
-    include 'antelope::instance_fact'
+    include 'antelope::service_fact'
   }
 
   if ! ($ensure in [ 'present', 'absent' ]) {
@@ -172,9 +172,9 @@ define antelope::instance (
   }
 
   if $manage_fact {
-    concat::fragment { "${antelope::instance_fact::file}_${name}" :
+    concat::fragment { "${antelope::service_fact::file}_${name}" :
       ensure  => $file_ensure,
-      target  => $antelope::instance_fact::file,
+      target  => $antelope::service_fact::file,
       order   => '20',
       content => "${name}\n",
     }
