@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.4.2
+Version 0.4.3
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by Boulder Real-Time Technologies
@@ -17,7 +17,7 @@ Geoff Davis <gadavis@ucsd.edu>
 * [https:///github.com/example42/puppi](example42-puppi module) for some additional parser functions. GitHub only at this point
 * [https://github.com/puppetlabs/puppetlabs-stdlib](puppetlabs-stdlib module) from PuppetLabs. Ships with Puppet Enterprise, also available on the Module Forge and on Github
 * osfamily fact. Supported by Facter 1.6.1+. Or you can use the code blurb below
-* [https://github.com/ripienaar/puppet-concat](ripienaar-concat module) - also available on the forge. Only required if managing the antelope_instances fact - see below
+* [https://github.com/ripienaar/puppet-concat](ripienaar-concat module) - also available on the forge. Only required if managing the antelope_services fact - see below
 
 If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as osfamily. It should be placed in site.pp (before declaring any node):
 
@@ -44,8 +44,8 @@ If you do not have facter 1.6.1 in your environment, the following manifest code
 
 ## Usage
 
-### The antelope instances fact
-By default, this module will try to create a fact called antelope_instances which contains a comma separated list of all antelope::instances configured on the system. The creation of this fact depends on a couple of different modules and resources, which you may not want to configure. If you want to skip creating this fact, set the manage_instances_fact parameter to the main antelope class to false, and set the manage_fact parameter to false for each antelope::instance that you manually define.
+### The antelope services fact
+By default, this module will try to create a fact called antelope_services which contains a comma separated list of all of the system services created by the antelope::instance defined types. The creation of this fact depends on a couple of different modules and resources, which you may not want to configure. If you want to skip creating this fact, set the manage_instances_fact parameter to the main antelope class to false, and set the manage_fact parameter to false for each antelope::instance that you manually define.
 
 ### antelope
 
@@ -63,11 +63,11 @@ This form creates a default antelope::instance set up to manage a real-time syst
        dirs => '/rtsystems/default',
      }
 
-This form creates an antelope::instance but does not create the antelope_instances fact
+This form creates an antelope::instance but does not create the antelope_services fact
 
      class { 'antelope':
        dirs => '/rtsystems/default',
-       manage_instances_fact => false,
+       manage_instance_fact => false,
      }
 
 #### With the instances Parameter
@@ -88,7 +88,7 @@ The instances parameter, when used instead of dirs, takes a hash of hashes. This
      }
 
 ### antelope::instance
-Configure an instance of Antelope. More than one can be configured. Useful for real-time systems running as different users. Note that only the antelope instance will show up in the antelope_instances fact
+Configure an instance of Antelope. More than one can be configured. Useful for real-time systems running as different users. Note that only the antelope instance will show up in the antelope_services fact
 
      antelope::instance { 'antelope' :
        user => 'rt',
@@ -98,10 +98,10 @@ Configure an instance of Antelope. More than one can be configured. Useful for r
     antelope::instance { 'antelope-baz' :
        user        => 'basil',
        dirs        => '/rtsystems/baz',
-       manage_fact => false, # don't create an entry in the antelope_instances fact for this instance.
+       manage_fact => false, # don't create an entry in the antelope_services fact for this instance.
     }
 
-Same configuration as above, but no antelope_instances fact is created:
+Same configuration as above, but no antelope_services fact is created:
 
      antelope::instance { 'antelope' :
        user        => 'rt',
