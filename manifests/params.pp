@@ -68,4 +68,21 @@ class antelope::params {
     default => $::antelope_user,
   }
 
+  ### Directory containing facts for the facts.d plugin (part of stdlib)
+  # Look for antelope_facts_dir, then for facts_dir in top scope
+  $facts_dir = $::antelope_facts_dir ? {
+    '' => $::facts_dir ? {
+      ''      => '/etc/facter/facts.d', # Default value
+      default => $::facts_dir,
+    },
+    default => $::antelope_facts_dir,
+  }
+
+  ### Controls whether or not we manage the antelope_instance fact
+  # if true, requires the 'concat' module
+  $manage_instance_fact = $::antelope_manage_instance_fact ? {
+    ''      => true,                   # Default value
+    default => $::antelope_manage_instance_fact,
+  }
+
 }
