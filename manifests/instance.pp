@@ -171,7 +171,7 @@ define antelope::instance (
     hasstatus   => false;
   }
 
-  if $manage_fact {
+  if $bool_manage_fact {
     concat::fragment { "${antelope::service_fact::file}_${name}" :
       ensure  => $file_ensure,
       target  => $antelope::service_fact::file,
