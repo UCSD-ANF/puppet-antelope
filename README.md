@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.4
+Version 0.4.1
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by Boulder Real-Time Technologies
@@ -13,11 +13,11 @@ Geoff Davis <gadavis@ucsd.edu>
 ## Requirements
 
 * Puppet version >= 2.6.x
-* create_resources library function. This ships with Puppet >= 2.7.x, but is also [https://github.com/puppetlabs/puppetlabs-create_resources](available as a module for 2.6 from:
+* create\_resources library function. This ships with Puppet >= 2.7.x, but is also [https://github.com/puppetlabs/puppetlabs-create_resources](available as a module for 2.6)
 * [https:///github.com/example42/puppi](example42-puppi module) for some additional parser functions. GitHub only at this point
 * [https://github.com/puppetlabs/puppetlabs-stdlib](puppetlabs-stdlib module) from PuppetLabs. Ships with Puppet Enterprise, also available on the Module Forge and on Github
-* osfamily fact. Supported by Facter 1.6.1+.
-* [https://github.com/ripienaar/puppet-concat](ripienaar-concat module) - also available on the forge
+* osfamily fact. Supported by Facter 1.6.1+. Or you can use the code blurb below
+* [https://github.com/ripienaar/puppet-concat](ripienaar-concat module) - also available on the forge. Only required if managing the antelope_instances fact - see below
 
 If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as osfamily. It should be placed in site.pp (before declaring any node):
 
@@ -41,7 +41,11 @@ If you do not have facter 1.6.1 in your environment, the following manifest code
       }
     }
 
+
 ## Usage
+
+### The antelope instances fact
+By default, this module will try to create a fact called antelope_instances which contains a comma separated list of all antelope::instances configured on the system. The creation of this fact depends on a couple of different modules and resources, which you may not want to configure. If you want to skip creating this fact, set the manage_instances_fact parameter to the main antelope class to false, and set the manage_fact parameter to false for each antelope::instance that you manually define.
 
 ### antelope
 
@@ -57,6 +61,13 @@ This form creates a default antelope::instance set up to manage a real-time syst
 
      class { 'antelope':
        dirs => '/rtsystems/default',
+     }
+
+This form creates an antelope::instance but does not create the antelope_instances fact
+
+     class { 'antelope':
+       dirs => '/rtsystems/default',
+       manage_instances_fact => false,
      }
 
 #### With the instances Parameter
@@ -77,7 +88,7 @@ The instances parameter, when used instead of dirs, takes a hash of hashes. This
      }
 
 ### antelope::instance
-Configure an instance of Antelope. More than one can be configured. Useful for real-time systems running as different users.
+Configure an instance of Antelope. More than one can be configured. Useful for real-time systems running as different users. Note that only the antelope instance will show up in the antelope_instances fact
 
      antelope::instance { 'antelope' :
        user => 'rt',
@@ -85,6 +96,22 @@ Configure an instance of Antelope. More than one can be configured. Useful for r
     }
 
     antelope::instance { 'antelope-baz' :
-       user => 'basil',
-       dirs => '/rtsystems/baz',
+       user        => 'basil',
+       dirs        => '/rtsystems/baz',
+       manage_fact => false, # don't create an entry in the antelope_instances fact for this instance.
     }
+
+Same configuration as above, but no antelope_instances fact is created:
+
+     antelope::instance { 'antelope' :
+       user        => 'rt',
+       dirs        => ['/rtsystems/foo', '/rtsystems/bar'],
+       manage_fact => false,
+    }
+
+    antelope::instance { 'antelope-baz' :
+       user        => 'basil',
+       dirs        => '/rtsystems/baz',
+       manage_fact => false,
+    }
+
