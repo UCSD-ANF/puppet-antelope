@@ -5,7 +5,7 @@ class site::antelope {
 
   user { 'rt' : }
 
-  class { 'antelope':
+  class { '::antelope':
     instances    => {
       'antelope-single' => {
         'user'   => 'rt',
