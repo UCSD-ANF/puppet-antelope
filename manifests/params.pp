@@ -85,4 +85,10 @@ class antelope::params {
     default => $::antelope_manage_service_fact,
   }
 
+  ### Controls how long we wait for a system to shut down cleanly
+  $shutdownwait = $::antelope_shutdownwait ? {
+    ''      => 120,
+    default => $::antelope_shutdownwait,
+  }
+
 }
