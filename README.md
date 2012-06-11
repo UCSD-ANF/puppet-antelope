@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.4.4
+Version 0.4.5
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by Boulder Real-Time Technologies
