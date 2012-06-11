@@ -83,6 +83,11 @@
 #  to use /etc/puppetlabs/facter/facts.d. Note that this directory is
 #  auto-required if manage_service_fact is true.
 #
+#  [*shutdownwait*] - controls the Antelope init script timeout for how
+#  long it will wait before it forcibly kills an rtexec process. Only
+#  has an effect when the dirs parameter is used. Otherwise, the
+#  shutdown wait should be specified inside of the instances hash.
+#
 class antelope (
   $absent               = $antelope::params::absent,
   $debug                = $antelope::params::debug,
@@ -95,7 +100,8 @@ class antelope (
   $user                 = $antelope::params::user,
   $service_name         = $antelope::params::service_name,
   $manage_service_fact  = $antelope::params::manage_service_fact,
-  $facts_dir            = $antelope::params::facts_dir
+  $facts_dir            = $antelope::params::facts_dir,
+  $shutdownwait         = $antelope::params::shutdownwait
 ) inherits antelope::params {
 
   include 'stdlib'
@@ -213,10 +219,11 @@ class antelope (
 
   if $antelope::manage_singleton_instance {
     antelope::instance { $antelope::service_name :
-      user        => $antelope::user,
-      dirs        => $antelope::dirs,
-      ensure      => $antelope::manage_instance_ensure,
-      manage_fact => $antelope::manage_service_fact,
+      user         => $antelope::user,
+      dirs         => $antelope::dirs,
+      ensure       => $antelope::manage_instance_ensure,
+      manage_fact  => $antelope::manage_service_fact,
+      shutdownwait => $antelope::shutdownwait,
     }
   }
 
