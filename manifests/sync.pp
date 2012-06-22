@@ -80,7 +80,7 @@ class antelope::sync (
     mode   => '444',
     owner  => $manage_file_owner,
     group  => $manage_file_group,
-    source => 'puppet:///modules/antelope/files/sync/rsync_exclude',
+    source => 'puppet:///modules/antelope/sync/rsync_exclude',
     require => File[$confdir],
   }
 
@@ -90,7 +90,7 @@ class antelope::sync (
     mode   => '444',
     owner  => $manage_file_owner,
     group  => $manage_file_group,
-    source => 'puppet:///modules/antelope/files/sync/rsync_include',
+    source => 'puppet:///modules/antelope/sync/rsync_include',
     require => File[$confdir],
   }
 }
