@@ -1,0 +1,121 @@
+#!/usr/bin/env perl
+
+# Sync Antelope and related directory trees
+
+use warnings;
+use strict;
+use Getopt::Std;
+
+# "constants"
+my $TRUE=1;
+my $FALSE=0;
+
+# Defaults
+my $excludeFile="<%= confdir %>/etc/rsync_exclude";
+my $includeFile="<%= confdir %>/etc/rsync_include";
+my $sourceHost="<%= sync_host %>";
+my $sourceUser="<%= sync_user %>";
+my $debug=$FALSE;
+my $quiet=$FALSE;
+my $dryRun=$FALSE;
+my $rsyncBin="<%= rsync_bin %>";
+my @rsyncOpts=("-a", "--delete", "--rsh=ssh -q");
+
+# Other globals
+my %option = ();
+my @syncdirs = ("/opt/antelope", "/opt/anf");
+
+# Static Strings
+my $usageHelp="Usage: $0";
+my $badOptionHelp="Option not recognised";
+my $debugHelp="-d Turns on debugging mode";
+my $dryRunHelp="-n Runs Rsync in dry run mode";
+my $excludeFileHelp="-e Path to Exclude file (default: $excludeFile)";
+my $includeFileHelp="-i Path to Include file (default: $includeFile)";
+my $quietHelp="-q Runs rsync without the -p option";
+
+# Help subroutine
+sub printHelpAndExit {
+  print $usageHelp."\n";
+  print $debugHelp."\n";
+  print $dryRunHelp."\n";
+  print $dryRunHelp."\n";
+  print $excludeFileHelp."\n";
+  print $includeFileHelp."\n";
+  print $quietHelp."\n";
+  if ($1) {
+    exit $1;
+  }
+  else {
+    exit 1;
+  }
+}
+# help for bad options
+sub printErrorHelpAndExit {
+  my $errstring=shift;
+  print "\n$errstring\n";
+  printHelpAndExit(1);
+}
+
+sub treeSync ( $ ) {
+  my $syncdir=shift;
+  my $srcpath= $sourceUser . "@" . $sourceHost . ":" . $syncdir . "/";
+  my $destpath=$syncdir;
+  my @cmd = $rsyncBin;
+  push @cmd, @rsyncOpts;
+  push @cmd, $srcpath, $destpath;
+  print join (" ", @cmd), "\n" if $debug;
+  system (@cmd);
+}
+
+sub printOptionSummary {
+  print "Options set are:\n";
+  print "  debug=$debug\n";
+  print "  dryRun=$dryRun\n";
+  print "  exclude file = $excludeFile\n";
+  print "  include file = $includeFile\n";
+  print "  quiet = $quiet\n";
+}
+#
+# Parse Options
+#
+getopts("hdne:i:q", \%option);
+printHelpAndExit() if $option{h};
+if ($option{d}) {
+  $debug=$TRUE;
+}
+if ($option{n}) {
+  $dryRun=$TRUE;
+}
+$excludeFile=$option{e} if $option{e};
+$includeFile=$option{i} if $option{i};
+$quiet=$TRUE if $option{q};
+
+printOptionSummary() if ($debug);
+
+#
+# Verify the Include and Exclude files exists
+#
+printErrorHelpAndExit("ERROR: Can't find exclude file ${excludeFile}") if ( ! -f $excludeFile );
+printErrorHelpAndExit("ERROR: Can't find include file ${includeFile}") if ( ! -f $includeFile );
+
+#
+# Compose the rsync options
+#
+push ( @rsyncOpts, "--dry-run") if ( $dryRun == $TRUE );
+if ( ! $quiet ) {
+  if ( $dryRun ) {
+    push ( @rsyncOpts, "-v" );
+  } else {
+    push ( @rsyncOpts, "-P" );
+  }
+}
+push ( @rsyncOpts, "--exclude-from=" . $excludeFile );
+push ( @rsyncOpts, "--include-from=" . $includeFile );
+
+#
+# Run the syncs
+#
+foreach my $dir (@syncdirs ) {
+  treeSync($dir);
+}

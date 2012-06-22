@@ -91,4 +91,19 @@ class antelope::params {
     default => $::antelope_shutdownwait,
   }
 
+  ### Host containing golden copy of Antelope for sync script
+  $sync_host = $::antelope_sync_host ? {
+    '' => $::osfamily ? {
+      'RedHat'  => 'anfbuildl.ucsd.edu',
+      'Solaris' => 'anfbuilds.ucsd.edu',
+    },
+    default => $::antelope_sync_host,
+  }
+
+  ### Source username for Antelope sync script
+  $sync_user = $::antelope_sync_user ? {
+    ''      => 'rt',
+    default => $::antleope_sync_user,
+  }
+
 }
