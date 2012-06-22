@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.4.5
+Version 0.5.0
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by Boulder Real-Time Technologies
@@ -18,6 +18,7 @@ Geoff Davis <gadavis@ucsd.edu>
 * [https://github.com/puppetlabs/puppetlabs-stdlib](puppetlabs-stdlib module) from PuppetLabs. Ships with Puppet Enterprise, also available on the Module Forge and on Github
 * osfamily fact. Supported by Facter 1.6.1+. Or you can use the code blurb below
 * [https://github.com/ripienaar/puppet-concat](ripienaar-concat module) - also available on the forge. Only required if managing the antelope_services fact - see below
+* A supported Operating System for Antelope. Currently Solaris, Linux, or OS X
 
 If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as osfamily. It should be placed in site.pp (before declaring any node):
 
@@ -115,3 +116,21 @@ Same configuration as above, but no antelope_services fact is created:
        manage_fact => false,
     }
 
+### antelope::sync
+Installs a wrapper around rsync for copying Antelope from a golden master. Includes the ability to synchronize an optional site-specific tree.
+
+You must at a minimum declare the sync_host parameter with this class. This can be done either by passing sync_user as a parameter or by declaring a top-scope variable $::antelope_sync_host
+
+    class { 'antelope::sync' :
+      sync_host => 'buildhost.example.net',
+      site_tree => '/opt/mysite',
+    }
+
+Same as above using global variables:
+
+    # in site.pp
+    $antelope_sync_host = 'buildhost.example.net'
+    $antelope_site_tree = '/opt/mysite'
+
+    # elsewhere:
+    include antelope::sync
