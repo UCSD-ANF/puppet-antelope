@@ -8,8 +8,8 @@ class antelope::params {
   #  default => $::antelope_install,
 
    # Make sure we can handle the OS
-  if ! ($::osfamily in ['Solaris', 'RedHat']) {
-    fail("This module does not yet work on $::operatingsystem")
+  if ! ($::osfamily in ['Solaris', 'RedHat', 'Darwin']) {
+    fail("This module does not work on $::operatingsystem")
   } #}
 
   ### General variables that affect module's behaviour
