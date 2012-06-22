@@ -23,7 +23,7 @@ my @rsyncOpts=("-a", "--delete", "--rsh=ssh -q");
 
 # Other globals
 my %option = ();
-my @syncdirs = ("/opt/antelope", "/opt/anf");
+my @syncdirs = (<%= sync_dirs.collect{ |d| "\"#{d}\"" }.join(', ') %>);
 
 # Static Strings
 my $usageHelp="Usage: $0";
