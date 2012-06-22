@@ -8,8 +8,8 @@ class antelope::params {
   #  default => $::antelope_install,
 
    # Make sure we can handle the OS
-  if ! ($::osfamily in ['Solaris', 'RedHat']) {
-    fail("This module does not yet work on $::operatingsystem")
+  if ! ($::osfamily in ['Solaris', 'RedHat', 'Darwin']) {
+    fail("This module does not work on $::operatingsystem")
   } #}
 
   ### General variables that affect module's behaviour
@@ -90,5 +90,22 @@ class antelope::params {
     ''      => 120,
     default => $::antelope_shutdownwait,
   }
+
+  ### Host containing golden copy of Antelope for sync script
+  ### No default is provided as this is a site specific option
+  $sync_host = $::antelope_sync_host
+
+  ### Source username for Antelope sync script
+  $sync_user = $::antelope_sync_user ? {
+    ''      => $::antelope_user,
+    default => $::antelope_sync_user,
+  }
+
+  ### Site tree is an optional directory containing a localized Antelope
+  ### environment. One can be created for your location by using the
+  ### build_sourcetree command from antelope_contrib
+  ### Example value is '/opt/anf'
+  ### The default value of undef will not synchronize an additional tree
+  $site_tree = $::antelope_site_tree
 
 }
