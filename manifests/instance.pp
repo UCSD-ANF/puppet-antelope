@@ -58,7 +58,7 @@ define antelope::instance (
   $servicename  = $title,
   $delay        = '0',
   $shutdownwait = '120',
-  $manage_fact  = '',
+  $manage_fact  = ''
 ) {
 
   require 'antelope::params'
