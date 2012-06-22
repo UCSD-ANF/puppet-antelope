@@ -10,8 +10,6 @@
 # /opt/csw/bin on Solaris
 #
 # Autorequires:
-#  * User[$sync_user]
-#  * Group[$sync_group]
 #  * File[/usr/local/bin]
 #  * File[/usr/local/etc]
 #
@@ -72,11 +70,7 @@ class antelope::sync (
     owner   => $manage_file_owner,
     group   => $manage_file_group,
     content => template('antelope/sync/antelope_sync.erb'),
-    require => [
-      File[$bindir],
-      User[$manage_file_owner],
-      Group[$manage_file_group],
-    ],
+    require => File[$bindir],
   }
 
   # Exclude and include lists
@@ -87,11 +81,7 @@ class antelope::sync (
     owner  => $manage_file_owner,
     group  => $manage_file_group,
     source => 'puppet:///modules/antelope/files/sync/rsync_exclude',
-    require => [
-      File[$confdir],
-      User[$manage_file_owner],
-      Group[$manage_file_group],
-    ],
+    require => File[$confdir],
   }
 
   file { 'rsync_include':
@@ -101,10 +91,6 @@ class antelope::sync (
     owner  => $manage_file_owner,
     group  => $manage_file_group,
     source => 'puppet:///modules/antelope/files/sync/rsync_include',
-    require => [
-      File[$confdir],
-      User[$manage_file_owner],
-      Group[$manage_file_group],
-    ],
+    require => File[$confdir],
   }
 }
