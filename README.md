@@ -18,6 +18,7 @@ Geoff Davis <gadavis@ucsd.edu>
 * [https://github.com/puppetlabs/puppetlabs-stdlib](puppetlabs-stdlib module) from PuppetLabs. Ships with Puppet Enterprise, also available on the Module Forge and on Github
 * osfamily fact. Supported by Facter 1.6.1+. Or you can use the code blurb below
 * [https://github.com/ripienaar/puppet-concat](ripienaar-concat module) - also available on the forge. Only required if managing the antelope_services fact - see below
+* [https://github.com/UCSD-ANF/puppet-php](camptocamp-php module with ANF customizations). Only required if using the antelope::php class.
 * A supported Operating System for Antelope. Currently Solaris, Linux, or OS X
 
 If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as osfamily. It should be placed in site.pp (before declaring any node):
@@ -134,3 +135,16 @@ Same as above using global variables:
 
     # elsewhere:
     include antelope::sync
+
+### antelope::php
+Enables the Antelope PHP bindings in php.ini
+
+Requires the camptocamp-php module with ANF customizations (shown under the Requirements section)
+
+This will install the PHP bindings using the latest installed version of antelope, as determined by the antelope_latest_version fact
+
+    include antelope::php
+
+Same as above, but being explicit with the version string
+
+    class { 'antelope::php' : version => '5.2-64' }
