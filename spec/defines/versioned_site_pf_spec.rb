@@ -20,9 +20,10 @@ describe 'antelope::versioned_site_pf' do
     end
 
     context 'with global variables' do
-      let(:pre_condition) {
-        [ "$antelope_dist_owner = 'guser'",
-          "$antelope_dist_group = 'ggroup'" ] }
+      let(:pre_condition) { [
+        "$antelope_dist_owner = 'guser'",
+        "$antelope_dist_group = 'ggroup'",
+      ] }
 
       it { should contain_file('/opt/antelope/5.3pre/data/pf/site.pf')\
         .with_owner('guser').with_group('ggroup') }
