@@ -110,17 +110,17 @@ class antelope::params {
 
   ### Owner of $ANTELOPE tree
   ### Used to set permissions on site.pf and license.pf among other things
-  dist_owner = $::antelope_dist_owner ? {
+  $dist_owner = $::antelope_dist_owner ? {
     ''      => 'root',
     default => $::antelope_dist_owner,
   }
 
-  dist_group = $::antelope_dist_group ? {
+  $dist_group = $::antelope_dist_group ? {
     ''      => 'root',
     default => $::antelope_dist_group,
   }
 
-  dist_mode = $::antelope_dist_mode ? {
+  $dist_mode = $::antelope_dist_mode ? {
     ''      => '0644',
     default => $::antelope_dist_mode,
   }
