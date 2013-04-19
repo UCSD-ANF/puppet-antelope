@@ -71,8 +71,12 @@ define antelope::versioned_site_pf (
   $originating_organization = '',
   $institution = 'XXXX',
   $source = undef,
-  $content = undef
+  $content = undef,
+  $owner = undef,
+  $group = undef,
+  $mode = undef
 ) {
+  include 'antelope::params'
 
   $filename="/opt/antelope/${version}/data/pf/site.pf"
 
@@ -92,10 +96,28 @@ define antelope::versioned_site_pf (
     },
   }
 
+  $file_owner = $owner ? {
+    ''      => $antelope::params::dist_owner,
+    default => $owner,
+  }
+
+  $file_group = $group ? {
+    ''      => $antelope::params::dist_group,
+    default => $group,
+  }
+
+  $file_mode = $mode ? {
+    ''      => $antelope::params::dist_mode,
+    default => $mode,
+  }
+
   file { $filename :
-    ensure   => $file_ensure,
-    source   => $file_source,
+    ensure  => $file_ensure,
+    source  => $file_source,
     content => $file_content,
+    owner   => $file_owner,
+    group   => $file_group,
+    mode    => $file_mode,
   }
 
 }
