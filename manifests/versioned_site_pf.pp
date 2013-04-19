@@ -71,10 +71,10 @@ define antelope::versioned_site_pf (
   $originating_organization = '',
   $institution = 'XXXX',
   $source = undef,
-  $content = undef
+  $content = undef,
   $owner = undef,
   $group = undef,
-  $mode = undef,
+  $mode = undef
 ) {
   include 'antelope::params'
 
