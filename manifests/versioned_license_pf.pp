@@ -57,8 +57,12 @@ define antelope::versioned_license_pf (
   $content             = undef,
   $license_keys        = undef,
   $replace             = false,
-  $expiration_warnings = true
+  $expiration_warnings = true,
+  $owner               = undef,
+  $group               = undef,
+  $mode                = undef
 ) {
+  include 'antelope::params'
 
   $filename="/opt/antelope/${version}/data/pf/license.pf"
 
@@ -80,6 +84,21 @@ define antelope::versioned_license_pf (
 
   $file_replace = $replace
 
+  $file_owner = $owner ? {
+    ''      => $antelope::params::dist_owner,
+    default => $owner,
+  }
+
+  $file_group = $group ? {
+    ''      => $antelope::params::dist_group,
+    default => $group,
+  }
+
+  $file_mode = $mode ? {
+    ''      => $antelope::params::dist_mode,
+    default => $mode,
+  }
+
   ### Managed resources
 
   file { $filename :
@@ -87,6 +106,9 @@ define antelope::versioned_license_pf (
     source  => $file_source,
     content => $file_content,
     replace => $file_replace,
+    owner   => $file_owner,
+    group   => $file_group,
+    mode    => $file_mode,
   }
 
 }
