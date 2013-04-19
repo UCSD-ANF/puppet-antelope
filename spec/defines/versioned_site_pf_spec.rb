@@ -28,5 +28,24 @@ describe 'antelope::versioned_site_pf' do
       it { should contain_file('/opt/antelope/5.3pre/data/pf/site.pf')\
         .with_owner('guser').with_group('ggroup') }
     end
+
+    context 'with basic params' do
+      let(:params) { {
+        :mailhost                 => 'smtp.example.com',
+        :mail_domain              => 'domain.example.com',
+        :default_seed_network     => 'EX',
+        :originating_organization => 'Example.com Inc.',
+        :institution              => 'EXPL',
+      } }
+
+      it { should contain_file('/opt/antelope/5.3pre/data/pf/site.pf')\
+        .with_content(/mailhost smtp\.example\.com/)\
+        .with_content(/mail_domain domain\.example\.com/)\
+        .with_content(/default_seed_network   EX/)\
+        .with_content(/originating_organization Example\.com Inc\./)\
+        .with_content(/Institution EXPL/)
+      }
+
+    end
   end
 end
