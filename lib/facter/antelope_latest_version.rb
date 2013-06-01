@@ -9,7 +9,8 @@ Facter.add(:antelope_latest_version) do
     version=nil
 
     versionstr = Facter.value('antelope_versions')
-    version = versionstr.split(',').last unless versionstr == nil
+    versions = Facter::Util::Antelope.get_versions
+    version = versions.last unless versions.nil?
 
     version
   end
