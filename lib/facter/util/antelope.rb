@@ -13,7 +13,7 @@ module Antelope
   require 'facter/util/resolution'
 
   ANTELOPE_BASEDIR = '/opt/antelope'
-  RE_VERSION = /^(\d+)\.(\d+)(-64)?(pre|post|p)?/
+  RE_VERSION = /^(\d+)\.(\d+)(-64)?(pre|post|p)?$/
 
   # Return a list of all Antelope versions installed on this system
   def self.get_versions
