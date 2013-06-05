@@ -44,7 +44,7 @@
 #
 #    # Set the license.pf for the latest version of Antelope:
 #    antelope::versioned_license_pf( $::antelope_latest_version :
-#      keys    => [
+#      license_keys    => [
 #        'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
 #        'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
 #      ],

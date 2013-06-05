@@ -41,6 +41,50 @@ describe 'antelope::versioned_license_pf' do
       }
     end
 
+    context 'using template parameters' do
+
+      context 'with a single license key' do
+        let(:params) {{
+          'license_keys' => 'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
+        }}
+        it { should contain_file('antelope license.pf 5.3')\
+          .with_content(/^tabcdef/) }
+      end
+
+      context 'with multiple license keys' do
+        let(:params) {{
+          'license_keys' => [
+            'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
+            'nabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
+          ],
+        }}
+        it { should contain_file('antelope license.pf 5.3')\
+          .with_content(/^tabcdef.*\nnabcdef/) }
+      end
+
+      context 'with expiration_warnings unset' do
+        it { should_not contain_file('antelope license.pf 5.3')\
+          .with_content(/no_more_expiration_warnings/) }
+      end
+
+      context 'with expiration_warnings set to true' do
+        let(:params) {{
+          'expiration_warnings' => true,
+        }}
+        it { should_not contain_file('antelope license.pf 5.3')\
+          .with_content(/no_more_expiration_warnings/) }
+      end
+
+      context 'with expiration_warnings set to false' do
+        let(:params) {{
+          'expiration_warnings' => false,
+        }}
+        it { should contain_file('antelope license.pf 5.3')\
+          .with_content(/no_more_expiration_warnings/) }
+      end
+
+    end
+
     context 'with a source parameter specified' do
       let(:params) {{
         :source => '/test/license.pf',
