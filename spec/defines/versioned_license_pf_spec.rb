@@ -7,7 +7,8 @@ describe 'antelope::versioned_license_pf' do
       :osfamily => 'RedHat',
     } }
 
-    it { should contain_file('/opt/antelope/5.3/data/pf/license.pf') }
+    it { should contain_file('antelope license.pf 5.3').with_path(
+      '/opt/antelope/5.3/data/pf/license.pf') }
 
     context 'with params owner and group = pkgbuild' do
       let(:params) { {
@@ -15,7 +16,7 @@ describe 'antelope::versioned_license_pf' do
         :group => 'pkgbuild',
       } }
 
-      it { should contain_file('/opt/antelope/5.3/data/pf/license.pf')\
+      it { should contain_file('antelope license.pf 5.3')\
         .with_owner('pkgbuild').with_group('pkgbuild') }
     end
 
@@ -25,7 +26,7 @@ describe 'antelope::versioned_license_pf' do
         "$antelope_dist_group = 'ggroup'",
       ] }
 
-      it { should contain_file('/opt/antelope/5.3/data/pf/license.pf')\
+      it { should contain_file('antelope license.pf 5.3')\
         .with_owner('guser').with_group('ggroup') }
     end
 
@@ -45,8 +46,26 @@ describe 'antelope::versioned_license_pf' do
         :source => '/test/license.pf',
       }}
 
-      it { should contain_file('/opt/antelope/5.3/data/pf/license.pf')\
+      it { should contain_file('antelope license.pf 5.3')\
         .with_source('/test/license.pf') }
+    end
+
+    context 'with a title different from the version' do
+      let(:title) { 'test antelope.pf' }
+      let(:params) { {
+        :version => '5.2-64',
+      } }
+      it { should contain_file('antelope license.pf test antelope.pf')\
+        .with_path('/opt/antelope/5.2-64/data/pf/license.pf') }
+    end
+
+    context 'with a path defined' do
+      let(:params) { {
+        :path => '/path/to/test.pf',
+      } }
+
+      it { should contain_file('antelope license.pf 5.3')\
+        .with_path('/path/to/test.pf') }
     end
   end
 end
