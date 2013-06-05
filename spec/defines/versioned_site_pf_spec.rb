@@ -29,6 +29,17 @@ describe 'antelope::versioned_site_pf' do
         .with_owner('guser').with_group('ggroup') }
     end
 
+    context 'with both source and content parameters' do
+      let(:params) { {
+        :source => '/this/should/fail',
+        :content => 'This garbage content should fail',
+      } }
+
+      it {
+        expect { should raise_error(Puppet::Error) }
+      }
+    end
+
     context 'with basic params' do
       let(:params) { {
         :mailhost                 => 'smtp.example.com',
