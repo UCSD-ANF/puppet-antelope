@@ -1,5 +1,5 @@
 #
-# === Class antelope::versioned_license_pf
+# === Defined type antelope::versioned_license_pf
 # Define a license.pf parameter file for a particular version of
 # Antelope.
 #
@@ -31,6 +31,11 @@
 #  exists. If false or no (the default) any existing contents are left
 #  in place
 #
+# *[path]*
+#  If set, this is used as the filename for the license file. This allows you
+#  specify an arbitrary location for license files for staging purposes.
+#  Defaults to '/opt/antelope/$version/data/pf/license.pf'
+#
 # Parameters affecting template evaluation:
 #
 # *[license_keys]*
@@ -38,7 +43,7 @@
 #
 # *[expiration_warnings]*
 #  If false, the parameter 'no_more_expiration_warnings' is set in
-#  license.pf. If true, it's not set
+#  license.pf. If true, it's not set in license.pf
 #
 # === Example
 #
@@ -46,7 +51,7 @@
 #    antelope::versioned_license_pf( $::antelope_latest_version :
 #      license_keys    => [
 #        'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
-#        'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
+#        'tbbadef1234567890abcdef1234567890abcdef12 2014 May 01 # node bar.ucsd.edu Antelope 5.1',
 #      ],
 #      replace => true,
 #    }

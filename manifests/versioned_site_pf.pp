@@ -25,6 +25,10 @@
 #  for you. Defaults to template('puppet/site.pf.erb'). It is an error
 #  to define both template and source at the same time.
 #
+# *[path]*
+#  If set, override the default filename. Defaults to
+#  '/opt/antelope/$version/data/pf/site.pf'
+#
 # Parameters affecting template evaluation:
 #
 # *[mailhost]*
