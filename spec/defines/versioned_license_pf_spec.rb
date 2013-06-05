@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe 'antelope::versioned_license_pf' do
-  let(:title) { '5.3pre' }
+  let(:title) { '5.3' }
   context 'on a supported platform' do
     let(:facts) { {
       :osfamily => 'RedHat',
     } }
 
-    it { should contain_file('/opt/antelope/5.3pre/data/pf/license.pf') }
+    it { should contain_file('/opt/antelope/5.3/data/pf/license.pf') }
 
     context 'with params owner and group = pkgbuild' do
       let(:params) { {
@@ -15,7 +15,7 @@ describe 'antelope::versioned_license_pf' do
         :group => 'pkgbuild',
       } }
 
-      it { should contain_file('/opt/antelope/5.3pre/data/pf/license.pf')\
+      it { should contain_file('/opt/antelope/5.3/data/pf/license.pf')\
         .with_owner('pkgbuild').with_group('pkgbuild') }
     end
 
@@ -25,8 +25,28 @@ describe 'antelope::versioned_license_pf' do
         "$antelope_dist_group = 'ggroup'",
       ] }
 
-      it { should contain_file('/opt/antelope/5.3pre/data/pf/license.pf')\
+      it { should contain_file('/opt/antelope/5.3/data/pf/license.pf')\
         .with_owner('guser').with_group('ggroup') }
+    end
+
+    context 'with both source and content parameters' do
+      let(:params) { {
+        :source => '/this/should/fail',
+        :content => 'This garbage content should fail',
+      } }
+
+      it {
+        expect { should raise_error(Puppet::Error) }
+      }
+    end
+
+    context 'with a source parameter specified' do
+      let(:params) {{
+        :source => '/test/license.pf',
+      }}
+
+      it { should contain_file('/opt/antelope/5.3/data/pf/license.pf')\
+        .with_source('/test/license.pf') }
     end
   end
 end
