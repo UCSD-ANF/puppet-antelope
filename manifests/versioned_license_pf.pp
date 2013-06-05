@@ -80,6 +80,7 @@ define antelope::versioned_license_pf (
       ''      => template('antelope/license.pf.erb'), # default value
       default => $content,
     },
+    default => undef,
   }
 
   $file_replace = $replace
