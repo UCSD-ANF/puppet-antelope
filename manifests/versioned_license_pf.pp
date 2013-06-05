@@ -60,11 +60,15 @@ define antelope::versioned_license_pf (
   $expiration_warnings = true,
   $owner               = undef,
   $group               = undef,
-  $mode                = undef
+  $mode                = undef,
+  $path                = undef,
 ) {
   include 'antelope::params'
 
-  $filename="/opt/antelope/${version}/data/pf/license.pf"
+  $file_path = $path ? {
+    ''      => "/opt/antelope/${version}/data/pf/license.pf",
+    default => $path,
+  }
 
   if $content != '' and $source != '' {
     fail('Cannot specify both content and source')
@@ -80,6 +84,7 @@ define antelope::versioned_license_pf (
       ''      => template('antelope/license.pf.erb'), # default value
       default => $content,
     },
+    default => undef,
   }
 
   $file_replace = $replace
@@ -101,8 +106,9 @@ define antelope::versioned_license_pf (
 
   ### Managed resources
 
-  file { $filename :
+  file { "antelope license.pf $title" :
     ensure  => $file_ensure,
+    path    => $file_path,
     source  => $file_source,
     content => $file_content,
     replace => $file_replace,
