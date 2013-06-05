@@ -74,11 +74,15 @@ define antelope::versioned_site_pf (
   $content = undef,
   $owner = undef,
   $group = undef,
-  $mode = undef
+  $mode = undef,
+  $path = undef
 ) {
   include 'antelope::params'
 
-  $filename="/opt/antelope/${version}/data/pf/site.pf"
+  $file_path = $path ? {
+    ''      => "/opt/antelope/${version}/data/pf/site.pf",
+    default => $path,
+  }
 
   if $content != '' and $source != '' {
     fail('Cannot specify both content and source')
@@ -111,8 +115,9 @@ define antelope::versioned_site_pf (
     default => $mode,
   }
 
-  file { $filename :
+  file { "antelope site.pf $title" :
     ensure  => $file_ensure,
+    path    => $file_path,
     source  => $file_source,
     content => $file_content,
     owner   => $file_owner,
