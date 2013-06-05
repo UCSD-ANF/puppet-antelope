@@ -7,7 +7,8 @@ describe 'antelope::versioned_site_pf' do
       :osfamily => 'RedHat',
     } }
 
-    it { should contain_file('/opt/antelope/5.3pre/data/pf/site.pf') }
+    it { should contain_file('antelope site.pf 5.3pre')\
+      .with_path('/opt/antelope/5.3pre/data/pf/site.pf') }
 
     context 'with params owner and group = pkgbuild' do
       let(:params) { {
@@ -15,7 +16,7 @@ describe 'antelope::versioned_site_pf' do
         :group => 'pkgbuild',
       } }
 
-      it { should contain_file('/opt/antelope/5.3pre/data/pf/site.pf')\
+      it { should contain_file('antelope site.pf 5.3pre')\
         .with_owner('pkgbuild').with_group('pkgbuild') }
     end
 
@@ -25,8 +26,19 @@ describe 'antelope::versioned_site_pf' do
         "$antelope_dist_group = 'ggroup'",
       ] }
 
-      it { should contain_file('/opt/antelope/5.3pre/data/pf/site.pf')\
+      it { should contain_file('antelope site.pf 5.3pre')\
         .with_owner('guser').with_group('ggroup') }
+    end
+
+    context 'with both source and content parameters' do
+      let(:params) { {
+        :source => '/this/should/fail',
+        :content => 'This garbage content should fail',
+      } }
+
+      it {
+        expect { should raise_error(Puppet::Error) }
+      }
     end
 
     context 'with basic params' do
@@ -38,7 +50,7 @@ describe 'antelope::versioned_site_pf' do
         :institution              => 'EXPL',
       } }
 
-      it { should contain_file('/opt/antelope/5.3pre/data/pf/site.pf')\
+      it { should contain_file('antelope site.pf 5.3pre')\
         .with_content(/mailhost smtp\.example\.com/)\
         .with_content(/mail_domain domain\.example\.com/)\
         .with_content(/default_seed_network   EX/)\
@@ -47,5 +59,24 @@ describe 'antelope::versioned_site_pf' do
       }
 
     end
+
+    context 'with a title different from the version' do
+      let(:title) { 'test antelope.pf' }
+      let(:params) { {
+        :version => '5.2-64',
+      } }
+      it { should contain_file('antelope site.pf test antelope.pf')\
+        .with_path('/opt/antelope/5.2-64/data/pf/site.pf') }
+    end
+
+    context 'with a path defined' do
+      let(:params) { {
+        :path => '/path/to/test.pf',
+      } }
+
+      it { should contain_file('antelope site.pf 5.3pre')\
+        .with_path('/path/to/test.pf') }
+    end
   end
+
 end
