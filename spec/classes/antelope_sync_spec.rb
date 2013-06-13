@@ -22,7 +22,7 @@ describe 'antelope::sync' do
       it do
         should contain_file('antelope_sync')\
           .with_path('/usr/local/bin/antelope_sync')\
-          .with_mode('555')\
+          .with_mode('0555')\
           .with_owner('root')\
           .with_group('root')
 

@@ -1,3 +1,4 @@
+# Parameters for the antelope module
 class antelope::params {
 
   #$valid_install = ['base','devel']
@@ -7,9 +8,9 @@ class antelope::params {
   #  ''      => 'base',                  # Default value
   #  default => $::antelope_install,
 
-   # Make sure we can handle the OS
+  # Make sure we can handle the OS
   if ! ($::osfamily in ['Solaris', 'RedHat', 'Darwin']) {
-    fail("This module does not work on $::operatingsystem")
+    fail("This module does not work on $::{operatingsystem}")
   } #}
 
   ### General variables that affect module's behaviour

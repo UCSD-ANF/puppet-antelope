@@ -97,7 +97,7 @@ define antelope::instance (
     # Verify we have an integer value for $delay
     if ( $ensure == 'present' ) {
       if ! ( is_integer($delay)) {
-        fail("antelope::instance - delay parameter must be an integer")
+        fail('antelope::instance - delay parameter must be an integer')
       }
     }
 
@@ -138,20 +138,20 @@ define antelope::instance (
           content => template('antelope/S99antelope.erb'),
         }
 
-        # On solaris we don't use SMF. We provide a bare init script which requires
-        # manual creation of symlinks
+        # On solaris we don't use SMF. We provide a bare init script which
+        # requires manual creation of symlinks
         if $::osfamily == 'Solaris' {
           Service { provider => 'init' }
           if $service_enable == true {
             # Create symlinks
             file {
-              "/etc/rc0.d/K01$servicename":
+              "/etc/rc0.d/K01${servicename}":
                 ensure => link,
                 target => $initfilename;
-              "/etc/rc1.d/K01$servicename":
+              "/etc/rc1.d/K01${servicename}":
                 ensure => link,
                 target => $initfilename;
-              "/etc/rc3.d/S99$servicename":
+              "/etc/rc3.d/S99${servicename}":
                 ensure => link,
                 target => $initfilename;
             }
@@ -159,9 +159,9 @@ define antelope::instance (
           else {
             # Remove symlinks
             file {
-              "/etc/rc0.d/K01$servicename": ensure => absent;
-              "/etc/rc1.d/K01$servicename": ensure => absent;
-              "/etc/rc3.d/S99$servicename": ensure => absent;
+              "/etc/rc0.d/K01${servicename}": ensure => absent;
+              "/etc/rc1.d/K01${servicename}": ensure => absent;
+              "/etc/rc3.d/S99${servicename}": ensure => absent;
             }
           }
         }
