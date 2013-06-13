@@ -120,7 +120,7 @@ class antelope (
 
   # verify that dirs and instances weren't both specified
   if ( $antelope::dirs and $antelope::instances ) {
-    fail("Can't specify both dirs and instances.")
+    fail('Can't specify both dirs and instances.')
   }
 
   if ( $antelope::instances ) {
@@ -219,9 +219,9 @@ class antelope (
 
   if $antelope::manage_singleton_instance {
     antelope::instance { $antelope::service_name :
+      ensure       => $antelope::manage_instance_ensure,
       user         => $antelope::user,
       dirs         => $antelope::dirs,
-      ensure       => $antelope::manage_instance_ensure,
       manage_fact  => $antelope::manage_service_fact,
       shutdownwait => $antelope::shutdownwait,
     }

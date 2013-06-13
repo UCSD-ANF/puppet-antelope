@@ -83,6 +83,8 @@ define antelope::versioned_site_pf (
 ) {
   include 'antelope::params'
 
+  $file_ensure = 'present'
+
   $file_path = $path ? {
     ''      => "/opt/antelope/${version}/data/pf/site.pf",
     default => $path,
@@ -119,7 +121,7 @@ define antelope::versioned_site_pf (
     default => $mode,
   }
 
-  file { "antelope site.pf $title" :
+  file { "antelope site.pf ${title}" :
     ensure  => $file_ensure,
     path    => $file_path,
     source  => $file_source,

@@ -50,8 +50,8 @@
 #    # Set the license.pf for the latest version of Antelope:
 #    antelope::versioned_license_pf( $::antelope_latest_version :
 #      license_keys    => [
-#        'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
-#        'tbbadef1234567890abcdef1234567890abcdef12 2014 May 01 # node bar.ucsd.edu Antelope 5.1',
+#        'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo',
+#        'tbbadef1234567890abcdef1234567890abcdef12 2014 May 01 # node bar',
 #      ],
 #      replace => true,
 #    }
@@ -70,6 +70,7 @@ define antelope::versioned_license_pf (
 ) {
   include 'antelope::params'
 
+  $file_ensure = 'present'
   $file_path = $path ? {
     ''      => "/opt/antelope/${version}/data/pf/license.pf",
     default => $path,
@@ -111,7 +112,7 @@ define antelope::versioned_license_pf (
 
   ### Managed resources
 
-  file { "antelope license.pf $title" :
+  file { "antelope license.pf ${title}" :
     ensure  => $file_ensure,
     path    => $file_path,
     source  => $file_source,
