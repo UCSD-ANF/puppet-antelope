@@ -138,6 +138,14 @@ define antelope::instance (
           content => template('antelope/S99antelope.erb'),
         }
 
+        if $::osfamily == 'RedHat' {
+          # chkconfig is kinda dumb, try to force it to do the right thing
+          exec{ "chkconfig antelope instance ${title}" :
+            command     => "/sbin/chkconfig ${servicename} reset",
+            refreshonly => true,
+            subscribe   => File[$initfilename],
+          }
+        }
         # On solaris we don't use SMF. We provide a bare init script which
         # requires manual creation of symlinks
         if $::osfamily == 'Solaris' {
