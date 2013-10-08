@@ -219,9 +219,9 @@ class antelope (
 
   if $antelope::manage_singleton_instance {
     antelope::instance { $antelope::service_name :
+      ensure       => $antelope::manage_instance_ensure,
       user         => $antelope::user,
       dirs         => $antelope::dirs,
-      ensure       => $antelope::manage_instance_ensure,
       manage_fact  => $antelope::manage_service_fact,
       shutdownwait => $antelope::shutdownwait,
     }

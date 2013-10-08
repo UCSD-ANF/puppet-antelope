@@ -36,7 +36,7 @@ class antelope::sync (
 
   ### Validate variables
   if !$sync_host {
-    fail('You must specify a value for sync_host. Either pass it as a parameter or defined the global variable \$::antelope_sync_host')
+    fail('You must specify a value for sync_host.')
   }
 
   ### Class local variables
@@ -52,8 +52,8 @@ class antelope::sync (
   }
 
   ### The following variables are used in template evaluation
-  $confdir   = "$basedir/etc"
-  $bindir    = "$basedir/bin"
+  $confdir   = "${basedir}/etc"
+  $bindir    = "${basedir}/bin"
   $rsync_bin = $::osfamily ? {
     'Solaris' => '/opt/csw/bin/rsync',
     default   => '/usr/bin/rsync',
@@ -66,7 +66,7 @@ class antelope::sync (
   file { 'antelope_sync' :
     ensure  => present,
     path    => "${bindir}/antelope_sync",
-    mode    => '555',
+    mode    => '0555',
     owner   => $manage_file_owner,
     group   => $manage_file_group,
     content => template('antelope/sync/antelope_sync.erb'),
@@ -75,22 +75,22 @@ class antelope::sync (
 
   # Exclude and include lists
   file { 'rsync_exclude':
-    ensure => present,
-    path   => "${confdir}/rsync_exclude",
-    mode   => '444',
-    owner  => $manage_file_owner,
-    group  => $manage_file_group,
-    source => 'puppet:///modules/antelope/sync/rsync_exclude',
+    ensure  => present,
+    path    => "${confdir}/rsync_exclude",
+    mode    => '0444',
+    owner   => $manage_file_owner,
+    group   => $manage_file_group,
+    source  => 'puppet:///modules/antelope/sync/rsync_exclude',
     require => File[$confdir],
   }
 
   file { 'rsync_include':
-    ensure => present,
-    path   => "${confdir}/rsync_include",
-    mode   => '444',
-    owner  => $manage_file_owner,
-    group  => $manage_file_group,
-    source => 'puppet:///modules/antelope/sync/rsync_include',
+    ensure  => present,
+    path    => "${confdir}/rsync_include",
+    mode    => '0444',
+    owner   => $manage_file_owner,
+    group   => $manage_file_group,
+    source  => 'puppet:///modules/antelope/sync/rsync_include',
     require => File[$confdir],
   }
 }
