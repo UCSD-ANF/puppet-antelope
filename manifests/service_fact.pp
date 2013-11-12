@@ -2,7 +2,6 @@
 class antelope::service_fact(
   $facts_dir = $antelope::params::facts_dir
 ) inherits antelope::params {
-  include concat::setup
 
   $file = "${facts_dir}/antelope_services"
 
