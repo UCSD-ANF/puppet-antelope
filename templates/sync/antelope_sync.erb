@@ -11,19 +11,23 @@ my $TRUE=1;
 my $FALSE=0;
 
 # Defaults
-my $excludeFile="<%= confdir %>/rsync_exclude";
-my $includeFile="<%= confdir %>/rsync_include";
-my $sourceHost="<%= sync_host %>";
-my $sourceUser="<%= sync_user %>";
+my $excludeFile="<%= @confdir %>/rsync_exclude";
+my $includeFile="<%= @confdir %>/rsync_include";
+my $sourceHost="<%= @sync_host %>";
+my $sourceUser="<%= @sync_user %>";
 my $debug=$FALSE;
 my $quiet=$FALSE;
 my $dryRun=$FALSE;
-my $rsyncBin="<%= rsync_bin %>";
+my $rsyncBin="<%= @rsync_bin %>";
+<%- if @sync_host =~ /^rsync:\/\// or @sync_host =~ /::$/ then -%>
+my @rsyncOpts=("-a", "--delete");
+<%- else -%>
 my @rsyncOpts=("-a", "--delete", "--rsh=ssh -q");
+<%- end -%>
 
 # Other globals
 my %option = ();
-my @syncdirs = (<%= sync_dirs.collect{ |d| "\"#{d}\"" }.join(', ') %>);
+my @syncdirs = (<%= @sync_dirs.collect{ |d| "\"#{d}\"" }.join(', ') %>);
 
 # Static Strings
 my $usageHelp="Usage: $0";
@@ -59,7 +63,11 @@ sub printErrorHelpAndExit {
 
 sub treeSync ( $ ) {
   my $syncdir=shift;
+<%- if @sync_host =~ /^rsync:\/\// or @sync_host =~ /::$/ then -%>
+  my $srcpath= $sourceHost . "/" . $syncdir . "/";
+<%- else -%>
   my $srcpath= $sourceUser . "@" . $sourceHost . ":" . $syncdir . "/";
+<%- end -%>
   my $destpath=$syncdir;
   my @cmd = $rsyncBin;
   push @cmd, @rsyncOpts;
