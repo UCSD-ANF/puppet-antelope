@@ -13,15 +13,15 @@ my $FALSE=0;
 # Defaults
 my $excludeFile="<%= @confdir %>/rsync_exclude";
 my $includeFile="<%= @confdir %>/rsync_include";
-my $sourceHost="<%= @sync_host %>";
-my $sourceUser="<%= @sync_user %>";
 my $debug=$FALSE;
 my $quiet=$FALSE;
 my $dryRun=$FALSE;
 my $rsyncBin="<%= @rsync_bin %>";
+my $sourceHost="<%= @sync_host %>";
 <%- if @sync_host =~ /^rsync:\/\// or @sync_host =~ /::$/ then -%>
 my @rsyncOpts=("-a", "--delete");
 <%- else -%>
+my $sourceUser="<%= @sync_user %>";
 my @rsyncOpts=("-a", "--delete", "--rsh=ssh -q");
 <%- end -%>
 
@@ -64,7 +64,7 @@ sub printErrorHelpAndExit {
 sub treeSync ( $ ) {
   my $syncdir=shift;
 <%- if @sync_host =~ /^rsync:\/\// or @sync_host =~ /::$/ then -%>
-  my $srcpath= $sourceHost . "/" . $syncdir . "/";
+  my $srcpath= $sourceHost . $syncdir . "/";
 <%- else -%>
   my $srcpath= $sourceUser . "@" . $sourceHost . ":" . $syncdir . "/";
 <%- end -%>
