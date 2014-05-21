@@ -21,5 +21,4 @@ print "antelope_services=$instancestr\n";
 __DATA__
 ',
   }
-
 }

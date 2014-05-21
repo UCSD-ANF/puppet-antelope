@@ -27,10 +27,9 @@
 #  This module is dependent on the following modules:
 #
 #  * puppetlabs-stdlib as stdlib
-#  * example42-puppi as puppi
 #  * For puppet 2.6, puppetlabs-create_resources. 2.7 ships with that
 #  function in core
-#  * repienaar/concat if $instance_fact is true
+#  * puppetlabs/concat if $instance_fact is true
 #
 # Parameters:
 #  [*absent*] - make sure that Antelope is not installed
@@ -39,8 +38,8 @@
 #
 #  [*disable*] - Don't start up any services. Removes init scripts
 #
-#  [*disableboot*] - installs init scripts but set's them to not start at
-#   boot
+#  [*disableboot*] - installs init scripts but set's them to not start
+#   at boot
 #
 #  [*audit_only*] - makes no changes to the system, just tracks changes
 #
@@ -72,6 +71,17 @@
 #      }
 #    }
 #
+#  [*instance_subscribe*] - Used to work around the sometime fragile
+#  Antelope service.  If $instances is set, expects an array of
+#  items that will pause the Antelope service before and restart the
+#  Antelope service before the item(s) are refreshed. Affects all
+#  instances, unless specifically overidden in the $instances hash.
+#    Format:
+#    [
+#      Service['automounter'],
+#      Exec['/usr/local/bin/antelope_sync'],
+#    ]
+#
 #  [*manage_service_fact*] - if true, creates a fact in the facter
 #  facts.d directory (specified by the parameter $facts_dir) called
 #  antelope_services. This fact will contain a comma separated list
@@ -96,6 +106,7 @@ class antelope (
   $audit_only           = $antelope::params::audit_only,
   $dirs                 = $antelope::params::dirs,
   $instances            = $antelope::params::instances,
+  $instance_subscribe   = $antelope::params::instance_subscribe,
   $version              = $antelope::params::version,
   $user                 = $antelope::params::user,
   $service_name         = $antelope::params::service_name,
@@ -104,7 +115,7 @@ class antelope (
   $shutdownwait         = $antelope::params::shutdownwait
 ) inherits antelope::params {
 
-  include 'stdlib'
+  include stdlib
 
   # TODO: rework install to actually install Antelope, rather than
   # fiddle with packages and mountpoints. For the time being, the whole
@@ -119,12 +130,13 @@ class antelope (
   #}
 
   # verify that dirs and instances weren't both specified
-  if ( $antelope::dirs and $antelope::instances ) {
-    fail("Can't specify both dirs and instances.")
+  if ( $dirs and $instances ) {
+    fail('Cannot specify both dirs and instances.')
   }
 
-  if ( $antelope::instances ) {
-    validate_hash($antelope::instances)
+  if ( $instances ) {
+    validate_hash($instances)
+    validate_array($instance_subscribe)
   }
 
   $bool_absent=is_string($absent) ? {
@@ -144,25 +156,25 @@ class antelope (
     default => str2bool($audit_only),
   }
 
-  $manage_package = $antelope::bool_absent ? {
+  $manage_package = $bool_absent ? {
     true  => 'absent',
     false => 'present',
   }
 
-  $manage_service_enable = $antelope::bool_disableboot ? {
+  $manage_service_enable = $bool_disableboot ? {
     true    => false,
-    default => $antelope::bool_disable ? {
+    default => $bool_disable ? {
       true    => false,
-      default => $antelope::bool_absent ? {
+      default => $bool_absent ? {
         true  => false,
         false => true,
       },
     },
   }
 
-  $manage_service_ensure = $antelope::bool_disable ? {
+  $manage_service_ensure = $bool_disable ? {
     true    => 'stopped',
-    default =>  $antelope::bool_absent ? {
+    default =>  $bool_absent ? {
       true    => 'stopped',
       default => 'running',
     },
@@ -170,10 +182,10 @@ class antelope (
 
   # We only manage the singleton Antelope::Instance if dirs is defined
   # or disable/absent is true
-  $manage_singleton_instance = $antelope::dirs ? {
-    '' => $antelope::bool_disable ? {
+  $manage_singleton_instance = $dirs ? {
+    '' => $bool_disable ? {
       true    => true,
-      default => $antelope::bool_absent,
+      default => $bool_absent,
     },
     default => true,
   }
@@ -182,27 +194,27 @@ class antelope (
   # Since we can't enumerate any pre-existing Antelope::Instances that
   # aren't named with the default service_name, we won't try to clean
   # them up.
-  $manage_plural_instances = $antelope::instances
+  $manage_plural_instances = $instances
 
-  $manage_instance_ensure = $antelope::dirs ? {
+  $manage_instance_ensure = $dirs ? {
     ''      => 'absent',
-    default => $antelope::bool_disable ? {
+    default => $bool_disable ? {
       false => 'present',
       true  => 'absent',
     },
   }
 
-  $manage_file = $antelope::bool_absent ? {
+  $manage_file = $bool_absent ? {
     true    => 'absent',
     default => 'present',
   }
 
-  $manage_audit = $antelope::bool_audit_only ? {
+  $manage_audit = $bool_audit_only ? {
     true  => 'all',
     false => undef,
   }
 
-  $manage_file_replace = $antelope::bool_audit_only ? {
+  $manage_file_replace = $bool_audit_only ? {
     true  => false,
     false => true,
   }
@@ -213,18 +225,20 @@ class antelope (
 
   # We manage antelope instances only if the 'instances' or 'dirs'
   # parameters were provided.
-  if $antelope::manage_plural_instances {
-    create_resources('antelope::instance', $antelope::instances)
-  }
+  if $manage_plural_instances {
+    $instance_defaults = { subscriptions => $instance_subscribe }
+    create_resources('antelope::instance', $instances, $instance_defaults)
 
-  if $antelope::manage_singleton_instance {
-    antelope::instance { $antelope::service_name :
-      ensure       => $antelope::manage_instance_ensure,
-      user         => $antelope::user,
-      dirs         => $antelope::dirs,
-      manage_fact  => $antelope::manage_service_fact,
-      shutdownwait => $antelope::shutdownwait,
+  } elsif $manage_singleton_instance {
+    antelope::instance { $service_name :
+      ensure        => $manage_instance_ensure,
+      user          => $user,
+      dirs          => $dirs,
+      manage_fact   => $manage_service_fact,
+      shutdownwait  => $shutdownwait,
+      subscriptions => $instance_subscribe,
     }
+  } else {
+    notice('Not managing a singleton nor plural instance of Antelope.')
   }
-
 }
