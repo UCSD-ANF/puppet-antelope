@@ -118,7 +118,10 @@ class antelope::params {
   }
 
   $dist_group = $::antelope_dist_group ? {
-    ''      => 'root',
+    ''      => $::osfamily ? {
+      'Darwin' => 'wheel',
+      default  => 'root',
+    },
     default => $::antelope_dist_group,
   }
 
