@@ -28,6 +28,14 @@ my @rsyncOpts=("-a", "--delete", "--rsh=ssh -q");
 # Other globals
 my %option = ();
 my @syncdirs = (<%= @sync_dirs.collect{ |d| "\"#{d}\"" }.join(', ') %>);
+<% if scope.lookupvar('::antelope_services') -%>
+    my @services = (<%= scope.lookupvar('::antelope_services'
+                                       ).split(',').collect{ |d|
+                                         "\"#{d}\""
+                                       }.join(', ') %>);
+<% else -%>
+ my @services = ();
+<% end -%>
 
 # Static Strings
 my $usageHelp="Usage: $0";
@@ -59,6 +67,27 @@ sub printErrorHelpAndExit {
   my $errstring=shift;
   print "\n$errstring\n";
   printHelpAndExit(1);
+}
+
+sub serviceStop ( $ ) {
+  my $service=shift;
+  my $reason='antelope_sync';
+  my $cmd = "/etc/init.d/$service stop $reason";
+  if ( $dryRun == $TRUE ) {
+      print "Would run '$cmd'\n";
+  } else {
+      system($cmd);
+  }
+}
+
+sub serviceStart ( $ ) {
+  my $service=shift;
+  my $cmd = "/etc/init.d/$service start";
+  if ( $dryRun == $TRUE ) {
+      print "Would run '$cmd'\n";
+  } else {
+      system($cmd);
+  }
 }
 
 sub treeSync ( $ ) {
@@ -122,8 +151,10 @@ push ( @rsyncOpts, "--exclude-from=" . $excludeFile );
 push ( @rsyncOpts, "--include-from=" . $includeFile );
 
 #
-# Run the syncs
+# Run the syncs, pausing any Antelope services as needed
 #
+serviceStop(@services) if (@services);
 foreach my $dir (@syncdirs ) {
   treeSync($dir);
 }
+serviceStart(@services) if (@services);
