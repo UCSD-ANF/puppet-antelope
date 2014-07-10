@@ -115,23 +115,12 @@ sub printOptionSummary {
 #
 getopts("hdnse:i:q", \%option);
 printHelpAndExit()        if $option{h};
-$debug       = $TRUE      if $option{d};
-$dryRun      = $TRUE      if $option{n};
 $svcStart    = $FALSE     if $option{s};
 $excludeFile = $option{e} if $option{e};
 $includeFile = $option{i} if $option{i};
 $quiet       = $TRUE      if $option{q};
-getopts("hdsne:i:q", \%option);
-printHelpAndExit() if $option{h};
-if ($option{d}) {
-  $debug=$TRUE;
-}
-if ($option{n}) {
-  $dryRun=$TRUE;
-}
-$excludeFile=$option{e} if $option{e};
-$includeFile=$option{i} if $option{i};
-$quiet=$TRUE if $option{q};
+if ($option{d}) { $debug=$TRUE;  }
+if ($option{n}) { $dryRun=$TRUE; }
 
 printOptionSummary() if ($debug);
 
