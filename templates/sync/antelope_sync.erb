@@ -124,7 +124,7 @@ $svcStart    = $FALSE     if $option{s};
 $excludeFile = $option{e} if $option{e};
 $includeFile = $option{i} if $option{i};
 $quiet       = $TRUE      if $option{q};
-if $option{S} {
+if ($option{S}) {
   $svcStop     = $FALSE;
   $svcStart    = $FALSE;
 }
