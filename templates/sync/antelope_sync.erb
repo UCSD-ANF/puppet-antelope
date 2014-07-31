@@ -71,8 +71,12 @@ sub serviceStop ( $ ) {
   my $service=shift;
   my $reason="Shut down to update Antelope per $0";
   my $cmd = "/etc/init.d/$service stop $reason";
-  if ( $dryRun == $TRUE ) { print "Would run '$cmd'\n"; }
-  else                    { system($cmd); }
+  if ( $svcStop == $TRUE ) {
+    if ( $dryRun == $TRUE ) { print "Would run '$cmd'\n"; }
+    else                    { system($cmd); }
+  } else {
+    print "Not stopping ${service} per option '-S'\n";
+  }
 }
 
 sub serviceStart ( $ ) {
@@ -82,7 +86,7 @@ sub serviceStart ( $ ) {
     if ( $dryRun == $TRUE ) { print "Would run '$cmd'\n"; }
     else                    { system($cmd); }
   } else {
-      print "Not restarting ${service} per option '-s'\n";
+      print "Not restarting ${service} per option '-s' or '-S'\n";
   }
 }
 
@@ -113,12 +117,16 @@ sub printOptionSummary {
 #
 # Parse Options
 #
-getopts("hdnse:i:q", \%option);
+getopts("hdnsSe:i:q", \%option);
 printHelpAndExit()        if $option{h};
 $svcStart    = $FALSE     if $option{s};
 $excludeFile = $option{e} if $option{e};
 $includeFile = $option{i} if $option{i};
 $quiet       = $TRUE      if $option{q};
+if $option{S} {
+  $svcStop     = $FALSE;
+  $svcStart    = $FALSE;
+}
 if ($option{d}) { $debug=$TRUE;  }
 if ($option{n}) { $dryRun=$TRUE; }
 
