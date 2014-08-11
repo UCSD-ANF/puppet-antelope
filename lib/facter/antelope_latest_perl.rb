@@ -15,7 +15,7 @@ Facter.add(:antelope_latest_perl) do
     latestantelope = Facter.value('antelope_latest_version')
     if latestantelope
       antelopepath="#{antbasedir}/#{latestantelope}"
-      perl = %x{ export ANTELOPE=#{antelopepath}; #{antelopepath}/bin/getid perl 2> /dev/null}
+      perl = %x{ ANTELOPE=#{antelopepath}; export ANTELOPE; #{antelopepath}/bin/getid perl 2> /dev/null}
       perl.chomp!
     end
 
