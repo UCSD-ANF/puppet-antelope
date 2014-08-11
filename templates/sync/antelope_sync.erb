@@ -11,25 +11,40 @@ my $TRUE=1;
 my $FALSE=0;
 
 # Defaults
-my $excludeFile="<%= confdir %>/rsync_exclude";
-my $includeFile="<%= confdir %>/rsync_include";
-my $sourceHost="<%= sync_host %>";
-my $sourceUser="<%= sync_user %>";
+my $excludeFile="<%= @confdir %>/rsync_exclude";
+my $includeFile="<%= @confdir %>/rsync_include";
 my $debug=$FALSE;
 my $quiet=$FALSE;
 my $dryRun=$FALSE;
-my $rsyncBin="<%= rsync_bin %>";
+my $rsyncBin="<%= @rsync_bin %>";
+my $sourceHost="<%= @sync_host %>";
+<%- if @sync_host =~ /^rsync:\/\// or @sync_host =~ /::$/ then -%>
+my @rsyncOpts=("-a", "--delete");
+<%- else -%>
+my $sourceUser="<%= @sync_user %>";
 my @rsyncOpts=("-a", "--delete", "--rsh=ssh -q");
+<%- end -%>
 
 # Other globals
 my %option = ();
-my @syncdirs = (<%= sync_dirs.collect{ |d| "\"#{d}\"" }.join(', ') %>);
+my @syncdirs = (<%= @sync_dirs.collect{ |d| "\"#{d}\"" }.join(', ') %>);
+my @services = (<%=
+# calculate services based on Facter.
+if scope.lookupvar('::antelope_services' ) then
+  scope.lookupvar('::antelope_services').split(',').collect{ |d|
+      "\"#{d}\""
+  }.join(', ')
+end
+%>);
+my $svcStop  = $TRUE;
+my $svcStart = $TRUE;
 
 # Static Strings
 my $usageHelp="Usage: $0";
 my $badOptionHelp="Option not recognised";
 my $debugHelp="-d Turns on debugging mode";
 my $dryRunHelp="-n Runs Rsync in dry run mode";
+my $svcStartHelp="-s Do not restart any antelope services stopped by $0";
 my $excludeFileHelp="-e Path to Exclude file (default: $excludeFile)";
 my $includeFileHelp="-i Path to Include file (default: $includeFile)";
 my $quietHelp="-q Runs rsync without the -p option";
@@ -39,16 +54,12 @@ sub printHelpAndExit {
   print $usageHelp."\n";
   print $debugHelp."\n";
   print $dryRunHelp."\n";
-  print $dryRunHelp."\n";
+  print $svcStartHelp."\n";
   print $excludeFileHelp."\n";
   print $includeFileHelp."\n";
   print $quietHelp."\n";
-  if ($1) {
-    exit $1;
-  }
-  else {
-    exit 1;
-  }
+  if ($1) { exit $1; }
+  else    { exit 1;  }
 }
 # help for bad options
 sub printErrorHelpAndExit {
@@ -57,9 +68,36 @@ sub printErrorHelpAndExit {
   printHelpAndExit(1);
 }
 
+sub serviceStop ( $ ) {
+  my $service=shift;
+  my $reason="Shut down to update Antelope per $0";
+  my $cmd = "/etc/init.d/$service stop $reason";
+  if ( $svcStop == $TRUE ) {
+    if ( $dryRun == $TRUE ) { print "Would run '$cmd'\n"; }
+    else                    { system($cmd); }
+  } else {
+    print "Not stopping ${service} per option '-S'\n";
+  }
+}
+
+sub serviceStart ( $ ) {
+  my $service=shift;
+  my $cmd = "/etc/init.d/$service start";
+  if ( $svcStart == $TRUE ) {
+    if ( $dryRun == $TRUE ) { print "Would run '$cmd'\n"; }
+    else                    { system($cmd); }
+  } else {
+      print "Not restarting ${service} per option '-s' or '-S'\n";
+  }
+}
+
 sub treeSync ( $ ) {
   my $syncdir=shift;
+<%- if @sync_host =~ /^rsync:\/\// or @sync_host =~ /::$/ then -%>
+  my $srcpath= $sourceHost . $syncdir . "/";
+<%- else -%>
   my $srcpath= $sourceUser . "@" . $sourceHost . ":" . $syncdir . "/";
+<%- end -%>
   my $destpath=$syncdir;
   my @cmd = $rsyncBin;
   push @cmd, @rsyncOpts;
@@ -75,21 +113,23 @@ sub printOptionSummary {
   print "  exclude file = $excludeFile\n";
   print "  include file = $includeFile\n";
   print "  quiet = $quiet\n";
+  print "  svcStart = $svcStart\n";
 }
 #
 # Parse Options
 #
-getopts("hdne:i:q", \%option);
-printHelpAndExit() if $option{h};
-if ($option{d}) {
-  $debug=$TRUE;
+getopts("hdnsSe:i:q", \%option);
+printHelpAndExit()        if $option{h};
+$svcStart    = $FALSE     if $option{s};
+$excludeFile = $option{e} if $option{e};
+$includeFile = $option{i} if $option{i};
+$quiet       = $TRUE      if $option{q};
+if ($option{S}) {
+  $svcStop     = $FALSE;
+  $svcStart    = $FALSE;
 }
-if ($option{n}) {
-  $dryRun=$TRUE;
-}
-$excludeFile=$option{e} if $option{e};
-$includeFile=$option{i} if $option{i};
-$quiet=$TRUE if $option{q};
+if ($option{d}) { $debug=$TRUE;  }
+if ($option{n}) { $dryRun=$TRUE; }
 
 printOptionSummary() if ($debug);
 
@@ -114,8 +154,8 @@ push ( @rsyncOpts, "--exclude-from=" . $excludeFile );
 push ( @rsyncOpts, "--include-from=" . $includeFile );
 
 #
-# Run the syncs
+# Run the syncs, pausing any Antelope services as needed
 #
-foreach my $dir (@syncdirs ) {
-  treeSync($dir);
-}
+foreach my $service (@services) { serviceStop($service);  }
+foreach my $dir     (@syncdirs) { treeSync($dir);         }
+foreach my $service (@services) { serviceStart($service); }

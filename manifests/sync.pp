@@ -2,8 +2,8 @@
 # golden master Antelope installation.
 #
 # The script uses rsync under the hood, and connects to the source
-# system over SSH using the sync_user and sync_host variables to
-# compute the ssh credentials
+# system over either rsync:// or SSH. SSH uses the sync_user and
+# sync_host variables to compute the ssh credentials
 #
 # It depends on passwordless SSH being set up. It also needs a working
 # copy of rsync installed in /usr/bin on Linux and Darwin or
@@ -28,16 +28,14 @@
 # Defaults to undef. Example value is /opt/anf
 # Can also be specified with the global variable $::antelope_site_tree
 #
-class antelope::sync (
+class antelope::sync(
   $sync_user = $antelope::params::sync_user,
   $sync_host = $antelope::params::sync_host,
-  $site_tree = $antelope::params::site_tree
+  $site_tree = $antelope::params::site_tree,
 ) inherits antelope::params {
 
   ### Validate variables
-  if !$sync_host {
-    fail('You must specify a value for sync_host.')
-  }
+  if !$sync_host { fail('You must specify a value for sync_host.') }
 
   ### Class local variables
 
@@ -46,7 +44,6 @@ class antelope::sync (
   $manage_file_owner = 'root'
   $manage_file_group = $::osfamily ? {
     'Solaris' => 'bin',
-    'RedHat'  => 'root',
     'Darwin'  => 'wheel',
     default   => 'root',
   }
@@ -63,14 +60,18 @@ class antelope::sync (
   ### Managed resources
 
   # Main synchronization script
-  file { 'antelope_sync' :
+  file { 'antelope_sync':
     ensure  => present,
     path    => "${bindir}/antelope_sync",
     mode    => '0555',
     owner   => $manage_file_owner,
     group   => $manage_file_group,
     content => template('antelope/sync/antelope_sync.erb'),
-    require => File[$bindir],
+    require => [
+      File[$bindir],
+      File['rsync_include'],
+      File['rsync_exclude'],
+    ],
   }
 
   # Exclude and include lists

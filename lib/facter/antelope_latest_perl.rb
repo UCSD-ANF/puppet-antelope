@@ -3,26 +3,22 @@
 # The path to the highest version of Perl as distributed by BRTT
 #
 
-# Antelope always lives under this directory
-basedir = '/opt/antelope'
+Facter.add(:antelope_latest_perl) do
 
-if File.directory?(basedir) || File.symlink?(basedir)
-  Facter.add(:antelope_latest_perl) do
+  confine :kernel => %w{Linux SunOS Darwin}
 
-    confine :kernel => %w{Linux SunOS Darwin}
+  setcode do
+    # Antelope always lives under this directory
+    antbasedir = '/opt/antelope'
+    perl = nil
 
-    setcode do
-      result = nil
-      dirs=Dir.entries(basedir).sort
-
-      dirs.each do |dir|
-        dir=dir.chomp
-        next unless dir =~/^perl\d+\.\d+(.\d+)?(-64)?$/
-        next unless File.exists?(File.join(basedir, dir, 'bin/perl'))
-        result = dir
-      end
-
-      result
+    latestantelope = Facter.value('antelope_latest_version')
+    if latestantelope
+      antelopepath="#{antbasedir}/#{latestantelope}"
+      perl = %x{ export ANTELOPE=#{antelopepath}; #{antelopepath}/bin/getid perl 2> /dev/null}
+      perl.chomp!
     end
+
+    perl
   end
 end
