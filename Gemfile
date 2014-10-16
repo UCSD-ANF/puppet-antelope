@@ -31,4 +31,4 @@ gem hiera_spec_gem, hiera_spec_gem_version
 
 gem 'puppetlabs_spec_helper'
 gem 'git'
-gem "ci_reporter"
+gem "ci_reporter_rspec"
