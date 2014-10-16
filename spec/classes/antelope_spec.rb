@@ -2,20 +2,20 @@ require 'spec_helper'
 
 describe 'antelope' do
   context 'on a supported osfamily' do
-    let (:facts) do {
+    let(:facts) { {
       :osfamily => 'RedHat',
-    } end
-    let (:pre_condition) do [
+    } }
+    let(:pre_condition) { [
       "$concat_basedir='/tmp'",
       "user { 'rt': }",
-    ] end
+    ] }
 
     context 'with no dirs or instances' do
       it { should_not contain_antelope__instance('antelope') }
     end
 
     context 'with a single dir' do
-      let (:params) { {
+      let(:params) { {
         :dirs => '/export/home/rt/rtsystems/test'
       } }
       it { should contain_antelope__instance('antelope') }
@@ -25,11 +25,12 @@ describe 'antelope' do
     end
 
     context 'with a multiple dirs' do
-      let (:params) do {
+      let(:params) { {
         :dirs => [
           '/export/home/rt/rtsystems/foo',
           '/export/home/rt/rtsystems/bar',
-      ] } end
+        ]
+      } }
       it { should contain_antelope__instance('antelope') }
       it { should contain_file('/etc/init.d/antelope').with_content(
         /@dirs = \( "\/export\/home\/rt\/rtsystems\/foo", "\/export\/home\/rt\/rtsystems\/bar" \);/
@@ -37,7 +38,7 @@ describe 'antelope' do
     end
 
     context 'with instances hash' do
-      let (:params) { {
+      let(:params) { {
         :instances => {
         'antelope-single' => {
           'user'   => 'rt',
@@ -63,7 +64,7 @@ describe 'antelope' do
         should contain_antelope__instance('antelope-arr')
       end
       context 'with instance_subscribe array' do
-        let (:params) do {
+        let(:params) do {
           :instances => {
             'antelope-single' => {
              'user'   => 'rt',
@@ -71,7 +72,7 @@ describe 'antelope' do
             },
             'antelope-csv' => {
               'user'       => 'rt',
-              'dirs'       => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2',
+              'dirs'       => '/export/home/rt/rtsystems/csv2,/export/home/rt/rtsystems/csv2',
             },
             'antelope-arr' => {
               'user'       => 'rt',
