@@ -38,55 +38,55 @@ describe 'antelope' do
     end
 
     context 'with instances hash' do
-      let(:params) { {
+      instance_params = {
         :instances => {
-        'antelope-single' => {
-          'user'   => 'rt',
-         'dirs'   => '/export/home/rt/rtsystems/single',
+          'antelope-single' => {
+            'user'   => 'rt',
+            'dirs'   => '/export/home/rt/rtsystems/single',
+          },
+          'antelope-csv' => {
+            'user'       => 'rt',
+            'dirs'       => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2',
+          },
+          'antelope-arr' => {
+            'user'       => 'rt',
+            'dirs'       => [
+              '/export/home/rt/rtsystems/arr1',
+              '/export/home/rt/rtsystems/arr2',
+            ],
+          },
         },
-        'antelope-csv' => {
-          'user'       => 'rt',
-          'dirs'       => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2',
-        },
-        'antelope-arr' => {
-          'user'       => 'rt',
-          'dirs'       => [
-            '/export/home/rt/rtsystems/arr1',
-            '/export/home/rt/rtsystems/arr2',
-          ],
-        },
-      },
-      } }
+      }
+
+      let(:params) { instance_params }
 
       it do
         should contain_antelope__instance('antelope-single')
         should contain_antelope__instance('antelope-csv')
         should contain_antelope__instance('antelope-arr')
       end
+
       context 'with instance_subscribe array' do
-        let(:params) do {
-          :instances => {
-            'antelope-single' => {
-             'user'   => 'rt',
-             'dirs'   => '/export/home/rt/rtsystems/single',
-            },
-            'antelope-csv' => {
-              'user'       => 'rt',
-              'dirs'       => '/export/home/rt/rtsystems/csv2,/export/home/rt/rtsystems/csv2',
-            },
-            'antelope-arr' => {
-              'user'       => 'rt',
-              'dirs'       => [
-                '/export/home/rt/rtsystems/arr1',
-                '/export/home/rt/rtsystems/arr2',
-              ],
-            },
-          },
-          :instance_subscribe => [ 'Service["foo"]' ],
-        } end
-        it { should contain_exec('/etc/init.d/antelope-single stop').with_notify('Service["foo"]') }
-        it { should contain_exec('/etc/init.d/antelope-csv stop').with_notify('Service["foo"]') }
-        it { should contain_exec('/etc/init.d/antelope-arr stop').with_notify('Service["foo"]') }
+        let(:params) do
+          {:instance_subscribe => [ 'Service["foo"]' ]}.merge(instance_params)
+        end
+
+        it do
+          should contain_antelope__instance('antelope-single').with({
+            'subscriptions' => [ 'Service["foo"]' ],
+            :ensure         => 'present',
+          })
+          should contain_antelope__instance('antelope-csv')
+          should contain_antelope__instance('antelope-arr')
+        end
+
+        it { should contain_exec('/etc/init.d/antelope-single stop')#\
+#             .with_notify('Service["foo"]')
+        }
+        it { should contain_exec('/etc/init.d/antelope-csv stop')\
+             .with_notify('Service["foo"]') }
+        it { should contain_exec('/etc/init.d/antelope-arr stop')\
+             .with_notify('Service["foo"]') }
       end
     end
   end

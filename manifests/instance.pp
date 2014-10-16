@@ -1,6 +1,7 @@
 # instance.pp
-
-# Install an Antelope init script for a list of real-time systems
+#
+# Install an Antelope init script and optionally manage permissions on key
+# parameter files for a list of real-time systems
 #
 # == Parameters
 #
@@ -30,9 +31,12 @@
 # [*manage_fact*]
 #   If false, does not manage the facter fact antelope_instances.
 #   Defaults to true
-
+#
+# [*manage_rtsystemdirs*]
+#   If true, will manage permissions inside each directory specified in *dirs*
+#
 # [*subscriptions*]
-#   If set, this Anteloep instance will be stopped and restarted
+#   If set, this Antelope instance will be stopped and restarted
 #   Defaults to undef
 #
 #
@@ -62,14 +66,16 @@
 #    }
 #
 define antelope::instance(
-  $ensure        = 'present',
-  $dirs          = undef,
-  $user          = 'rt',
-  $servicename   = $title,
-  $delay         = '0',
-  $shutdownwait  = '120',
-  $manage_fact   = '',
-  $subscriptions = [],
+  $servicename         = $title,
+  $ensure              = 'present',
+  $dirs                = undef,
+  $user                = 'rt',
+  $group               = undef,
+  $delay               = '0',
+  $shutdownwait        = '120',
+  $manage_fact         = '',
+  $manage_rtsystemdirs = '',
+  $subscriptions       = [],
 ) {
   require antelope::params
 
@@ -80,6 +86,7 @@ define antelope::instance(
   # Sanity test parameters
   validate_re($ensure,'^(ab|pre)sent')
   validate_string($user)
+  if $group != undef { validate_string($group) }
   validate_string($servicename)
   validate_string($delay)
   validate_array($subscriptions)
@@ -95,6 +102,13 @@ define antelope::instance(
     false   => $manage_fact,
     ''      => $antelope::params::manage_service_fact,
     default => str2bool($manage_fact),
+  }
+
+  $bool_manage_dirs = $manage_rtsystemdirs ? {
+    true    => $manage_rtsystemdirs,
+    false   => $manage_rtsystemdirs,
+    ''      => $antelope::params::manage_rtsystemdirs,
+    default => str2bool($manage_rtsystemdirs),
   }
 
   # Determine the path to the init script
@@ -114,7 +128,18 @@ define antelope::instance(
     false => split($dirs,','),
   }
 
+  $rtsystemdir_defaults = {
+    user  => $user,
+    group => $group
+  }
+
   ### Managed resources
+
+  # Create the rtsystemdir resources
+  if $bool_manage_rtsystemdirs {
+    create_resources(
+      'antelope::rtsystemdir', $real_dirs, $rtsystemdir_defaults)
+  }
 
   # init script path for Solaris and Linux
   file { $initfilename :

@@ -59,6 +59,12 @@ If you do not have facter 1.6.1 in your environment, the following manifest code
 
 ## Usage
 
+## Facts
+
+This module includes Facter facts for several things related to Antelope. It
+also optionally manages the contents of a fact called `antelope_services`,
+described below.
+
 ### The `antelope services` fact
 By default, this module will try to create a fact called `antelope_services`
 which contains a comma separated list of all of the system services created by
@@ -67,6 +73,14 @@ couple of different modules and resources, which you may not want to configure.
 If you want to skip creating this fact, set the `manage_instances_fact`
 parameter to the main `antelope` class to false, and set the `manage_fact`
 parameter to false for each `antelope::instance` that you manually define.
+
+### Other facts
+
+* `antelope_versions`       - All versions of Antelope installed on the system
+* `antelope_latest_version` - The newest version of Antelope installed on the system
+* `antelope_latest_perl`    - the version of Perl that ships with `antelope_latest_version`
+
+## Classes
 
 ### Class `antelope`
 
