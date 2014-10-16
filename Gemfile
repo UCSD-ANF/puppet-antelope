@@ -24,7 +24,7 @@ gem 'rake'
 gem 'rspec', rspec_version
 gem 'facter', facter_version
 gem 'puppet', puppet_version
-gem 'rspec-puppet'
+gem 'rspec-puppet', '>= 1.0.0'
 #gem 'rcov'
 
 gem 'puppet-lint'
