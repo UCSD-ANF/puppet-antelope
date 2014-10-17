@@ -112,7 +112,7 @@ class antelope (
   $group                = $antelope::params::group,
   $service_name         = $antelope::params::service_name,
   $manage_service_fact  = $antelope::params::manage_service_fact,
-  $manage_rtsystemdir   = $antelope::params::manage_rtsystemdir,
+  $manage_rtsystemdirs  = $antelope::params::manage_rtsystemdirs,
   $facts_dir            = $antelope::params::facts_dir,
   $shutdownwait         = $antelope::params::shutdownwait
 ) inherits antelope::params {
@@ -221,21 +221,7 @@ class antelope (
     false => true,
   }
 
-  ### Managed resources
-  # We call the required subclass based on the install type
-  #include "antelope::$install"
-
-  $instance_defaults = {
-    subscriptions       => $instance_subscribe,
-    user                => $user,
-    group               => $group,
-    manage_fact         => $manage_service_fact,
-    manage_rtsystemdirs => $manage_rtsystemdirs,
-    shutdownwait        => $shutdownwait,
-  }
-
-  # We manage antelope instances only if the 'instances' or 'dirs'
-  # parameters were provided.
+  # Set up resource hashes.
   if $manage_plural_instances {
     $instances_real = $instances
   } elsif $manage_singleton_instance {
@@ -246,7 +232,21 @@ class antelope (
       }
     }
   }
+  $instance_defaults = {
+    subscriptions       => $instance_subscribe,
+    user                => $user,
+    group               => $group,
+    manage_fact         => $manage_service_fact,
+    manage_rtsystemdirs => $manage_rtsystemdirs,
+    shutdownwait        => $shutdownwait,
+  }
 
+  ### Managed resources
+  # We call the required subclass based on the install type
+  #include "antelope::$install"
+
+  # We manage antelope instances only if the 'instances' or 'dirs'
+  # parameters were provided.
   if is_hash($instances_real) {
     create_resources('antelope::instance', $instances_real, $instance_defaults )
   } else {
