@@ -87,6 +87,13 @@ class antelope::params {
     default => $::antelope_manage_service_fact,
   }
 
+  ### Controls whether or not we managed permissions and other attributes of
+  # an rtsystem directory
+  $manage_rtsystemdirs = $::antelope_manage_rtsystemdirs ? {
+    ''      => true, # default value
+    default => $::antelope_manage_rtsystemdirs,
+  }
+
   ### Controls how long we wait for a system to shut down cleanly
   $shutdownwait = $::antelope_shutdownwait ? {
     ''      => 120,
