@@ -89,6 +89,9 @@ parameter to false for each `antelope::instance` that you manually define.
 Sets up a basic Antelope environment. The optional dirs or instances parameters
 automatically configures `antelope::instance` resources.
 
+Please look at the class definition in init.pp for additional parameters that
+can control behavior, such as `manage_rtsystemdirs`
+
 #### Basic usage of the Antelope class
 
      class { 'antelope': }
@@ -132,8 +135,10 @@ an External Node Classifier without having to explicitely declare separate
 
 ### Defined Type `antelope::instance`
 Configure an instance of Antelope. More than one can be configured. Useful for
-real-time systems running as different users. Note that in the example below,
-_only the `antelope` instance will show up_ in the `antelope_services` fact
+real-time systems running as different users. Permissions on the rtexec.pf in
+each entry in dirs are managed unless `manage_rtsystemdirs` is false.
+Note that in the example below, _only the `antelope` instance will show up_
+in the `antelope_services` fact
 
      antelope::instance { 'antelope' :
        user => 'rt',
