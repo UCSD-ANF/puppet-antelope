@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.7.1
+Version 0.7.2
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by [Boulder Real-Time Technologies][brtt]
@@ -34,7 +34,9 @@ Geoff Davis <gadavis@ucsd.edu>
 [ripienaar-concat]: https://github.com/ripienaar/puppet-concat
 [ucsd-puppet-php]: [https://github.com/UCSD-ANF/puppet-php]
 
-If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as `osfamily`. It should be placed in `site.pp` (before declaring any node):
+If you do not have facter >= 1.6.1 in your environment, the following manifest
+code will provide the same functionality as `osfamily`. It should be
+placed in `site.pp` (before declaring any node):
 
     if ! $::osfamily {
       case $::operatingsystem {
