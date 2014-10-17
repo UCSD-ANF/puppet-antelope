@@ -79,14 +79,6 @@ describe 'antelope' do
           should contain_antelope__instance('antelope-csv')
           should contain_antelope__instance('antelope-arr')
         end
-
-        it { should contain_exec('/etc/init.d/antelope-single stop')#\
-#             .with_notify('Service["foo"]')
-        }
-        it { should contain_exec('/etc/init.d/antelope-csv stop')\
-             .with_notify('Service["foo"]') }
-        it { should contain_exec('/etc/init.d/antelope-arr stop')\
-             .with_notify('Service["foo"]') }
       end
     end
   end

@@ -104,7 +104,7 @@ define antelope::instance(
     default => str2bool($manage_fact),
   }
 
-  $bool_manage_dirs = $manage_rtsystemdirs ? {
+  $bool_manage_rtsystemdirs = $manage_rtsystemdirs ? {
     true    => $manage_rtsystemdirs,
     false   => $manage_rtsystemdirs,
     ''      => $antelope::params::manage_rtsystemdirs,
@@ -128,17 +128,15 @@ define antelope::instance(
     false => split($dirs,','),
   }
 
-  $rtsystemdir_defaults = {
-    user  => $user,
-    group => $group
-  }
 
   ### Managed resources
 
   # Create the rtsystemdir resources
   if $bool_manage_rtsystemdirs {
-    create_resources(
-      'antelope::rtsystemdir', $real_dirs, $rtsystemdir_defaults)
+    antelope::rtsystemdir { $real_dirs :
+      owner  => $user,
+      group => $group,
+    }
   }
 
   # init script path for Solaris and Linux

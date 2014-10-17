@@ -13,7 +13,7 @@
 #  The username that the real-time system should run as. Defaults to 'rt'
 define antelope::rtsystemdir(
   $path        = $title,
-  $user        = 'rt',
+  $owner       = 'rt',
   $group       = undef,
   $dir_mode    = 0775,
   $rtexec_mode = 0664,
@@ -30,7 +30,7 @@ define antelope::rtsystemdir(
 
   file { $manage_rtexec_filename :
     ensure  => $manage_file_ensure,
-    user    => $manage_file_user,
+    owner   => $manage_file_user,
     group   => $manage_file_group,
     mode    => $manage_rtexec_mode,
     replace => $manage_rtexec_replace,
