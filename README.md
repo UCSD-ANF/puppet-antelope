@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.7.1
+Version 0.7.2
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by [Boulder Real-Time Technologies][brtt]
@@ -34,7 +34,9 @@ Geoff Davis <gadavis@ucsd.edu>
 [ripienaar-concat]: https://github.com/ripienaar/puppet-concat
 [ucsd-puppet-php]: [https://github.com/UCSD-ANF/puppet-php]
 
-If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as `osfamily`. It should be placed in `site.pp` (before declaring any node):
+If you do not have facter >= 1.6.1 in your environment, the following manifest
+code will provide the same functionality as `osfamily`. It should be
+placed in `site.pp` (before declaring any node):
 
     if ! $::osfamily {
       case $::operatingsystem {
@@ -87,6 +89,9 @@ parameter to false for each `antelope::instance` that you manually define.
 Sets up a basic Antelope environment. The optional dirs or instances parameters
 automatically configures `antelope::instance` resources.
 
+Please look at the class definition in init.pp for additional parameters that
+can control behavior, such as `manage_rtsystemdirs`
+
 #### Basic usage of the Antelope class
 
      class { 'antelope': }
@@ -130,8 +135,10 @@ an External Node Classifier without having to explicitely declare separate
 
 ### Defined Type `antelope::instance`
 Configure an instance of Antelope. More than one can be configured. Useful for
-real-time systems running as different users. Note that in the example below,
-_only the `antelope` instance will show up_ in the `antelope_services` fact
+real-time systems running as different users. Permissions on the rtexec.pf in
+each entry in dirs are managed unless `manage_rtsystemdirs` is false.
+Note that in the example below, _only the `antelope` instance will show up_
+in the `antelope_services` fact
 
      antelope::instance { 'antelope' :
        user => 'rt',
