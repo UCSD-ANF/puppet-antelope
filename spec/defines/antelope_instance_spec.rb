@@ -17,9 +17,10 @@ describe 'antelope::instance', :type => 'define' do
     end
 
     context "on supported OS #{os[:operatingsystem]} with dirs" do
-      let(:pre_condition) do 'user { "rt": }'              end
-      let(:facts)         do os.merge(basefacts)           end
-      let(:params)        do { :dirs => '/foo,/bar,/baz' } end
+      baseparams = { :dirs => '/foo,/bar,/baz' }
+      let(:pre_condition) { 'user { "rt": }' }
+      let(:facts)         { os.merge(basefacts) }
+      let(:params)        { baseparams }
 
       it { expect { should compile } }
       it { should contain_file('/etc/init.d/myantelope').that_notifies(
@@ -28,6 +29,46 @@ describe 'antelope::instance', :type => 'define' do
       it { should contain_service('myantelope').that_requires('User[rt]') }
       it { should contain_concat__fragment(
         '/etc/facter/facts.d/antelope_services_myantelope') }
+      it { should contain_antelope__rtsystemdir('/foo') }
+      it { should contain_antelope__rtsystemdir('/bar') }
+      it { should contain_antelope__rtsystemdir('/baz') }
+
+      context "with manage_rtsystemdirs = true" do
+        let(:params) do
+          { 'manage_rtsystemdirs' => true }.merge(baseparams)
+        end
+
+        it { should contain_antelope__rtsystemdir('/foo') }
+        it { should contain_antelope__rtsystemdir('/bar') }
+        it { should contain_antelope__rtsystemdir('/baz') }
+
+        context "with user = someguy and group = somegroup" do
+          let(:pre_condition) { 'user { "someguy": }' }
+          let(:params) do
+            { 'manage_rtsystemdirs' => true,
+              :user                 => 'someguy',
+              :group                => 'somegroup',
+            }.merge(baseparams)
+          end
+
+          it { should contain_antelope__rtsystemdir('/foo').with({
+            :owner => 'someguy',
+            :group => 'somegroup',
+          }) }
+        end
+
+      end
+
+      context "with manage_rtsystemdirs = false" do
+        let(:params) do
+          { 'manage_rtsystemdirs' => false }.merge(baseparams)
+        end
+
+        it { should_not contain_antelope__rtsystemdir('/foo') }
+        it { should_not contain_antelope__rtsystemdir('/bar') }
+        it { should_not contain_antelope__rtsystemdir('/baz') }
+      end
+
 
       case os[:osfamily]
       when 'RedHat' then

@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.7.1
+Version 0.7.2
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by [Boulder Real-Time Technologies][brtt]
@@ -34,7 +34,9 @@ Geoff Davis <gadavis@ucsd.edu>
 [ripienaar-concat]: https://github.com/ripienaar/puppet-concat
 [ucsd-puppet-php]: [https://github.com/UCSD-ANF/puppet-php]
 
-If you do not have facter 1.6.1 in your environment, the following manifest code will provide the same functionality as `osfamily`. It should be placed in `site.pp` (before declaring any node):
+If you do not have facter >= 1.6.1 in your environment, the following manifest
+code will provide the same functionality as `osfamily`. It should be
+placed in `site.pp` (before declaring any node):
 
     if ! $::osfamily {
       case $::operatingsystem {
@@ -59,6 +61,12 @@ If you do not have facter 1.6.1 in your environment, the following manifest code
 
 ## Usage
 
+## Facts
+
+This module includes Facter facts for several things related to Antelope. It
+also optionally manages the contents of a fact called `antelope_services`,
+described below.
+
 ### The `antelope services` fact
 By default, this module will try to create a fact called `antelope_services`
 which contains a comma separated list of all of the system services created by
@@ -68,10 +76,21 @@ If you want to skip creating this fact, set the `manage_instances_fact`
 parameter to the main `antelope` class to false, and set the `manage_fact`
 parameter to false for each `antelope::instance` that you manually define.
 
+### Other facts
+
+* `antelope_versions`       - All versions of Antelope installed on the system
+* `antelope_latest_version` - The newest version of Antelope installed on the system
+* `antelope_latest_perl`    - the version of Perl that ships with `antelope_latest_version`
+
+## Classes
+
 ### Class `antelope`
 
 Sets up a basic Antelope environment. The optional dirs or instances parameters
 automatically configures `antelope::instance` resources.
+
+Please look at the class definition in init.pp for additional parameters that
+can control behavior, such as `manage_rtsystemdirs`
 
 #### Basic usage of the Antelope class
 
@@ -116,8 +135,10 @@ an External Node Classifier without having to explicitely declare separate
 
 ### Defined Type `antelope::instance`
 Configure an instance of Antelope. More than one can be configured. Useful for
-real-time systems running as different users. Note that in the example below,
-_only the `antelope` instance will show up_ in the `antelope_services` fact
+real-time systems running as different users. Permissions on the rtexec.pf in
+each entry in dirs are managed unless `manage_rtsystemdirs` is false.
+Note that in the example below, _only the `antelope` instance will show up_
+in the `antelope_services` fact
 
      antelope::instance { 'antelope' :
        user => 'rt',
