@@ -41,16 +41,16 @@ describe 'antelope' do
       instance_params = {
         :instances => {
           'antelope-single' => {
-            'user'   => 'rt',
-            'dirs'   => '/export/home/rt/rtsystems/single',
+            'user' => 'rt',
+            'dirs' => '/export/home/rt/rtsystems/single',
           },
-          'antelope-csv' => {
-            'user'       => 'rt',
-            'dirs'       => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2',
+          'antelope-csv'    => {
+            'user' => 'rt',
+            'dirs' => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2',
           },
-          'antelope-arr' => {
-            'user'       => 'rt',
-            'dirs'       => [
+          'antelope-arr'    => {
+            'user' => 'rt',
+            'dirs' => [
               '/export/home/rt/rtsystems/arr1',
               '/export/home/rt/rtsystems/arr2',
             ],
