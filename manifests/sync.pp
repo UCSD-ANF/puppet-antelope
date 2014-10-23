@@ -39,7 +39,9 @@ class antelope::sync(
 ) inherits antelope::params {
 
   ### Validate variables
-  if !$sync_host { fail('You must specify a value for sync_host.') }
+  if $ensure == 'present' {
+    if !$sync_host { fail('You must specify a value for sync_host.') }
+  }
 
   ### Class local variables
 
