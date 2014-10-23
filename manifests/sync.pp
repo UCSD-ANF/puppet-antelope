@@ -15,8 +15,11 @@
 #
 # Parameters:
 #
+# [*ensure*] - if 'present', files are placed on the filesystem. If 'absent',
+# files are removed from the filesystem if they were present.
+# Default: 'present'
+#
 # [*sync_host*] - the source hostname for the rsync command
-# REQUIRED PARAMETER, MUST BE SPECIFIED TO USE THIS CLASS.
 # Can also be specified by the global variable
 # $::antelope_sync_host
 #
@@ -29,6 +32,7 @@
 # Can also be specified with the global variable $::antelope_site_tree
 #
 class antelope::sync(
+  $ensure    = present,
   $sync_user = $antelope::params::sync_user,
   $sync_host = $antelope::params::sync_host,
   $site_tree = $antelope::params::site_tree,
@@ -41,6 +45,7 @@ class antelope::sync(
 
   $basedir   = '/usr/local'
 
+  $manage_file_ensure = $ensure
   $manage_file_owner = 'root'
   $manage_file_group = $::osfamily ? {
     'Solaris' => 'bin',
@@ -61,7 +66,7 @@ class antelope::sync(
 
   # Main synchronization script
   file { 'antelope_sync':
-    ensure  => present,
+    ensure  => $manage_file_ensure,
     path    => "${bindir}/antelope_sync",
     mode    => '0555',
     owner   => $manage_file_owner,
@@ -76,7 +81,7 @@ class antelope::sync(
 
   # Exclude and include lists
   file { 'rsync_exclude':
-    ensure  => present,
+    ensure  => $manage_file_ensure,
     path    => "${confdir}/rsync_exclude",
     mode    => '0444',
     owner   => $manage_file_owner,
@@ -86,7 +91,7 @@ class antelope::sync(
   }
 
   file { 'rsync_include':
-    ensure  => present,
+    ensure  => $manage_file_ensure,
     path    => "${confdir}/rsync_include",
     mode    => '0444',
     owner   => $manage_file_owner,
