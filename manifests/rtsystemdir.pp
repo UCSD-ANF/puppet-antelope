@@ -9,8 +9,8 @@
 # "/export/home/rt/rtsystems/foo". Defaults to the value of title - this is
 # the *namevar*
 #
-# [*user*]
-#  The username that the real-time system should run as. Defaults to 'rt'
+# [*owner*]
+#  The ownername that the real-time system should run as. Defaults to 'rt'
 define antelope::rtsystemdir(
   $path        = $title,
   $owner       = 'rt',
@@ -20,7 +20,7 @@ define antelope::rtsystemdir(
 ) {
   require antelope::params
 
-  $manage_file_user       = $user
+  $manage_file_owner      = $owner
   $manage_file_group      = $group
   $manage_file_ensure     = 'present'
 
@@ -30,7 +30,7 @@ define antelope::rtsystemdir(
 
   file { $manage_rtexec_filename :
     ensure  => $manage_file_ensure,
-    owner   => $manage_file_user,
+    owner   => $manage_file_owner,
     group   => $manage_file_group,
     mode    => $manage_rtexec_mode,
     replace => $manage_rtexec_replace,

@@ -134,7 +134,7 @@ define antelope::instance(
   # Create the rtsystemdir resources
   if $bool_manage_rtsystemdirs {
     antelope::rtsystemdir { $real_dirs :
-      owner  => $user,
+      owner => $user,
       group => $group,
     }
   }
