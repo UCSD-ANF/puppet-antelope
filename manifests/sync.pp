@@ -2,8 +2,8 @@
 # golden master Antelope installation.
 #
 # The script uses rsync under the hood, and connects to the source
-# system over either rsync:// or SSH. SSH uses the sync_user and
-# sync_host variables to compute the ssh credentials
+# system over either rsync:// or SSH. SSH uses the user and
+# host variables to compute the ssh credentials
 #
 # It depends on passwordless SSH being set up. It also needs a working
 # copy of rsync installed in /usr/bin on Linux and Darwin or
@@ -19,11 +19,17 @@
 # files are removed from the filesystem if they were present.
 # Default: 'present'
 #
-# [*sync_host*] - the source hostname for the rsync command
+# [*host*] - the source hostname for the rsync command
 # Can also be specified by the global variable
 # $::antelope_sync_host
+# This parameter can either be a bare hostname, or optionally include the
+# prefex rsync:// in which case it will use the native rsync protocol instead
+# of rsync over ssh.
+# Examples:
+# * 'rsync://build.test.domain'
+# * 'build.test.domain'
 #
-# [*sync_user*] - the source username for the rsync command
+# [*user*] - the source username for the rsync command
 # Can also be specified by the global variables $::antelope_sync_user
 # or $::antelope_user. Defaults to 'rt'
 #
@@ -33,14 +39,14 @@
 #
 class antelope::sync(
   $ensure    = present,
-  $sync_user = $antelope::params::sync_user,
-  $sync_host = $antelope::params::sync_host,
+  $user = $antelope::params::sync_user,
+  $host = $antelope::params::sync_host,
   $site_tree = $antelope::params::site_tree,
 ) inherits antelope::params {
 
   ### Validate variables
   if $ensure == 'present' {
-    if !$sync_host { fail('You must specify a value for sync_host.') }
+    if !$host { fail('You must specify a value for host.') }
   }
 
   ### Class local variables
@@ -63,6 +69,9 @@ class antelope::sync(
     default   => '/usr/bin/rsync',
   }
   $sync_dirs = flatten(['/opt/antelope', $site_tree ])
+  $sync_host = $host
+  $sync_user = $user
+
 
   ### Managed resources
 

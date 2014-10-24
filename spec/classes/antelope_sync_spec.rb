@@ -16,16 +16,16 @@ describe 'antelope::sync' do
       baseparams = {:ensure => 'present'}
 
       let(:params) { baseparams }
-      context 'without a sync_host defined' do
+      context 'without a host defined' do
         it do
           expect { should compile
           }.to raise_error(Puppet::Error, /You must specify a value/)
         end
-      end # without a sync_host defined
+      end # without a host defined
 
-      context 'with an anonymous rsync sync_host defined' do
+      context 'with an anonymous rsync host defined' do
         let(:params) do
-          { :sync_host => 'rsync://my.sync.host' }.merge(baseparams)
+          { :host => 'rsync://my.sync.host' }.merge(baseparams)
         end
 
         it { should contain_file('antelope_sync')\
@@ -41,11 +41,11 @@ describe 'antelope::sync' do
         it { should contain_file('rsync_include')\
              .with_path('/usr/local/etc/rsync_include')
         }
-      end # with an anonymous rsync sync_host defined
+      end # with an anonymous rsync host defined
 
-      context 'with an SSH sync_host defined' do
+      context 'with an SSH host defined' do
         let(:params) do
-          { :sync_host => 'my.sync.host' }.merge(baseparams)
+          { :host => 'my.sync.host' }.merge(baseparams)
         end
 
         it { should contain_file('antelope_sync')\
@@ -55,7 +55,7 @@ describe 'antelope::sync' do
              .with_group('root')\
              .with_content(/my @rsyncOpts=\("-a", "--delete", "--rsh=ssh -q"\);/)
         }
-      end # with an SSH sync_host defined
+      end # with an SSH host defined
     end # with ensure == present
   end # on a supported osfamily
 end
