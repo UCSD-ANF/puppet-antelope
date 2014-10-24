@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.7.6
+Version 0.8.0
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by [Boulder Real-Time Technologies][brtt]
@@ -169,12 +169,12 @@ Same configuration as above, but no `antelope_services` fact is created:
 Installs a wrapper around rsync for copying Antelope from a golden master.
 Includes the ability to synchronize an optional site-specific tree.
 
-You must at a minimum declare the `sync_host` parameter with this class. This
-can be done either by passing `sync_user` as a parameter or by declaring a
+You must at a minimum declare the `host` parameter with this class. This
+can be done either by passing `host` as a parameter or by declaring a
 top-scope variable `$::antelope_sync_host`
 
     class { 'antelope::sync' :
-      sync_host => 'buildhost.example.net',
+      host => 'buildhost.example.net',
       site_tree => '/opt/mysite',
     }
 
