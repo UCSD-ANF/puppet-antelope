@@ -10,6 +10,8 @@
 # === Parameters
 #
 # Parameters affecting behavior of this define:
+# *[ensure]*
+#  Either present or absent. If absent, file is removed. Default: present
 #
 # *[version]*
 #  The version of Antelope that this license.pf instance will belong to
