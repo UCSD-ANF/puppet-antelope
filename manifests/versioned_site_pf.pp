@@ -9,6 +9,8 @@
 # === Parameters
 #
 # Parameters affecting antelope::versioned_site_pf's behavior:
+# *[ensure]*
+#  Either present or absent. If absent, file is removed. Default: present
 #
 # *[version]*
 #  The version of Antelope that this site.pf instance will belong to.
