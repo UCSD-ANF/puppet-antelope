@@ -7,8 +7,43 @@ describe 'antelope::versioned_license_pf' do
       :osfamily => 'RedHat',
     } }
 
-    it { should contain_file('antelope license.pf 5.3').with_path(
-      '/opt/antelope/5.3/data/pf/license.pf') }
+    it { should contain_file('antelope license.pf 5.3').with( {
+      :path   => '/opt/antelope/5.3/data/pf/license.pf',
+      :ensure => 'present',
+    } ) }
+
+    context 'with ensure == present' do
+      let(:params) { {
+        :ensure => 'present',
+      } }
+      it { should contain_file('antelope license.pf 5.3').with( {
+          :path   => '/opt/antelope/5.3/data/pf/license.pf',
+          :ensure => 'present',
+      } ) }
+    end
+
+    context 'with ensure == absent' do
+      let(:params) { {
+        :ensure => 'absent',
+      } }
+      it { should contain_file('antelope license.pf 5.3').with( {
+          :path   => '/opt/antelope/5.3/data/pf/license.pf',
+          :ensure => 'absent',
+      } ) }
+    end
+
+    context 'with ensure == garbage' do
+      let(:params) { {
+        :ensure => 'garbage',
+      } }
+
+      it do
+        expect { should compile }.to raise_error(Puppet::Error,
+                                                 /does not match/)
+      end
+    end
+
+
 
     context 'with params owner and group = pkgbuild' do
       let(:params) { {

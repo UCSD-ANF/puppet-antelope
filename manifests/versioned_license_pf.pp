@@ -57,6 +57,7 @@
 #    }
 #
 define antelope::versioned_license_pf (
+  $ensure              = 'present',
   $version             = $title,
   $source              = undef,
   $content             = undef,
@@ -70,7 +71,9 @@ define antelope::versioned_license_pf (
 ) {
   include 'antelope::params'
 
-  $file_ensure = 'present'
+  validate_re($ensure, ['present', 'absent'])
+
+  $file_ensure = $ensure
   $file_path = $path ? {
     ''      => "/opt/antelope/${version}/data/pf/license.pf",
     default => $path,

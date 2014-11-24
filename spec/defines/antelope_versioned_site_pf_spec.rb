@@ -7,8 +7,41 @@ describe 'antelope::versioned_site_pf' do
       :osfamily => 'RedHat',
     } }
 
-    it { should contain_file('antelope site.pf 5.3pre')\
-      .with_path('/opt/antelope/5.3pre/data/pf/site.pf') }
+    it { should contain_file('antelope site.pf 5.3pre').with( {
+      :path   => '/opt/antelope/5.3pre/data/pf/site.pf',
+      :ensure => 'present',
+    } ) }
+
+    context 'with ensure == garbage' do
+      let(:params) { {
+        :ensure => 'garbage',
+      } }
+
+      it do
+        expect { should compile }.to raise_error(Puppet::Error,
+                                                 /does not match/)
+      end
+    end
+
+    context 'with ensure == present' do
+      let(:params) { {
+        :ensure => 'present',
+      } }
+
+      it { should contain_file('antelope site.pf 5.3pre').with( {
+        :ensure => 'present',
+      } ) }
+    end
+
+    context 'with ensure == absent' do
+      let(:params) { {
+        :ensure => 'absent',
+      } }
+
+      it { should contain_file('antelope site.pf 5.3pre').with( {
+        :ensure => 'absent',
+      } ) }
+    end
 
     context 'with params owner and group = pkgbuild' do
       let(:params) { {
@@ -16,8 +49,11 @@ describe 'antelope::versioned_site_pf' do
         :group => 'pkgbuild',
       } }
 
-      it { should contain_file('antelope site.pf 5.3pre')\
-        .with_owner('pkgbuild').with_group('pkgbuild') }
+      it { should contain_file('antelope site.pf 5.3pre').with( {
+        :owner  => 'pkgbuild',
+        :group  => 'pkgbuild',
+        :ensure => 'present',
+      } ) }
     end
 
     context 'with global variables' do
