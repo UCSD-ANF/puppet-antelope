@@ -9,6 +9,8 @@
 # === Parameters
 #
 # Parameters affecting antelope::versioned_site_pf's behavior:
+# *[ensure]*
+#  Either present or absent. If absent, file is removed. Default: present
 #
 # *[version]*
 #  The version of Antelope that this site.pf instance will belong to.
@@ -68,22 +70,25 @@
 #    }
 #
 define antelope::versioned_site_pf (
-  $version = $title,
-  $mailhost = '',
-  $mail_domain = $::fqdn,
-  $default_seed_network = 'XX',
+  $ensure                   = 'present',
+  $version                  = $title,
+  $mailhost                 = '',
+  $mail_domain              = $::fqdn,
+  $default_seed_network     = 'XX',
   $originating_organization = '',
-  $institution = 'XXXX',
-  $source = undef,
-  $content = undef,
-  $owner = undef,
-  $group = undef,
-  $mode = undef,
-  $path = undef
+  $institution              = 'XXXX',
+  $source                   = undef,
+  $content                  = undef,
+  $owner                    = undef,
+  $group                    = undef,
+  $mode                     = undef,
+  $path                     = undef
 ) {
   include 'antelope::params'
 
-  $file_ensure = 'present'
+  validate_re($ensure, ['present', 'absent'])
+
+  $file_ensure = $ensure
 
   $file_path = $path ? {
     ''      => "/opt/antelope/${version}/data/pf/site.pf",
