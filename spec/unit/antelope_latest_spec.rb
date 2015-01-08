@@ -18,7 +18,7 @@ describe 'antelope_latest_perl fact', :type => :fact do
     it do
       expect(Facter.fact(:antelope_latest_version)).to receive(:value).\
         and_return(nil)
-      expect(Facter::Antelope::Latest).to_not receive(:getid)
+      expect(Facter::Util::Antelope).to_not receive(:getid)
       should be_nil
     end
   end
@@ -27,7 +27,7 @@ describe 'antelope_latest_perl fact', :type => :fact do
     it do
       expect(Facter.fact(:antelope_latest_version)).to receive(:value).\
         and_return('5.4')
-      expect(Facter::Antelope::Latest).to receive(:getid).with('5.4', :perl).\
+      expect(Facter::Util::Antelope).to receive(:getid).with('5.4', :perl).\
         and_return('something')
       should eql('something')
     end
@@ -36,7 +36,7 @@ describe 'antelope_latest_perl fact', :type => :fact do
     it do
       expect(Facter.fact(:antelope_latest_version)).to receive(:value).\
         and_return('5.4')
-      expect(Facter::Antelope::Latest).to receive(:getid).with('5.4', :perl).\
+      expect(Facter::Util::Antelope).to receive(:getid).with('5.4', :perl).\
         and_return(nil)
       should be_nil
     end

@@ -10,6 +10,7 @@
 module Facter::Util::Antelope
   require 'facter/util/resolution'
 
+  VALID_KERNELS = %w{Linux SunOS Darwin}
   ANTELOPE_BASEDIR = '/opt/antelope'
   RE_VERSION = /^(\d+)\.(\d+)(-64)?(pre|post|p)?$/
 
@@ -31,6 +32,14 @@ module Facter::Util::Antelope
       nil
     end
   end
+
+  def self.getid(version, id)
+    antelopepath="#{Facter::Util::Antelope::ANTELOPE_BASEDIR}/#{version}"
+    res = %x{ ANTELOPE=#{antelopepath}; export ANTELOPE; #{antelopepath}/bin/getid #{id} 2> /dev/null}
+    res.chomp!
+    res
+  end
+
 
   # Sort Antelope versions from oldest to newest
   # 5.2-64 < 5.2-64p < 5.3pre < 5.3 < 5.3post
