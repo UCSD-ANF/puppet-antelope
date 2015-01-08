@@ -15,8 +15,22 @@ Facter.add(:antelope_versions) do
   versions = Facter::Util::Antelope.get_versions
   unless versions.nil?
     setcode do
-      versions.join(',')
+      return versions.join(',')
     end
   end
 
 end
+
+Facter.add(:antelope_versions_hash) do
+
+  confine :kernel => %w{Linux SunOS Darwin}
+
+  versions = Facter::Util::Antelope.get_versions
+  unless versions.nil?
+    setcode do
+      return versions
+    end
+  end
+
+end
+
