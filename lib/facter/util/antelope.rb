@@ -67,7 +67,7 @@ module Facter::Util::Antelope
           elsif amatch[4] == 'p' or amatch[4] == 'post'
             return 1
           else
-            return +1
+            return -1
           end
         end
       end
