@@ -7,9 +7,7 @@
 ## Author: Geoff Davis <gadavis@ucsd.edu>
 ##
 
-module Facter
-module Util
-module Antelope
+module Facter::Util::Antelope
   require 'facter/util/resolution'
 
   ANTELOPE_BASEDIR = '/opt/antelope'
@@ -76,6 +74,4 @@ module Antelope
     end
   end
 
-end
-end
 end
