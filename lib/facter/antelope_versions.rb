@@ -21,7 +21,7 @@ Facter.add(:antelope_versions) do
 
 end
 
-Facter.add(:antelope_versions_hash) do
+Facter.add(:antelope_versions_array) do
 
   confine :kernel => %w{Linux SunOS Darwin}
 
