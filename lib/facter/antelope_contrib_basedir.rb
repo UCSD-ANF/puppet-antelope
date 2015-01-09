@@ -10,14 +10,12 @@ module Facter
         Facter.add(:antelope_contrib_basedir) do
           confine :kernel => %w{Linux SunOS Darwin}
           result={}
-
-          versions = Facter::Util::Antelope.get_versions
           begin
-            versions.each do |version|
+            Facter::Util::Antelope.get_versions.each do |version|
               result[version]=''
               result[version]='/contrib' if \
                 File.directory?("/opt/antelope/#{version}/contrib/bin")
-            end unless versions.nil?
+            end
           rescue
             result = nil
           end
