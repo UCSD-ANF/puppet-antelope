@@ -11,13 +11,17 @@ module Facter
           confine :kernel => %w{Linux SunOS Darwin}
           result={}
 
-          Facter::Util::Antelope.get_versions.each do |version|
-            result[version]=''
-            result[version]='/contrib' if \
-              File.directory?("/opt/antelope/#{version}/contrib/bin")
-
-            setcode { result } unless result.nil?
+          versions = Facter::Util::Antelope.get_versions
+          begin
+            versions.each do |version|
+              result[version]=''
+              result[version]='/contrib' if \
+                File.directory?("/opt/antelope/#{version}/contrib/bin")
+            end unless versions.nil?
+          rescue
+            result = nil
           end
+          setcode { result } unless result.nil?
         end
       end
     end
@@ -25,5 +29,3 @@ module Facter
 end
 
 Facter::Antelope::ContribFact.add_facts
-
-
