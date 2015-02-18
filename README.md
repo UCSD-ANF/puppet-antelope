@@ -339,3 +339,51 @@ Set the license.pf for the latest version of Antelope:
       ],
       replace => true,
     }
+
+## Facter Facts
+
+### antelope_supports_ald_proxy
+
+Returns a hash of all versions of Antelope supported on the system and whether or not they support the Antelope License Proxy.
+
+```
+{"5.2-64"=>false, "5.3"=>true, "5.4"=>true, "5.5"=>true}
+```
+
+### antelope_contrib_basedir
+
+Antelope versions 5.5 and higher (actually started in 5.4post) now relocate the
+Antelope contributed code repository (contrib) to a subdirectory. This fact is
+a hash of versions of Antelope installed on the system and what subdirectory
+contrib lives in. Returns an empty string if not relocated, and "/contrib" if
+it is for each version.
+
+Should look something like this:
+
+```
+{"5.2-64"=>"", "5.3"=>"", "5.4"=>"", "5.4post"=>"/contrib"}
+```
+
+### antelope_latest_version
+
+Shows the newest version of Antelope installed on the system
+
+### antelope_latest_perl
+
+The version of Perl that ships with the latest version of Antelope, as provided
+in the antelope_latest_version fact.
+
+### antelope_latest_python
+
+The version of Python that ships with the latest version of Antelope, as
+provided in the antelope_latest_version fact.
+
+### antelope_versions
+
+Legacy-style fact that provides a comma-separated list of Antelope versions
+installed on the system.
+
+### antelope_versions_array
+
+New-style fact that provides an array of Antelope versions installed on the
+system.
