@@ -37,10 +37,7 @@ describe 'antelope::versioned_license_pf' do
         :ensure => 'garbage',
       } }
 
-      it do
-        expect { should compile }.to raise_error(Puppet::Error,
-                                                 /does not match/)
-      end
+      it { should raise_error(Puppet::Error, /does not match/) }
     end
 
 
@@ -71,9 +68,7 @@ describe 'antelope::versioned_license_pf' do
         :content => 'This garbage content should fail',
       } }
 
-      it {
-        expect { should raise_error(Puppet::Error) }
-      }
+      it { should raise_error(Puppet::Error) }
     end
 
     context 'using template parameters' do

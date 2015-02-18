@@ -17,10 +17,8 @@ describe 'antelope::versioned_site_pf' do
         :ensure => 'garbage',
       } }
 
-      it do
-        expect { should compile }.to raise_error(Puppet::Error,
-                                                 /does not match/)
-      end
+      it { should raise_error(Puppet::Error,
+                              /does not match/) }
     end
 
     context 'with ensure == present' do

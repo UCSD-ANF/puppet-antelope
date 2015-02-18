@@ -12,10 +12,10 @@ puppet_version = ENV.key?('PUPPET_VERSION') ? "= #{ENV['PUPPET_VERSION']}" : \
 
 ### Gem requirements
 gem 'rake'
-gem 'rspec'
+gem 'rspec', '< 3.0.0'
 gem 'facter', facter_version
 gem 'puppet', puppet_version
-gem 'rspec-puppet', '>= 1.0.0'
+gem 'rspec-puppet', '>= 2.0'
 #gem 'rcov'
 
 gem 'puppet-lint'
