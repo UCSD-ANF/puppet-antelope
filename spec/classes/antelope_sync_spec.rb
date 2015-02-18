@@ -17,10 +17,7 @@ describe 'antelope::sync' do
 
       let(:params) { baseparams }
       context 'without a host defined' do
-        it do
-          expect { should compile
-          }.to raise_error(Puppet::Error, /You must specify a value/)
-        end
+        it { should raise_error(Puppet::Error, /You must specify a value/) }
       end # without a host defined
 
       context 'with an anonymous rsync host defined' do

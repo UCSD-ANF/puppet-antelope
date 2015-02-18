@@ -11,9 +11,8 @@ describe 'antelope::instance', :type => 'define' do
 
     context "on supported OS #{os[:operatingsystem]} without params" do
       let(:facts) do os.merge(basefacts) end
-      it { expect { should compile }.to raise_error(Puppet::Error,
-        /^service enabled but no dirs specified/)
-      }
+      it { should raise_error(Puppet::Error,
+        /^service enabled but no dirs specified/) }
     end
 
     context "on supported OS #{os[:operatingsystem]} with dirs" do
@@ -150,14 +149,12 @@ describe 'antelope::instance', :type => 'define' do
       case os[:operatingsystem]
       when 'Darwin' then
         # Darwin is supported by this module, but not by this type.
-        it { expect { should compile }.to raise_error(Puppet::Error,
-          /^Unsupported.*instance\.pp/)
+        it { should raise_error(Puppet::Error, /^Unsupported.*instance\.pp/)
         }
       else
         # antelope::params should fail out anything else.
-        it { expect { should compile }.to raise_error(Puppet::Error,
-          /^This module does not work on.*params\.pp/)
-        }
+        it { should raise_error(Puppet::Error,
+          /^This module does not work on.*params\.pp/) }
       end
     end
   }
