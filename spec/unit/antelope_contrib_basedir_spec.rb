@@ -8,7 +8,9 @@ describe 'antelope_contrib_basedir fact', :type => :fact do
 
   before :each do
     Facter::Util::Antelope.should_receive(:get_versions).and_return([
-      '5.4', '5.4post'])
+      '5.2-64', '5.4', '5.4post'])
+    File.should_receive('directory?').with(
+      '/opt/antelope/5.2-64/contrib/bin').and_return(false)
     File.should_receive('directory?').with(
       '/opt/antelope/5.4/contrib/bin').and_return(false)
     File.should_receive('directory?').with(
@@ -24,6 +26,7 @@ describe 'antelope_contrib_basedir fact', :type => :fact do
 
   it { should_not be_nil }
   it { should eql({
+    '5.2-64' => '',
     '5.4' => '',
     '5.4post' => '/contrib', })
   }
