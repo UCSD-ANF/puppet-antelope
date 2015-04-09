@@ -22,7 +22,7 @@ Geoff Davis <gadavis@ucsd.edu>
  Puppet Enterprise, also available on the Module Forge and on Github
 * `osfamily` fact. Supported by Facter 1.6.1+. Or you can use the code blurb
  below
-* [ripienaar-concat][ripienaar-concat] module - also available on the forge.
+* [puppetlabs-concat][puppetlabs-concat] module - also available on the forge.
  Only required if managing the `antelope_services` fact - see below
 * [camptocamp-php module with ANF customizations][ucsd-puppet-php]. Only
  required if using the `antelope::php` class.
@@ -31,7 +31,7 @@ Geoff Davis <gadavis@ucsd.edu>
 [puppetlabs-create_resources]: https://github.com/puppetlabs/puppetlabs-create_resources
 [example42-puppi]: https:///github.com/example42/puppi
 [puppetlabs-stdlib]: https://github.com/puppetlabs/puppetlabs-stdlib
-[ripienaar-concat]: https://github.com/ripienaar/puppet-concat
+[puppetlabs-concat]: https://github.com/puppetlabs/puppetlabs-concat
 [ucsd-puppet-php]: [https://github.com/UCSD-ANF/puppet-php]
 
 If you do not have facter >= 1.6.1 in your environment, the following manifest
@@ -347,14 +347,6 @@ Set the license.pf for the latest version of Antelope:
 
 ## Facter Facts
 
-### antelope_supports_ald_proxy
-
-Returns a hash of all versions of Antelope supported on the system and whether or not they support the Antelope License Proxy.
-
-```
-{"5.2-64"=>false, "5.3"=>true, "5.4"=>true, "5.5"=>true}
-```
-
 ### antelope_contrib_basedir
 
 Antelope versions 5.5 and higher (actually started in 5.4post) now relocate the
@@ -392,3 +384,20 @@ installed on the system.
 
 New-style fact that provides an array of Antelope versions installed on the
 system.
+
+### antelope_versions_supports_ald_proxy
+
+Returns an comma-delimited string of all system versions of Antelope that support the Antelope License Proxy.
+E.G.
+```
+'5.3,5.4,5.5'
+```
+
+### antelope_versions_supports_ald_proxy_array
+
+Returns an array of all system versions of Antelope that support the Antelope License Proxy.
+E.G.
+```
+['5.3','5.4','5.5']
+```
+
