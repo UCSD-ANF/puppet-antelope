@@ -1,6 +1,6 @@
 # Antelope Module for Puppet
 
-Version 0.8.6
+Version 0.8.7
 
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by [Boulder Real-Time Technologies][brtt]
@@ -132,6 +132,11 @@ an External Node Classifier without having to explicitely declare separate
          },
        }
      }
+
+### Class `antelope::mco`
+Install an MCollective Agent for managing Antelope.
+
+    include antelope::mco
 
 ### Defined Type `antelope::instance`
 Configure an instance of Antelope. More than one can be configured. Useful for
