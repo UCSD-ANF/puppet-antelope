@@ -45,13 +45,13 @@ class antelope::mco(
 
   # Installed on MCO clients (management stations) and servers
   file {"${real_plugin_basedir}/agent/antelope.ddl":
-    source => 'puppet:///antelope/mco/antelope.ddl',
+    source => 'puppet:///modules/antelope/mco/antelope.ddl',
   }
 
   # Only install this on servers
   file {"${real_plugin_basedir}/agent/antelope.rb":
     ensure => $server_ensure,
-    source => 'puppet:///antelope/mco/antelope.rb',
+    source => 'puppet:///modules/antelope/mco/antelope.rb',
   }
 
 }
