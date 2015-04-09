@@ -11,7 +11,7 @@ requires :mcollective => '2.2.1'
 action 'sync', :description => 'run antelope_sync on a node' do
   input :mode,
     :prompt => 'Antelope Sync Mode',
-    :description => 'One of the various supported sync modes',
+    :description => 'One of: normal, dry-run, nostopstart, norestart',
     :type => :list,
     :optional => true,
     :list => ['normal', 'dry-run', 'nostopstart', 'norestart']
