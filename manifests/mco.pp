@@ -18,7 +18,6 @@ class antelope::mco(
   $owner       = 'root',
   $group       = 'root',
   $mode        = '0644',
-  $notify      = undef,
   $client_only = false,
 ) {
 
@@ -42,7 +41,6 @@ class antelope::mco(
     group  => $group,
     mode   => $mode,
     owner  => $owner,
-    notify => $notify,
   }
 
   # Installed on MCO clients (management stations) and servers
