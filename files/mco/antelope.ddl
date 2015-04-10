@@ -4,7 +4,7 @@ metadata    :name        => 'antelope',
             :license     => 'BSD',
             :version     => '0.1',
             :url         => 'https://github.com/UCSD-ANF/puppet-antelope',
-            :timeout     => 300
+            :timeout     => 500
 
 requires :mcollective => '2.2.1'
 
