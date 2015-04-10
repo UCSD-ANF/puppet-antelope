@@ -151,11 +151,6 @@ printErrorHelpAndExit("Can't find include file ${includeFile}") if ( ! -f $inclu
 # Compose the rsync options
 #
 push ( @rsyncOpts, "--dry-run") if ( $dryRun == $TRUE );
-if ( ! $quiet ) {
-  if ( $dryRun ) {
-    push ( @rsyncOpts, "-v" );
-  }
-}
 
 if ( $verbose ) {
   push ( @rsyncOpts, '--progress');
