@@ -15,14 +15,15 @@ my $excludeFile="<%= @confdir %>/rsync_exclude";
 my $includeFile="<%= @confdir %>/rsync_include";
 my $debug=$FALSE;
 my $quiet=$FALSE;
+my $verbose=$FALSE;
 my $dryRun=$FALSE;
 my $rsyncBin="<%= @rsync_bin %>";
 my $sourceHost="<%= @sync_host %>";
 <%- if @sync_host =~ /^rsync:\/\// or @sync_host =~ /::$/ then -%>
-my @rsyncOpts=("-a", "--delete");
+my @rsyncOpts=("-a", '--partial', "--delete");
 <%- else -%>
 my $sourceUser="<%= @sync_user %>";
-my @rsyncOpts=("-a", "--delete", "--rsh=ssh -q");
+my @rsyncOpts=("-a", '--partial', "--delete", "--rsh=ssh");
 <%- end -%>
 
 # Other globals
@@ -47,7 +48,8 @@ my $dryRunHelp="-n Runs Rsync in dry run mode";
 my $svcStartHelp="-s Do not restart any antelope services stopped by $0";
 my $excludeFileHelp="-e Path to Exclude file (default: $excludeFile)";
 my $includeFileHelp="-i Path to Include file (default: $includeFile)";
-my $quietHelp="-q Runs rsync without the -p option";
+my $quietHelp="-q Runs rsync in quiet mode";
+my $verboseHelp="-v Runs rsync in verbose mode";
 
 # Help subroutine
 sub printHelpAndExit {
@@ -58,13 +60,14 @@ sub printHelpAndExit {
   print $excludeFileHelp."\n";
   print $includeFileHelp."\n";
   print $quietHelp."\n";
+  print $verboseHelp."\n";
   if ($1) { exit $1; }
   else    { exit 1;  }
 }
 # help for bad options
 sub printErrorHelpAndExit {
   my $errstring=shift;
-  print "\n$errstring\n";
+  print STDERR "ERROR: $errstring\n";
   printHelpAndExit(1);
 }
 
@@ -113,17 +116,19 @@ sub printOptionSummary {
   print "  exclude file = $excludeFile\n";
   print "  include file = $includeFile\n";
   print "  quiet = $quiet\n";
+  print "  verbose = $verbose\n";
   print "  svcStart = $svcStart\n";
 }
 #
 # Parse Options
 #
-getopts("hdnsSe:i:q", \%option);
+getopts("vhdnsSe:i:q", \%option) || printHelpAndExit(1);
 printHelpAndExit()        if $option{h};
 $svcStart    = $FALSE     if $option{s};
 $excludeFile = $option{e} if $option{e};
 $includeFile = $option{i} if $option{i};
 $quiet       = $TRUE      if $option{q};
+$verbose     = $TRUE      if $option{v};
 if ($option{S}) {
   $svcStop     = $FALSE;
   $svcStart    = $FALSE;
@@ -133,11 +138,14 @@ if ($option{n}) { $dryRun=$TRUE; }
 
 printOptionSummary() if ($debug);
 
+# Can't have quiet and verbose:
+printErrorHelpAndExit("Can't use both verbose and quiet options") if ( $verbose && $quiet );
+
 #
 # Verify the Include and Exclude files exists
 #
-printErrorHelpAndExit("ERROR: Can't find exclude file ${excludeFile}") if ( ! -f $excludeFile );
-printErrorHelpAndExit("ERROR: Can't find include file ${includeFile}") if ( ! -f $includeFile );
+printErrorHelpAndExit("Can't find exclude file ${excludeFile}") if ( ! -f $excludeFile );
+printErrorHelpAndExit("Can't find include file ${includeFile}") if ( ! -f $includeFile );
 
 #
 # Compose the rsync options
@@ -146,9 +154,13 @@ push ( @rsyncOpts, "--dry-run") if ( $dryRun == $TRUE );
 if ( ! $quiet ) {
   if ( $dryRun ) {
     push ( @rsyncOpts, "-v" );
-  } else {
-    push ( @rsyncOpts, "-P" );
   }
+}
+
+if ( $verbose ) {
+  push ( @rsyncOpts, '--progress');
+} else {
+  push ( @rsyncOpts, '--stats');
 }
 push ( @rsyncOpts, "--exclude-from=" . $excludeFile );
 push ( @rsyncOpts, "--include-from=" . $includeFile );
