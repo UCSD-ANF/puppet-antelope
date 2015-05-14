@@ -30,7 +30,7 @@ describe 'antelope::sync' do
              .with_mode('0555')\
              .with_owner('root')\
              .with_group('root')\
-             .with_content(/my @rsyncOpts=\("-a", "--delete"\);/)
+             .with_content(/my @rsyncOpts=\("-a", '--partial', "--delete"\);/)
         }
         it { should contain_file('rsync_exclude')\
              .with_path('/usr/local/etc/rsync_exclude')
@@ -50,7 +50,7 @@ describe 'antelope::sync' do
              .with_mode('0555')\
              .with_owner('root')\
              .with_group('root')\
-             .with_content(/my @rsyncOpts=\("-a", "--delete", "--rsh=ssh -q"\);/)
+             .with_content(/my @rsyncOpts=\("-a", '--partial', "--delete", "--rsh=ssh"\);/)
         }
       end # with an SSH host defined
     end # with ensure == present
