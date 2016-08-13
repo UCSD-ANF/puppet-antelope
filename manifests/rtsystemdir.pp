@@ -15,8 +15,8 @@ define antelope::rtsystemdir(
   $path        = $title,
   $owner       = 'rt',
   $group       = undef,
-  $dir_mode    = 0775,
-  $rtexec_mode = 0664,
+  $dir_mode    = '0775',
+  $rtexec_mode = '0664',
 ) {
   require antelope::params
 
