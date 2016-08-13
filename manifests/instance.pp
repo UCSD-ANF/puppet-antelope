@@ -73,8 +73,8 @@ define antelope::instance(
   $group               = undef,
   $delay               = '0',
   $shutdownwait        = '120',
-  $manage_fact         = '',
-  $manage_rtsystemdirs = '',
+  $manage_fact         = '', # lint:ignore:empty_string_assignment
+  $manage_rtsystemdirs = '', # lint:ignore:empty_string_assignment
   $subscriptions       = [],
 ) {
   require antelope::params

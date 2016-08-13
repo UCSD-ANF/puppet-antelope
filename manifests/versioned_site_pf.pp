@@ -72,10 +72,10 @@
 define antelope::versioned_site_pf (
   $ensure                   = 'present',
   $version                  = $title,
-  $mailhost                 = '',
+  $mailhost                 = '', # lint:ignore:empty_string_assignment
   $mail_domain              = $::fqdn,
   $default_seed_network     = 'XX',
-  $originating_organization = '',
+  $originating_organization = '', # lint:ignore:empty_string_assignment
   $institution              = 'XXXX',
   $source                   = undef,
   $content                  = undef,
