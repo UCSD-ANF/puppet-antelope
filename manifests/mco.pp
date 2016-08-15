@@ -6,9 +6,11 @@
 # This is a generic class that will install MCollective Plugins for Antelope on
 # systems with Antelope installed.
 #
-# For background on MCollective directories, see https://docs.puppetlabs.com/mcollective/deploy/plugins.html#method-2-copying-plugins-into-the-libdir
+# For background on MCollective directories, see
+# https://docs.puppetlabs.com/mcollective/deploy/plugins.html#method-2-copying-plugins-into-the-libdir
 #
-# *plugin_basedir* is where MCollective plugins are stored on your system, aka the "libdir".
+# *plugin_basedir* is where MCollective plugins are stored on your system, aka
+# the "libdir".
 #
 # *mco_etc* is where MCollective config files are kept
 class antelope::mco(

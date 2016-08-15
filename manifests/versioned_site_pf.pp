@@ -87,11 +87,16 @@ define antelope::versioned_site_pf (
   include 'antelope::params'
 
   validate_re($ensure, ['present', 'absent'])
+  validate_string($mailhost)
+  validate_string($mail_domain)
+  validate_string($default_seed_network)
+  validate_string($originating_organization)
+  validate_string($institution)
 
   $file_ensure = $ensure
 
   $file_path = $path ? {
-    ''      => "/opt/antelope/${version}/data/pf/site.pf",
+    undef   => "/opt/antelope/${version}/data/pf/site.pf",
     default => $path,
   }
 
@@ -99,30 +104,27 @@ define antelope::versioned_site_pf (
     fail('Cannot specify both content and source')
   }
 
-  $file_source = $source ? {
-    ''      => undef, # default value
-    default => $source,
-  }
+  $file_source = $source
 
   $file_content = $source ? {
-    '' => $content ? {
-      ''      => template('antelope/site.pf.erb'), # default value
+    undef => $content ? {
+      undef   => template('antelope/site.pf.erb'), # default value
       default => $content,
     },
   }
 
   $file_owner = $owner ? {
-    ''      => $antelope::params::dist_owner,
+    undef   => $antelope::params::dist_owner,
     default => $owner,
   }
 
   $file_group = $group ? {
-    ''      => $antelope::params::dist_group,
+    undef   => $antelope::params::dist_group,
     default => $group,
   }
 
   $file_mode = $mode ? {
-    ''      => $antelope::params::dist_mode,
+    undef   => $antelope::params::dist_mode,
     default => $mode,
   }
 

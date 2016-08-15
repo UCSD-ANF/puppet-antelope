@@ -73,8 +73,8 @@ define antelope::instance(
   $group               = undef,
   $delay               = '0',
   $shutdownwait        = '120',
-  $manage_fact         = '', # lint:ignore:empty_string_assignment
-  $manage_rtsystemdirs = '', # lint:ignore:empty_string_assignment
+  $manage_fact         = undef,
+  $manage_rtsystemdirs = undef,
   $subscriptions       = [],
 ) {
   require antelope::params
@@ -100,14 +100,14 @@ define antelope::instance(
   $bool_manage_fact = $manage_fact ? {
     true    => $manage_fact,
     false   => $manage_fact,
-    ''      => $antelope::params::manage_service_fact,
+    undef   => $antelope::params::manage_service_fact,
     default => str2bool($manage_fact),
   }
 
   $bool_manage_rtsystemdirs = $manage_rtsystemdirs ? {
     true    => $manage_rtsystemdirs,
     false   => $manage_rtsystemdirs,
-    ''      => $antelope::params::manage_rtsystemdirs,
+    undef   => $antelope::params::manage_rtsystemdirs,
     default => str2bool($manage_rtsystemdirs),
   }
 
