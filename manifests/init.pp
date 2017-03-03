@@ -98,38 +98,42 @@
 #  has an effect when the dirs parameter is used. Otherwise, the
 #  shutdown wait should be specified inside of the instances hash.
 #
+#  [*dist_owner*] - user that should own files in the $ANTELOPE tree.
+#  Defaults to 'root'
+#
+#  [*dist_group*] - group that should own files in the $ANTELOPE tree.
+#  Defaults are os-specific, 'wheel' on Darwin and 'root' on Linux
+#
+#  [*dist_mode*] - file mode for files in the $ANTELOPE tree. Default is 0644
+#
 class antelope (
-  $absent               = $antelope::params::absent,
-  $debug                = $antelope::params::debug,
-  $disable              = $antelope::params::disable,
-  $disableboot          = $antelope::params::disableboot,
-  $audit_only           = $antelope::params::audit_only,
-  $dirs                 = $antelope::params::dirs,
-  $instances            = $antelope::params::instances,
-  $instance_subscribe   = $antelope::params::instance_subscribe,
-  $version              = $antelope::params::version,
-  $user                 = $antelope::params::user,
-  $group                = $antelope::params::group,
-  $service_name         = $antelope::params::service_name,
-  $manage_service_fact  = $antelope::params::manage_service_fact,
-  $manage_rtsystemdirs  = $antelope::params::manage_rtsystemdirs,
-  $facts_dir            = $antelope::params::facts_dir,
-  $shutdownwait         = $antelope::params::shutdownwait
+  $absent               = false,
+  $debug                = false,
+  $disable              = false,
+  $disableboot          = false,
+  $audit_only           = false,
+  $dirs                 = undef,
+  $instances            = undef,
+  $instance_subscribe   = [],
+  $version              = $::antelope_latest_version, # autodetect with fact
+  $user                 = 'rt',
+  $group                = 'antelope',
+  $service_name         = 'antelope',
+  $manage_service_fact  = true,
+  $manage_rtsystemdirs  = true,
+  $facts_dir            = '/etc/facter/facts.d',
+  $shutdownwait         = 120,
+  $dist_owner           = 'root',
+  $dist_group           = $::antelope::params::dist_group,
+  $dist_mode            = '0644',
 ) inherits antelope::params {
 
-  include stdlib
+  include '::stdlib'
 
-  # TODO: rework install to actually install Antelope, rather than
-  # fiddle with packages and mountpoints. For the time being, the whole
-  # mess is disabled
-  #  $install = $antelope::params::install,
+  validate_re($::osfamily, '^(RedHat|Darwin)$',
+    "OS Family ${::osfamily} unsupported")
 
   ### Sanity check
-
-  # verify install is valid:
-  #if ! member($antelope::params::valid_install, $install) {
-  #  fail("value \"$install\" of parameter install is not valid")
-  #}
 
   # verify that dirs and instances weren't both specified
   if ( $dirs and $instances ) {
@@ -141,42 +145,30 @@ class antelope (
     validate_array($instance_subscribe)
   }
 
-  $bool_absent=is_string($absent) ? {
-    false => $absent,
-    true  => str2bool($absent),
-  }
-  $bool_disable=is_string($disable) ? {
-    false   => $disable,
-    default => str2bool($disable),
-  }
-  $bool_disableboot=is_string($disableboot) ? {
-    false   => $disableboot,
-    default => str2bool($disableboot),
-  }
-  $bool_audit_only=is_string($audit_only) ? {
-    false   => $audit_only,
-    default => str2bool($audit_only),
-  }
+  validate_bool($absent)
+  validate_bool($disable)
+  validate_bool($disableboot)
+  validate_bool($audit_only)
 
-  $manage_package = $bool_absent ? {
+  $manage_package = $absent ? {
     true  => 'absent',
     false => 'present',
   }
 
-  $manage_service_enable = $bool_disableboot ? {
+  $manage_service_enable = $disableboot ? {
     true    => false,
-    default => $bool_disable ? {
+    default => $disable ? {
       true    => false,
-      default => $bool_absent ? {
+      default => $absent ? {
         true  => false,
         false => true,
       },
     },
   }
 
-  $manage_service_ensure = $bool_disable ? {
+  $manage_service_ensure = $disable ? {
     true    => 'stopped',
-    default =>  $bool_absent ? {
+    default =>  $absent ? {
       true    => 'stopped',
       default => 'running',
     },
@@ -185,9 +177,9 @@ class antelope (
   # We only manage the singleton Antelope::Instance if dirs is defined
   # or disable/absent is true
   $manage_singleton_instance = $dirs ? {
-    '' => $bool_disable ? {
+    '' => $disable ? {
       true    => true,
-      default => $bool_absent,
+      default => $absent,
     },
     default => true,
   }
@@ -200,23 +192,23 @@ class antelope (
 
   $manage_instance_ensure = $dirs ? {
     ''      => 'absent',
-    default => $bool_disable ? {
+    default => $disable ? {
       false => 'present',
       true  => 'absent',
     },
   }
 
-  $manage_file = $bool_absent ? {
+  $manage_file = $absent ? {
     true    => 'absent',
     default => 'present',
   }
 
-  $manage_audit = $bool_audit_only ? {
+  $manage_audit = $audit_only ? {
     true  => 'all',
     false => undef,
   }
 
-  $manage_file_replace = $bool_audit_only ? {
+  $manage_file_replace = $audit_only ? {
     true  => false,
     false => true,
   }

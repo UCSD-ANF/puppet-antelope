@@ -1,12 +1,19 @@
 # Autorequires: File[$facts_dir]
 class antelope::service_fact(
-  $facts_dir = $antelope::params::facts_dir
+  $facts_dir = undef,
 ) inherits antelope::params {
 
-  $file = "${facts_dir}/antelope_services"
+  include ::antelope
+
+  $facts_dir_real = $facts_dir ? {
+    ''      => $::antelope::facts_dir,
+    default => $facts_dir,
+  }
+
+  $file = "${facts_dir_real}/antelope_services"
 
   concat { $file:
-    require => File[$facts_dir],
+    require => File[$facts_dir_real],
     mode    => '0755',
   }
 

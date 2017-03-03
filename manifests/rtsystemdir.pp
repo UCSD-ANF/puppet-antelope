@@ -13,15 +13,21 @@
 #  The ownername that the real-time system should run as. Defaults to 'rt'
 define antelope::rtsystemdir(
   $path        = $title,
-  $owner       = 'rt',
+  $owner       = undef,
   $group       = undef,
-  $dir_mode    = 0775,
-  $rtexec_mode = 0664,
+  $dir_mode    = '0775',
+  $rtexec_mode = '0664',
 ) {
-  require antelope::params
+  include '::antelope'
 
-  $manage_file_owner      = $owner
-  $manage_file_group      = $group
+  $manage_file_owner      = $owner ? {
+    ''      => $antelope::user,
+    default => $owner,
+  }
+  $manage_file_group      = $group ? {
+    ''      => $antelope::group,
+    default => $group,
+  }
   $manage_file_ensure     = 'present'
 
   $manage_rtexec_mode     = $rtexec_mode

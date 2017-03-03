@@ -52,16 +52,6 @@ describe 'antelope::versioned_license_pf' do
         .with_owner('pkgbuild').with_group('pkgbuild') }
     end
 
-    context 'with global variables' do
-      let(:pre_condition) { [
-        "$antelope_dist_owner = 'guser'",
-        "$antelope_dist_group = 'ggroup'",
-      ] }
-
-      it { should contain_file('antelope license.pf 5.3')\
-        .with_owner('guser').with_group('ggroup') }
-    end
-
     context 'with both source and content parameters' do
       let(:params) { {
         :source => '/this/should/fail',

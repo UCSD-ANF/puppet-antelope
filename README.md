@@ -1,7 +1,5 @@
 # Antelope Module for Puppet
 
-Version 0.8.12
-
 This is a Puppet Module to provide support for the Antelope Real-Time
 Monitoring System by [Boulder Real-Time Technologies][brtt]
 
@@ -13,53 +11,20 @@ Geoff Davis <gadavis@ucsd.edu>
 
 ## Requirements
 
-* Puppet version >= 2.6.x
-* `create_resources` library function. This ships with Puppet >= 2.7.x, but is
- also available as a [module for 2.6 on GitHub][puppetlabs-create_resources]
-* [example42-puppi][example42-puppi] module for some additional parser
- functions. GitHub only at this point
+* Puppet version >= 3
 * [puppetlabs-stdlib][puppetlabs-stdlib] module from PuppetLabs. Ships with
  Puppet Enterprise, also available on the Module Forge and on Github
 * `osfamily` fact. Supported by Facter 1.6.1+. Or you can use the code blurb
  below
 * [puppetlabs-concat][puppetlabs-concat] module - also available on the forge.
  Only required if managing the `antelope_services` fact - see below
-* [camptocamp-php module with ANF customizations][ucsd-puppet-php]. Only
- required if using the `antelope::php` class.
-* A supported Operating System for Antelope. Currently Solaris, Linux, or OS X
+* A supported Operating System for Antelope. Currently Linux or OS X
 
-[puppetlabs-create_resources]: https://github.com/puppetlabs/puppetlabs-create_resources
-[example42-puppi]: https:///github.com/example42/puppi
 [puppetlabs-stdlib]: https://github.com/puppetlabs/puppetlabs-stdlib
 [puppetlabs-concat]: https://github.com/puppetlabs/puppetlabs-concat
-[ucsd-puppet-php]: [https://github.com/UCSD-ANF/puppet-php]
-
-If you do not have facter >= 1.6.1 in your environment, the following manifest
-code will provide the same functionality as `osfamily`. It should be
-placed in `site.pp` (before declaring any node):
-
-    if ! $::osfamily {
-      case $::operatingsystem {
-        'RedHat', 'Fedora', 'CentOS', 'Scientific', 'SLC', 'Ascendos', 'CloudLinux', 'PSBM', 'OracleLinux', 'OVS', 'OEL': {
-          $osfamily = 'RedHat'
-        }
-        'ubuntu', 'debian': {
-          $osfamily = 'Debian'
-        }
-        'SLES', 'SLED', 'OpenSuSE', 'SuSE': {
-          $osfamily = 'Suse'
-        }
-        'Solaris', 'Nexenta': {
-          $osfamily = 'Solaris'
-        }
-        default: {
-          $osfamily = $::operatingsystem
-        }
-      }
-    }
 
 
-## Usage
+# Usage
 
 ## Facts
 
@@ -109,7 +74,7 @@ This form creates an `antelope::instance` but does not create the
 `antelope_services` fact
 
      class { 'antelope':
-       dirs => '/rtsystems/default',
+       dirs                 => '/rtsystems/default',
        manage_instance_fact => false,
      }
 
@@ -153,7 +118,8 @@ in the `antelope_services` fact
     antelope::instance { 'antelope-baz' :
        user        => 'basil',
        dirs        => '/rtsystems/baz',
-       manage_fact => false, # don't create an entry in the antelope_services fact for this instance.
+       manage_fact => false, # don't create an entry in the antelope_services
+                             # fact for this instance.
     }
 
 Same configuration as above, but no `antelope_services` fact is created:
@@ -174,29 +140,15 @@ Same configuration as above, but no `antelope_services` fact is created:
 Installs a wrapper around rsync for copying Antelope from a golden master.
 Includes the ability to synchronize an optional site-specific tree.
 
-You must at a minimum declare the `host` parameter with this class. This
-can be done either by passing `host` as a parameter or by declaring a
-top-scope variable `$::antelope_sync_host`
+You must at a minimum declare the `host` parameter with this class.
 
     class { 'antelope::sync' :
       host => 'buildhost.example.net',
       site_tree => '/opt/mysite',
     }
 
-Same as above using global variables:
-
-    # in site.pp
-    $antelope_sync_host = 'buildhost.example.net'
-    $antelope_site_tree = '/opt/mysite'
-
-    # elsewhere:
-    include antelope::sync
-
 ### Defined Type `antelope::php`
 Enables the Antelope PHP bindings in `php.ini`
-
-Requires the camptocamp-php module with ANF customizations (shown under the
- Requirements section)
 
 This will install the PHP bindings using the latest installed version of
 antelope, as determined by the `antelope_latest_version` fact
