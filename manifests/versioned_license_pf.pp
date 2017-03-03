@@ -71,7 +71,7 @@ define antelope::versioned_license_pf (
   $mode                = undef,
   $path                = undef,
 ) {
-  include 'antelope::params'
+  include 'antelope'
 
   validate_re($ensure, ['present', 'absent'])
 
@@ -101,17 +101,17 @@ define antelope::versioned_license_pf (
   $file_replace = $replace
 
   $file_owner = $owner ? {
-    ''      => $antelope::params::dist_owner,
+    ''      => $antelope::dist_owner,
     default => $owner,
   }
 
   $file_group = $group ? {
-    ''      => $antelope::params::dist_group,
+    ''      => $antelope::dist_group,
     default => $group,
   }
 
   $file_mode = $mode ? {
-    ''      => $antelope::params::dist_mode,
+    ''      => $antelope::dist_mode,
     default => $mode,
   }
 

@@ -6,8 +6,7 @@
 # host variables to compute the ssh credentials
 #
 # It depends on passwordless SSH being set up. It also needs a working
-# copy of rsync installed in /usr/bin on Linux and Darwin or
-# /opt/csw/bin on Solaris
+# copy of rsync installed in /usr/bin on Linux and Darwin
 #
 # Autorequires:
 #  * File[/usr/local/bin]
@@ -39,24 +38,27 @@
 #
 class antelope::sync(
   $ensure    = present,
-  $user = $antelope::params::sync_user,
-  $host = $antelope::params::sync_host,
-  $site_tree = $antelope::params::site_tree,
-) inherits antelope::params {
+  $host      = undef, # must be set if ensure is present
+  $user      = 'rt',
+  $site_tree = undef,
+  $basedir   = '/usr/local',
+  $rsync_bin = '/usr/bin/rsync',
+) {
+
+  include antelope
 
   ### Validate variables
+  validate_re($ensure, '^(pre|ab)sent$')
+
   if $ensure == 'present' {
     if !$host { fail('You must specify a value for host.') }
   }
 
   ### Class local variables
 
-  $basedir   = '/usr/local'
-
   $manage_file_ensure = $ensure
   $manage_file_owner = 'root'
   $manage_file_group = $::osfamily ? {
-    'Solaris' => 'bin',
     'Darwin'  => 'wheel',
     default   => 'root',
   }
@@ -64,10 +66,6 @@ class antelope::sync(
   ### The following variables are used in template evaluation
   $confdir   = "${basedir}/etc"
   $bindir    = "${basedir}/bin"
-  $rsync_bin = $::osfamily ? {
-    'Solaris' => '/opt/csw/bin/rsync',
-    default   => '/usr/bin/rsync',
-  }
   $sync_dirs = flatten(['/opt/antelope', $site_tree ])
   $sync_host = $host
   $sync_user = $user

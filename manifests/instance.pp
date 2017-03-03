@@ -77,11 +77,11 @@ define antelope::instance(
   $manage_rtsystemdirs = undef,
   $subscriptions       = [],
 ) {
-  require antelope::params
 
-  # We don't (yet) support Darwin.
-  validate_re($::osfamily,'^(RedHat|Solaris)$',
-    "Unsupported for ${::operatingsystem}.")
+  include antelope
+
+  validate_re($::osfamily, '^RedHat$$',
+    "OS Family $::osfamily unsupported")
 
   # Sanity test parameters
   validate_re($ensure,'^(ab|pre)sent')
@@ -100,14 +100,14 @@ define antelope::instance(
   $bool_manage_fact = $manage_fact ? {
     true    => $manage_fact,
     false   => $manage_fact,
-    undef   => $antelope::params::manage_service_fact,
+    undef   => $antelope::manage_service_fact,
     default => str2bool($manage_fact),
   }
 
   $bool_manage_rtsystemdirs = $manage_rtsystemdirs ? {
     true    => $manage_rtsystemdirs,
     false   => $manage_rtsystemdirs,
-    undef   => $antelope::params::manage_rtsystemdirs,
+    undef   => $antelope::manage_rtsystemdirs,
     default => str2bool($manage_rtsystemdirs),
   }
 
@@ -139,7 +139,7 @@ define antelope::instance(
     }
   }
 
-  # init script path for Solaris and Linux
+  # init script path for Linux
   file { $initfilename :
     ensure  => $file_ensure,
     mode    => '0755',
@@ -150,22 +150,6 @@ define antelope::instance(
     enable     => $service_enable,
     hasrestart => false,
     hasstatus  => false,
-  }
-
-  # On Solaris we don't use SMF. We provide a bare init script which
-  # requires manual creation of symlinks.
-  if $::osfamily == 'Solaris' {
-    Service[$servicename] { provider => 'init' }
-    # Create/remove symlinks
-    file { [
-      "/etc/rc0.d/K01${servicename}",
-      "/etc/rc1.d/K01${servicename}",
-      "/etc/rc3.d/S99${servicename}",
-    ]:
-      ensure  => $link_ensure,
-      target  => $initfilename,
-      require => File[$initfilename],
-    }
   }
 
   if $bool_manage_fact {

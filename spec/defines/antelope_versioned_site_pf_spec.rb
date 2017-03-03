@@ -54,16 +54,6 @@ describe 'antelope::versioned_site_pf' do
       } ) }
     end
 
-    context 'with global variables' do
-      let(:pre_condition) { [
-        "$antelope_dist_owner = 'guser'",
-        "$antelope_dist_group = 'ggroup'",
-      ] }
-
-      it { should contain_file('antelope site.pf 5.3pre')\
-        .with_owner('guser').with_group('ggroup') }
-    end
-
     context 'with both source and content parameters' do
       let(:params) { {
         :source => '/this/should/fail',

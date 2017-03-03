@@ -6,7 +6,6 @@ describe 'antelope::instance', :type => 'define' do
   # Supported OS checks
   [
     { :osfamily => 'RedHat',  :operatingsystem => 'CentOS' },
-    { :osfamily => 'Solaris', :operatingsystem => 'Solaris' },
   ].each { |os|
 
     context "on supported OS #{os[:operatingsystem]} without params" do
@@ -143,19 +142,12 @@ describe 'antelope::instance', :type => 'define' do
     { :osfamily => 'Darwin',  :operatingsystem => 'Darwin'  },
     { :osfamily => 'FreeBSD', :operatingsystem => 'FreeBSD' },
     { :osfamily => 'debian',  :operatingsystem => 'ubuntu'  },
+    { :osfamily => 'Solaris', :operatingsystem => 'Solaris' },
   ].each { |os|
     context "on unsupported OS #{os[:operatingsystem]}" do
       let(:facts) do os.merge(basefacts) end
-      case os[:operatingsystem]
-      when 'Darwin' then
-        # Darwin is supported by this module, but not by this type.
-        it { should raise_error(Puppet::Error, /^Unsupported.*instance\.pp/)
-        }
-      else
-        # antelope::params should fail out anything else.
-        it { should raise_error(Puppet::Error,
-          /^This module does not work on.*params\.pp/) }
-      end
+
+      it { should raise_error(Puppet::Error, /unsupported/i) }
     end
   }
 end
