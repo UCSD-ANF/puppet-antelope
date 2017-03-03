@@ -45,7 +45,7 @@ class antelope::sync(
   $rsync_bin = '/usr/bin/rsync',
 ) {
 
-  include antelope
+  include ::antelope
 
   ### Validate variables
   validate_re($ensure, '^(pre|ab)sent$')

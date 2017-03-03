@@ -78,10 +78,10 @@ define antelope::instance(
   $subscriptions       = [],
 ) {
 
-  include antelope
+  include '::antelope'
 
   validate_re($::osfamily, '^RedHat$$',
-    "OS Family $::osfamily unsupported")
+    "OS Family ${::osfamily} unsupported")
 
   # Sanity test parameters
   validate_re($ensure,'^(ab|pre)sent')
@@ -153,7 +153,7 @@ define antelope::instance(
   }
 
   if $bool_manage_fact {
-    include antelope::service_fact
+    include ::antelope::service_fact
 
     concat::fragment { "${antelope::service_fact::file}_${name}":
       ensure  => $ensure,
