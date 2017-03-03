@@ -128,10 +128,10 @@ class antelope (
   $dist_mode            = '0644',
 ) inherits antelope::params {
 
-  include stdlib
+  include '::stdlib'
 
   validate_re($::osfamily, '^(RedHat|Darwin)$',
-    "OS Family $::osfamily unsupported")
+    "OS Family ${::osfamily} unsupported")
 
   ### Sanity check
 

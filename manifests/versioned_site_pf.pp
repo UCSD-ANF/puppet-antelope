@@ -84,7 +84,7 @@ define antelope::versioned_site_pf (
   $mode                     = undef,
   $path                     = undef
 ) {
-  include 'antelope::params'
+  include '::antelope'
 
   validate_re($ensure, ['present', 'absent'])
   validate_string($mailhost)

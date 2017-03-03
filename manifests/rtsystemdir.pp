@@ -18,7 +18,7 @@ define antelope::rtsystemdir(
   $dir_mode    = '0775',
   $rtexec_mode = '0664',
 ) {
-  include 'antelope'
+  include '::antelope'
 
   $manage_file_owner      = $owner ? {
     ''      => $antelope::user,

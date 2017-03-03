@@ -3,7 +3,7 @@ class antelope::service_fact(
   $facts_dir = undef,
 ) inherits antelope::params {
 
-  include antelope
+  include ::antelope
 
   $facts_dir_real = $facts_dir ? {
     ''      => $::antelope::facts_dir,

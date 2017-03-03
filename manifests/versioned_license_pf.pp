@@ -71,7 +71,7 @@ define antelope::versioned_license_pf (
   $mode                = undef,
   $path                = undef,
 ) {
-  include 'antelope'
+  include '::antelope'
 
   validate_re($ensure, ['present', 'absent'])
 
