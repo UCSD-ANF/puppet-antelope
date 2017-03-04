@@ -5,11 +5,26 @@ describe 'antelope::instance', :type => 'define' do
   let(:title) { 'myantelope' }
   # Supported OS checks
   [
-    { :osfamily => 'RedHat',  :operatingsystem => 'CentOS' },
+    {
+      :name => 'centos6',
+      :facts => {
+        :osfamily => 'RedHat',
+        :operatingsystem => 'CentOS',
+        :operatingsystemmajrelease => 6,
+      },
+    },
+    {
+      :name => 'centos7',
+      :facts => {
+        :osfamily => 'RedHat',
+        :operatingsystem => 'CentOS',
+        :operatingsystemmajrelease => 7,
+      },
+    },
   ].each { |os|
 
-    context "on supported OS #{os[:operatingsystem]} without params" do
-      let(:facts) do os.merge(basefacts) end
+    context "on supported OS #{os[:name]} without params" do
+      let(:facts) do os[:facts].merge(basefacts) end
       it { should raise_error(Puppet::Error,
         /^service enabled but no dirs specified/) }
     end
@@ -17,7 +32,7 @@ describe 'antelope::instance', :type => 'define' do
     context "on supported OS #{os[:operatingsystem]} with dirs" do
       baseparams = { :dirs => '/foo,/bar,/baz' }
       let(:pre_condition) { 'user { "rt": }' }
-      let(:facts)         { os.merge(basefacts) }
+      let(:facts)         { os[:facts].merge(basefacts) }
       let(:params)        { baseparams }
 
       it { expect { should compile } }
@@ -25,6 +40,14 @@ describe 'antelope::instance', :type => 'define' do
         'Service[myantelope]').with_content(
         /@dirs = \( "\/foo", "\/bar", "\/baz" \);/ ) }
       it { should contain_service('myantelope').that_requires('User[rt]') }
+
+      if (os[:facts][:osfamily] == 'RedHat' and
+          os[:facts][:operatingsystemmajrelease] == 7)
+        it { should contain_service('myantelope').with_provider('redhat') }
+      else
+        it { should contain_service('myantelope').with_provider(nil) }
+      end
+
       it { should contain_concat__fragment(
         '/etc/facter/facts.d/antelope_services_myantelope') }
       it { should contain_antelope__rtsystemdir('/foo') }
@@ -118,7 +141,7 @@ describe 'antelope::instance', :type => 'define' do
           '/etc/facter/facts.d/antelope_services_myantelope'
         ).with_ensure('absent') }
 
-        case os[:osfamily]
+        case os[:facts][:osfamily]
         when 'RedHat' then
 
           it { should_not contain_exec('chkconfig myantelope reset') }
