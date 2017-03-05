@@ -6,4 +6,12 @@ class antelope::params {
     'Darwin' => 'wheel',
     default  => 'root',
   }
+
+  $service_provider = $::osfamily ? {
+    'RedHat'  => $::operatingsystemmajrelease ? {
+      7       => 'redhat',
+      default => undef,
+    },
+    default => undef,
+  }
 }
