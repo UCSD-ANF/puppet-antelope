@@ -150,6 +150,7 @@ define antelope::instance(
     enable     => $service_enable,
     hasrestart => false,
     hasstatus  => false,
+    provider   => $::antelope::service_provider,
   }
 
   if $bool_manage_fact {

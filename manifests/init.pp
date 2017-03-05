@@ -87,6 +87,10 @@
 #  antelope_services. This fact will contain a comma separated list
 #  of antelope::instance names. Defaults to true.
 #
+#  [*service_provider*]
+#  Override the default service provider. Default is 'redhat' on EL7 systems,
+#  and undef on other systems
+#
 #  [*facts_dir*] - path to the facts.d directory that is parsed by
 #  facter for externally provided facts. Defaults to
 #  "/etc/facter/facts.d". On Puppet Enterprise, it may make more sense
@@ -119,6 +123,7 @@ class antelope (
   $user                 = 'rt',
   $group                = 'antelope',
   $service_name         = 'antelope',
+  $service_provider     = $::antelope::params::service_provider,
   $manage_service_fact  = true,
   $manage_rtsystemdirs  = true,
   $facts_dir            = '/etc/facter/facts.d',
