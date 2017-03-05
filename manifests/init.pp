@@ -119,7 +119,7 @@ class antelope (
   $dirs                 = undef,
   $instances            = undef,
   $instance_subscribe   = [],
-  $version              = $::antelope_latest_version, # autodetect with fact
+  $version              = $facts['antelope_latest_version'],
   $user                 = 'rt',
   $group                = 'antelope',
   $service_name         = 'antelope',
@@ -141,11 +141,11 @@ class antelope (
   ### Sanity check
 
   # verify that dirs and instances weren't both specified
-  if ( $dirs and $instances ) {
+  if ( $dirs != undef and $instances != undef ) {
     fail('Cannot specify both dirs and instances.')
   }
 
-  if ( $instances ) {
+  if ( $instances != undef ) {
     validate_hash($instances)
     validate_array($instance_subscribe)
   }
@@ -182,21 +182,33 @@ class antelope (
   # We only manage the singleton Antelope::Instance if dirs is defined
   # or disable/absent is true
   $manage_singleton_instance = $dirs ? {
-    '' => $disable ? {
+    undef     => $disable ? {
+      true    => true,
+      default => $absent,
+    },
+    ''        => $disable ? {
       true    => true,
       default => $absent,
     },
     default => true,
   }
 
+  validate_bool($manage_singleton_instance)
+
   # We only manage the multiple instances if instances is defined.
   # Since we can't enumerate any pre-existing Antelope::Instances that
   # aren't named with the default service_name, we won't try to clean
   # them up.
-  $manage_plural_instances = $instances
+  $manage_plural_instances = $instances ? {
+    undef   => false,
+    default => true,
+  }
+
+  validate_bool($manage_plural_instances)
 
   $manage_instance_ensure = $dirs ? {
     ''      => 'absent',
+    undef   => 'absent',
     default => $disable ? {
       false => 'present',
       true  => 'absent',
@@ -228,7 +240,10 @@ class antelope (
         ensure => $manage_instance_ensure,
       }
     }
+  } else {
+    $instances_real = undef
   }
+
   $instance_defaults = {
     subscriptions       => $instance_subscribe,
     user                => $user,
@@ -244,7 +259,7 @@ class antelope (
 
   # We manage antelope instances only if the 'instances' or 'dirs'
   # parameters were provided.
-  if is_hash($instances_real) {
+  if $instances_real != undef {
     create_resources('antelope::instance', $instances_real, $instance_defaults )
   } else {
     notice('Not managing a singleton nor plural instance of Antelope.')

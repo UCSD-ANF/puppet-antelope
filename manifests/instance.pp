@@ -81,7 +81,7 @@ define antelope::instance(
   include '::antelope'
 
   validate_re($::osfamily, '^RedHat$$',
-    "OS Family ${::osfamily} unsupported")
+  "OS Family ${::osfamily} unsupported")
 
   # Sanity test parameters
   validate_re($ensure,'^(ab|pre)sent')
@@ -90,6 +90,12 @@ define antelope::instance(
   validate_string($servicename)
   validate_string($delay)
   validate_array($subscriptions)
+
+  if $dirs != undef {
+    unless (is_string($dirs) or is_array($dirs)) {
+      fail('dirs must be undef, a string, or an array')
+    }
+  }
 
   # Set local variables based on the desired state
   # In our management model, we don't ensure the service is running
@@ -123,16 +129,18 @@ define antelope::instance(
   $stop_reason = shellquote($reason)
 
   # array of directories that gets evaluated by the template
-  $real_dirs = is_array($dirs) ? {
-    true  => $dirs,
-    false => split($dirs,','),
+  if $dirs != undef {
+    $real_dirs = is_array($dirs) ? {
+      true  => $dirs,
+      false => split($dirs,','),
+    }
   }
 
 
   ### Managed resources
 
   # Create the rtsystemdir resources
-  if $bool_manage_rtsystemdirs {
+  if ( $real_dirs and $bool_manage_rtsystemdirs ) {
     antelope::rtsystemdir { $real_dirs :
       owner => $user,
       group => $group,
