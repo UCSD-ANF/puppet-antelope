@@ -2,11 +2,7 @@ require 'spec_helper'
 
 describe 'antelope::versioned_site_pf' do
   let(:title) { '5.3pre' }
-  context 'on a supported platform' do
-    let(:facts) { {
-      :osfamily => 'RedHat',
-    } }
-
+  shared_context 'Supported Platform' do
     it { should contain_file('antelope site.pf 5.3pre').with( {
       :path   => '/opt/antelope/5.3pre/data/pf/site.pf',
       :ensure => 'present',
@@ -17,8 +13,7 @@ describe 'antelope::versioned_site_pf' do
         :ensure => 'garbage',
       } }
 
-      it { should raise_error(Puppet::Error,
-                              /does not match/) }
+      it { should raise_error(Puppet::Error, /does not match/) }
     end
 
     context 'with ensure == present' do
@@ -103,4 +98,18 @@ describe 'antelope::versioned_site_pf' do
     end
   end
 
+  Helpers::Data.unsupported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+
+      it_behaves_like 'Unsupported Platform'
+    end
+  end
+
+  Helpers::Data.supported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+      it_behaves_like 'Supported Platform'
+    end
+  end
 end

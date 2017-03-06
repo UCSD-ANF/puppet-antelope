@@ -43,7 +43,7 @@ class antelope::sync(
   $site_tree = undef,
   $basedir   = '/usr/local',
   $rsync_bin = '/usr/bin/rsync',
-) {
+) inherits antelope::params {
 
   include ::antelope
 

@@ -77,22 +77,22 @@ define antelope::versioned_license_pf (
 
   $file_ensure = $ensure
   $file_path = $path ? {
-    ''      => "/opt/antelope/${version}/data/pf/license.pf",
+    undef   => "/opt/antelope/${version}/data/pf/license.pf",
     default => $path,
   }
 
-  if $content != '' and $source != '' {
+  if $content != undef and $source != undef {
     fail('Cannot specify both content and source')
   }
 
   $file_source = $source ? {
-    ''      => undef, # default value
+    undef   => undef, # default value
     default => $source,
   }
 
   $file_content = $source ? {
-    '' => $content ? {
-      ''      => template('antelope/license.pf.erb'), # default value
+    undef => $content ? {
+      undef   => template('antelope/license.pf.erb'), # default value
       default => $content,
     },
     default => undef,
@@ -101,17 +101,17 @@ define antelope::versioned_license_pf (
   $file_replace = $replace
 
   $file_owner = $owner ? {
-    ''      => $antelope::dist_owner,
+    undef   => $antelope::dist_owner,
     default => $owner,
   }
 
   $file_group = $group ? {
-    ''      => $antelope::dist_group,
+    undef   => $antelope::dist_group,
     default => $group,
   }
 
   $file_mode = $mode ? {
-    ''      => $antelope::dist_mode,
+    undef   => $antelope::dist_mode,
     default => $mode,
   }
 

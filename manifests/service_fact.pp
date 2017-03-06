@@ -1,4 +1,6 @@
 # Autorequires: File[$facts_dir]
+# Installs a service fact for Antelope services
+# Sets up a basic concat resource that other classes can add to
 class antelope::service_fact(
   $facts_dir = undef,
 ) inherits antelope::params {
@@ -7,6 +9,7 @@ class antelope::service_fact(
 
   $facts_dir_real = $facts_dir ? {
     ''      => $::antelope::facts_dir,
+    undef   => $::antelope::facts_dir,
     default => $facts_dir,
   }
 
