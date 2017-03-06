@@ -14,7 +14,7 @@ class antelope::params {
 
   $service_provider = $::osfamily ? {
     'RedHat'  => $::operatingsystemmajrelease ? {
-      7       => 'redhat',
+      '7'       => 'redhat',
       default => undef,
     },
     default => undef,

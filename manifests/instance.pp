@@ -80,9 +80,6 @@ define antelope::instance(
 
   include '::antelope'
 
-  validate_re($::osfamily, '^RedHat$$',
-  "OS Family ${::osfamily} unsupported")
-
   # Sanity test parameters
   validate_re($ensure,'^(ab|pre)sent')
   validate_string($user)
@@ -90,12 +87,27 @@ define antelope::instance(
   validate_string($servicename)
   validate_string($delay)
   validate_array($subscriptions)
+  if $manage_fact != undef {
+    validate_bool($manage_fact)
+  }
+  if $manage_rtsystemdirs != undef {
+    validate_bool($manage_rtsystemdirs)
+  }
 
-  if $dirs != undef {
+  if $dirs == undef {
+    if ($ensure == 'present') {
+      fail('service enabled but no dirs specified')
+    }
+  } else {
     unless (is_string($dirs) or is_array($dirs)) {
       fail('dirs must be undef, a string, or an array')
     }
   }
+
+  if ($ensure == 'present' and ! is_integer($delay)) {
+    fail('delay parameter must be an integer')
+  }
+
 
   # Set local variables based on the desired state
   # In our management model, we don't ensure the service is running
@@ -103,18 +115,16 @@ define antelope::instance(
   $link_ensure    = $ensure ? { 'present' => 'link', default => $ensure }
   $service_enable = $ensure ? { 'present' => true  , default => false }
 
-  $bool_manage_fact = $manage_fact ? {
-    true    => $manage_fact,
-    false   => $manage_fact,
+
+  # Set variables that require the antelope class
+  $manage_fact_real = $manage_fact ? {
     undef   => $antelope::manage_service_fact,
-    default => str2bool($manage_fact),
+    default => $manage_fact,
   }
 
-  $bool_manage_rtsystemdirs = $manage_rtsystemdirs ? {
-    true    => $manage_rtsystemdirs,
-    false   => $manage_rtsystemdirs,
+  $manage_rtsystemdirs_real = $manage_rtsystemdirs ? {
     undef   => $antelope::manage_rtsystemdirs,
-    default => str2bool($manage_rtsystemdirs),
+    default => $manage_rtsystemdirs,
   }
 
   # Determine the path to the init script
@@ -134,13 +144,15 @@ define antelope::instance(
       true  => $dirs,
       false => split($dirs,','),
     }
+  } else {
+    $real_dirs = undef
   }
 
 
   ### Managed resources
 
   # Create the rtsystemdir resources
-  if ( $real_dirs and $bool_manage_rtsystemdirs ) {
+  if ( $real_dirs != undef and $manage_rtsystemdirs_real ) {
     antelope::rtsystemdir { $real_dirs :
       owner => $user,
       group => $group,
@@ -161,7 +173,7 @@ define antelope::instance(
     provider   => $::antelope::service_provider,
   }
 
-  if $bool_manage_fact {
+  if $manage_fact_real {
     include ::antelope::service_fact
 
     concat::fragment { "${antelope::service_fact::file}_${name}":
@@ -173,10 +185,6 @@ define antelope::instance(
   }
 
   if ($ensure == 'present') {
-    # More sanity checks.
-    if $dirs == undef       { fail('service enabled but no dirs specified') }
-    if ! is_integer($delay) { fail('delay parameter must be an integer') }
-
     # declare relations based on desired behavior
     File[$initfilename] ~> Service[$servicename]
     User[$user]         -> Service[$servicename]
