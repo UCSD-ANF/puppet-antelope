@@ -100,7 +100,7 @@ define antelope::versioned_site_pf (
     default => $path,
   }
 
-  if $content != '' and $source != '' {
+  if $content != undef and $source != undef {
     fail('Cannot specify both content and source')
   }
 
@@ -114,17 +114,17 @@ define antelope::versioned_site_pf (
   }
 
   $file_owner = $owner ? {
-    undef   => $antelope::params::dist_owner,
+    undef   => $antelope::dist_owner,
     default => $owner,
   }
 
   $file_group = $group ? {
-    undef   => $antelope::params::dist_group,
+    undef   => $antelope::dist_group,
     default => $group,
   }
 
   $file_mode = $mode ? {
-    undef   => $antelope::params::dist_mode,
+    undef   => $antelope::dist_mode,
     default => $mode,
   }
 

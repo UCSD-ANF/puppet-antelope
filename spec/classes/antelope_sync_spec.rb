@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 describe 'antelope::sync' do
-  context 'on a supported osfamily' do
-    let(:facts) { { :osfamily => 'RedHat' } }
+  shared_context 'Supported Platform' do
 
     context 'with ensure==absent' do
       let(:params) { { :ensure => 'absent' } }
@@ -54,5 +53,21 @@ describe 'antelope::sync' do
         }
       end # with an SSH host defined
     end # with ensure == present
-  end # on a supported osfamily
+  end
+
+  Helpers::Data.unsupported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+
+      it_behaves_like 'Unsupported Platform'
+    end
+  end
+
+  Helpers::Data.supported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+
+      it_behaves_like 'Supported Platform'
+    end
+  end
 end

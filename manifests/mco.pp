@@ -14,24 +14,16 @@
 #
 # *mco_etc* is where MCollective config files are kept
 class antelope::mco(
-  $plugin_basedir = 'UNSET',
-  $mco_etc     = '/etc/mcollective',
-  $ensure      = 'present',
-  $owner       = 'root',
-  $group       = 'root',
-  $mode        = '0644',
-  $client_only = false,
-) {
+  $plugin_basedir = '/usr/libexec/mcollective',
+  $mco_etc        = '/etc/mcollective',
+  $ensure         = 'present',
+  $owner          = 'root',
+  $group          = 'root',
+  $mode           = '0644',
+  $client_only    = false,
+) inherits antelope::params {
 
   validate_re($ensure, '(present|absent)')
-
-  $real_plugin_basedir = $plugin_basedir ? {
-    'UNSET' => $::osfamily ? {
-      'Debian' => '/usr/share/mcollective/plugins',
-      default  => '/usr/libexec/mcollective',
-    },
-    default => $plugin_basedir,
-  }
 
   $server_ensure = $client_only ? {
     true         => 'absent',
@@ -46,12 +38,12 @@ class antelope::mco(
   }
 
   # Installed on MCO clients (management stations) and servers
-  file {"${real_plugin_basedir}/agent/antelope.ddl":
+  file {"${plugin_basedir}/agent/antelope.ddl":
     source => 'puppet:///modules/antelope/mco/antelope.ddl',
   }
 
   # Only install this on servers
-  file {"${real_plugin_basedir}/agent/antelope.rb":
+  file {"${plugin_basedir}/agent/antelope.rb":
     ensure => $server_ensure,
     source => 'puppet:///modules/antelope/mco/antelope.rb',
   }

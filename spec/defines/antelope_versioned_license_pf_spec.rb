@@ -2,11 +2,7 @@ require 'spec_helper'
 
 describe 'antelope::versioned_license_pf' do
   let(:title) { '5.3' }
-  context 'on a supported platform' do
-    let(:facts) { {
-      :osfamily => 'RedHat',
-    } }
-
+  shared_context 'Supported Platform' do
     it { should contain_file('antelope license.pf 5.3').with( {
       :path   => '/opt/antelope/5.3/data/pf/license.pf',
       :ensure => 'present',
@@ -132,4 +128,20 @@ describe 'antelope::versioned_license_pf' do
         .with_path('/path/to/test.pf') }
     end
   end
+
+  Helpers::Data.unsupported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+
+      it_behaves_like 'Unsupported Platform'
+    end
+  end
+
+  Helpers::Data.supported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+      it_behaves_like 'Supported Platform'
+    end
+  end
+
 end

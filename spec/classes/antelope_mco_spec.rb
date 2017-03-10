@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 describe 'antelope::mco' do
-  context 'on a supported osfamily' do
-    let(:facts) { { :osfamily => 'RedHat' } }
-
+  shared_context 'Supported Platform' do
     context 'with ensure==absent' do
       let(:params) { { :ensure => 'absent' } }
 
@@ -53,6 +51,24 @@ describe 'antelope::mco' do
         end
       end
 
-    end # with ensure == present
-  end # on a supported osfamily
+    end
+  end
+
+  Helpers::Data.unsupported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+
+      it_behaves_like 'Unsupported Platform'
+    end
+  end
+
+  Helpers::Data.supported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+
+      it_behaves_like 'Supported Platform'
+    end
+  end
+
+
 end

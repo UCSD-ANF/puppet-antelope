@@ -1,25 +1,22 @@
 require 'spec_helper'
 
 describe 'antelope' do
-  context 'on a supported osfamily' do
-    let(:facts) { {
-      :osfamily => 'RedHat',
-    } }
+
+  shared_context 'Supported Platform' do
     let(:pre_condition) { [
-      "$concat_basedir='/tmp'",
       "user { 'rt': }",
     ] }
 
     context 'with no dirs or instances' do
-      it { should_not contain_antelope__instance('antelope') }
+      it { is_expected.not_to contain_antelope__instance('antelope') }
     end
 
     context 'with a single dir' do
       let(:params) { {
         :dirs => '/export/home/rt/rtsystems/test'
       } }
-      it { should contain_antelope__instance('antelope') }
-      it { should contain_file('/etc/init.d/antelope').with_content(
+      it { is_expected.to contain_antelope__instance('antelope') }
+      it { is_expected.to contain_file('/etc/init.d/antelope').with_content(
         /@dirs = \( "\/export\/home\/rt\/rtsystems\/test" \);/
       ) }
     end
@@ -31,8 +28,8 @@ describe 'antelope' do
           '/export/home/rt/rtsystems/bar',
         ]
       } }
-      it { should contain_antelope__instance('antelope') }
-      it { should contain_file('/etc/init.d/antelope').with_content(
+      it { is_expected.to contain_antelope__instance('antelope') }
+      it { is_expected.to contain_file('/etc/init.d/antelope').with_content(
         /@dirs = \( "\/export\/home\/rt\/rtsystems\/foo", "\/export\/home\/rt\/rtsystems\/bar" \);/
       ) }
     end
@@ -61,9 +58,9 @@ describe 'antelope' do
       let(:params) { instance_params }
 
       it do
-        should contain_antelope__instance('antelope-single')
-        should contain_antelope__instance('antelope-csv')
-        should contain_antelope__instance('antelope-arr')
+        is_expected.to contain_antelope__instance('antelope-single')
+        is_expected.to contain_antelope__instance('antelope-csv')
+        is_expected.to contain_antelope__instance('antelope-arr')
       end
 
       context 'with instance_subscribe array' do
@@ -72,14 +69,32 @@ describe 'antelope' do
         end
 
         it do
-          should contain_antelope__instance('antelope-single').with({
+          is_expected.to contain_antelope__instance('antelope-single').with({
             'subscriptions' => [ 'Service["foo"]' ],
             :ensure         => 'present',
           })
-          should contain_antelope__instance('antelope-csv')
-          should contain_antelope__instance('antelope-arr')
+          is_expected.to contain_antelope__instance('antelope-csv')
+          is_expected.to contain_antelope__instance('antelope-arr')
         end
       end
     end
   end
+
+  Helpers::Data.unsupported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+
+      it_behaves_like 'Unsupported Platform'
+    end
+  end
+
+  Helpers::Data.supported_platforms.each do |platform|
+    context "on #{platform}" do
+      include_context platform
+
+      it_behaves_like 'Supported Platform'
+    end
+  end
+
+
 end
