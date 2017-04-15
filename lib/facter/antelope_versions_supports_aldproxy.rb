@@ -1,5 +1,7 @@
 # Fact: antelope_versions_supports_aldproxy
 #
+require 'facter/util/antelope'
+
 module Facter
   module Antelope
     module AldProxyFact
