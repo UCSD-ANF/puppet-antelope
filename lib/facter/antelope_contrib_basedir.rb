@@ -1,8 +1,4 @@
 # Fact: antelope_contribbasedir
-#
-
-require 'facter/util/antelope'
-
 module Facter
   module Antelope
     module ContribFact
