@@ -5,6 +5,8 @@
 # version naming convention, and then # checks to see if setup.sh is
 # present in the directory.
 #
+require 'facter/util/antelope'
+
 module Facter
   module Antelope
     module Versions

@@ -3,13 +3,11 @@
 ##
 ## a set of utility methods to interact with a BRTT Antelope installation.
 ##
-## Copyright (C) 2013 The Regents of The University of California
+## Copyright (C) 2013-2017 The Regents of The University of California
 ## Author: Geoff Davis <gadavis@ucsd.edu>
 ##
 
 module Facter::Util::Antelope
-  require 'facter/util/resolution'
-
   VALID_KERNELS = %w{Linux SunOS Darwin}
   ANTELOPE_BASEDIR = '/opt/antelope'
   RE_VERSION = /^(\d+)\.(\d+)(-64)?(pre|post|p)?$/
