@@ -2,8 +2,6 @@
 #
 # The path to the highest version of Perl and Python as distributed by BRTT
 #
-require 'facter/util/antelope'
-
 module Facter
   module Antelope
     module Latest
