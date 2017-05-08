@@ -2,6 +2,8 @@ fixtures:
   forge_modules:
     firewall: "puppetlabs/firewall"
     stdlib: "puppetlabs/stdlib"
-    concat: "puppetlabs/concat"
+    concat:
+        repo: "puppetlabs/concat"
+        ref: 2.2.1
   symlinks:
     antelope: "#{source_dir}"
