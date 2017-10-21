@@ -1,6 +1,10 @@
+<%- if @osfamily == 'RedHat' %>
+#!/opt/antelope/<%= scope.lookupvar('::antelope_latest_perl') %>/bin/perl
+<% else %>
 : # use perl
 eval 'exec /opt/antelope/<%= scope.lookupvar('::antelope_latest_perl') %>/bin/perl -S $0 "$@"'
 if 0;
+<% end -%>
 
 ##----------------------------------------------------------------------------
 ## !! WARNING !!
@@ -40,6 +44,7 @@ $user = "<%= @user %>" ;  # actual user that runs rtexec
 $rsh = "ssh" ;  # command to get a remote shell without password prompting
 $sleep = <%= @delay %> ;    # specify # seconds to delay between startups.
 $shutdownwait = <%= @shutdownwait %>;    # specify number of seconds to wait for shutdown
+$lockfile = "/var/lock/subsys/antelope";    # lockfile for init.d 
 
 if ( -x "/bin/logger" ) {
     $Logger = "/bin/logger" ;
@@ -94,6 +99,10 @@ if ( @dirs > 0 && $sleep > 0 && $action eq "start" ) {
 }
 
 if ( $action eq "start" ) {
+    <%- if @osfamily == 'RedHat' %>
+    # create lockfile
+    open LOCKFILE, '>', $lockfile and close LOCKFILE or die "Failed to create $lockfile: $!";
+    <% end -%>
     foreach $dir ( @dirs ) {
 	&syslog ( "starting Antelope realtime system in $dir as $user." ) ;
 	    if ( -d $dir && -x $dir ) {
@@ -128,6 +137,10 @@ if ( $action eq "start" ) {
     }
 
 } elsif ( $action eq "stop" ) {
+    <%- if @osfamily == 'RedHat' %>
+    # Remove lockfile
+    unlink $lockfile;
+    <% end -%>
     foreach $dir ( @dirs ) {
 	if ( -d $dir && -x $dir ) {
 	    &syslog ( "system shutting down -- Antelope stopping realtime system in $dir as $user." ) ;
