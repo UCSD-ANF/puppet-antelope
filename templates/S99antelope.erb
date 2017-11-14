@@ -65,8 +65,8 @@ if ( @ARGV < 1 ) {
 ($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell,$expire)
     = getpwnam($user) ;
 
-if ( $< != 0 && $< != $uid ) {
-    &syslog("  must be root or $user to run $0\n") ;
+if ( $< != 0 ) {
+    &syslog("  must be root to run $0\n") ;
     exit 1 ;
 }
 
