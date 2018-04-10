@@ -177,7 +177,6 @@ define antelope::instance(
     include ::antelope::service_fact
 
     concat::fragment { "${antelope::service_fact::file}_${name}":
-      ensure  => $ensure,
       target  => $antelope::service_fact::file,
       order   => '20',
       content => "${name}\n",

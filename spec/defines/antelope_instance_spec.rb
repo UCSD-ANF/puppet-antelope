@@ -159,7 +159,7 @@ describe 'antelope::instance', :type => 'define' do
         it { should contain_service('myantelope').with_enable(false) }
         it { should contain_concat__fragment(
           '/etc/facter/facts.d/antelope_services_myantelope'
-        ).with_ensure('absent') }
+        ) }
       end
     end
   end
