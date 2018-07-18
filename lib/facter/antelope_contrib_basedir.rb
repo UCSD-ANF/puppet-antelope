@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Fact: antelope_contribbasedir
 require 'facter/util/antelope'
 
@@ -6,15 +8,15 @@ module Facter
     module ContribFact
       def self.add_facts
         Facter.add(:antelope_contrib_basedir) do
-          confine :kernel => %w{Linux SunOS Darwin}
-          result={}
+          confine kernel: %w[Linux SunOS Darwin]
+          result = {}
           begin
             Facter::Util::Antelope.get_versions.each do |version|
-              result[version]=''
-              result[version]='/contrib' if \
+              result[version] = ''
+              result[version] = '/contrib' if \
                 File.directory?("/opt/antelope/#{version}/contrib/bin")
             end
-          rescue
+          rescue StandardError
             result = nil
           end
           setcode { result } unless result.nil?

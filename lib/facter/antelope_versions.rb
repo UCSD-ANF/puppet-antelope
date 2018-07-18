@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Fact: antelope_versions
 #
 # The installed versions of BRTT Antelope on a system. It is determined
@@ -11,8 +13,7 @@ module Facter
   module Antelope
     module Versions
       def self.add_facts
-
-        if %w{Linux SunOS Darwin}.include? Facter.value(:kernel)
+        if %w[Linux SunOS Darwin].include? Facter.value(:kernel)
           versions = Facter::Util::Antelope.get_versions
           Facter.add(:antelope_versions) do
             setcode { versions.join(',') } unless versions.nil?
