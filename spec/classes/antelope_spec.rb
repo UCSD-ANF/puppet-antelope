@@ -6,7 +6,8 @@ describe 'antelope' do
   shared_context 'Supported Platform' do
     let(:pre_condition) do
       [
-        "user { 'rt': }"
+        "user { 'rt': }",
+        "file { '/etc/facter/facts.d': }"
       ]
     end
 
@@ -75,13 +76,18 @@ describe 'antelope' do
       end
 
       context 'with instance_subscribe array' do
+        let(:pre_condition) do
+          super() + ["service {'foo':}"]
+        end
+
         let(:params) do
-          { instance_subscribe: ['Service["foo"]'] }.merge(instance_params)
+          p = { instance_subscribe: ['Service[foo]'] }
+          super().merge(p)
         end
 
         it do
           is_expected.to contain_antelope__instance('antelope-single').with(
-            'subscriptions' => ['Service["foo"]'],
+            'subscriptions' => ['Service[foo]'],
             :ensure => 'present'
           )
           is_expected.to contain_antelope__instance('antelope-csv')
