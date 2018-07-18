@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'facter/util/antelope'
 
@@ -8,7 +10,7 @@ describe Facter::Util::Antelope do
   after { Facter.clear }
 
   describe '.sort_versions' do
-    subject(:data) { described_class.sort_versions(a,b) }
+    subject(:data) { described_class.sort_versions(a, b) }
 
     context 'equal 64-bit versions' do
       let(:a) { '5.2-64' }
@@ -66,5 +68,4 @@ describe Facter::Util::Antelope do
       it { should eq(1) }
     end
   end
-
 end
