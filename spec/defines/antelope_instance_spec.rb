@@ -124,7 +124,10 @@ describe 'antelope::instance', type: 'define' do
         it { should contain_antelope__rtsystemdir('/baz') }
 
         context 'with user = someguy and group = somegroup' do
-          let(:pre_condition) { 'user { "someguy": }' }
+          let(:pre_condition) do
+            super() + [ 'user { "someguy": }' ]
+          end
+
           let(:params) do
             { 'manage_rtsystemdirs' => true,
               :user                 => 'someguy',
@@ -152,8 +155,7 @@ describe 'antelope::instance', type: 'define' do
 
       context 'and with subscriptions to services' do
         let(:pre_condition) do
-          [
-            'user    { "rt": }',
+          super() + [
             'service { "foo": }',
             'exec    { "bar": }'
           ]
@@ -161,19 +163,19 @@ describe 'antelope::instance', type: 'define' do
         let(:params) do
           {
             dirs: '/foo,/bar,/baz',
-            subscriptions: ['Service["foo"]', 'Exec["bar"]']
+            subscriptions: ['Service[foo]', 'Exec[bar]']
           }
         end
         it {
           should contain_exec('/etc/init.d/myantelope stop').with_refreshonly(true).with_notify(
-            ['Service["foo"]', 'Exec["bar"]']
+            ['Service[foo]', 'Exec[bar]']
           ).with_command(
-            /\/etc\/init\.d\/myantelope stop 'Puppet antelope: pause myantelope \(per refresh of Service\["foo"\], Exec\["bar"\]/
+            "/etc/init.d/myantelope stop \"Puppet antelope: pause myantelope (per refresh of Service[foo], Exec[bar] ), using /etc/init.d/myantelope.\""
           )
         }
         it {
           should contain_exec('/etc/init.d/myantelope start').with_refreshonly(true).with_subscribe(
-            ['Service["foo"]', 'Exec["bar"]']
+            ['Service[foo]', 'Exec[bar]']
           )
         }
       end
