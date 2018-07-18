@@ -71,6 +71,12 @@ describe 'antelope::sync' do
   Helpers::Data.supported_platforms.each do |platform|
     context "on #{platform}" do
       include_context platform
+      let(:pre_condition) do
+        [
+          'file{"/usr/local/bin":}',
+          'file{"/usr/local/etc":}',
+        ]
+      end
 
       it_behaves_like 'Supported Platform'
     end
