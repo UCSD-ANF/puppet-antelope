@@ -1,58 +1,69 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'antelope' do
-
   shared_context 'Supported Platform' do
-    let(:pre_condition) { [
-      "user { 'rt': }",
-    ] }
+    let(:pre_condition) do
+      [
+        "user { 'rt': }"
+      ]
+    end
 
     context 'with no dirs or instances' do
       it { is_expected.not_to contain_antelope__instance('antelope') }
     end
 
     context 'with a single dir' do
-      let(:params) { {
-        :dirs => '/export/home/rt/rtsystems/test'
-      } }
+      let(:params) do
+        {
+          dirs: '/export/home/rt/rtsystems/test'
+        }
+      end
       it { is_expected.to contain_antelope__instance('antelope') }
-      it { is_expected.to contain_file('/etc/init.d/antelope').with_content(
-        /@dirs = \( "\/export\/home\/rt\/rtsystems\/test" \);/
-      ) }
+      it {
+        is_expected.to contain_file('/etc/init.d/antelope').with_content(
+          /@dirs = \( "\/export\/home\/rt\/rtsystems\/test" \);/
+        )
+      }
     end
 
     context 'with a multiple dirs' do
-      let(:params) { {
-        :dirs => [
-          '/export/home/rt/rtsystems/foo',
-          '/export/home/rt/rtsystems/bar',
-        ]
-      } }
+      let(:params) do
+        {
+          dirs: [
+            '/export/home/rt/rtsystems/foo',
+            '/export/home/rt/rtsystems/bar'
+          ]
+        }
+      end
       it { is_expected.to contain_antelope__instance('antelope') }
-      it { is_expected.to contain_file('/etc/init.d/antelope').with_content(
-        /@dirs = \( "\/export\/home\/rt\/rtsystems\/foo", "\/export\/home\/rt\/rtsystems\/bar" \);/
-      ) }
+      it {
+        is_expected.to contain_file('/etc/init.d/antelope').with_content(
+          /@dirs = \( "\/export\/home\/rt\/rtsystems\/foo", "\/export\/home\/rt\/rtsystems\/bar" \);/
+        )
+      }
     end
 
     context 'with instances hash' do
       instance_params = {
-        :instances => {
+        instances: {
           'antelope-single' => {
             'user' => 'rt',
-            'dirs' => '/export/home/rt/rtsystems/single',
+            'dirs' => '/export/home/rt/rtsystems/single'
           },
-          'antelope-csv'    => {
+          'antelope-csv' => {
             'user' => 'rt',
-            'dirs' => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2',
+            'dirs' => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2'
           },
-          'antelope-arr'    => {
+          'antelope-arr' => {
             'user' => 'rt',
             'dirs' => [
               '/export/home/rt/rtsystems/arr1',
-              '/export/home/rt/rtsystems/arr2',
-            ],
-          },
-        },
+              '/export/home/rt/rtsystems/arr2'
+            ]
+          }
+        }
       }
 
       let(:params) { instance_params }
@@ -65,14 +76,14 @@ describe 'antelope' do
 
       context 'with instance_subscribe array' do
         let(:params) do
-          {:instance_subscribe => [ 'Service["foo"]' ]}.merge(instance_params)
+          { instance_subscribe: ['Service["foo"]'] }.merge(instance_params)
         end
 
         it do
-          is_expected.to contain_antelope__instance('antelope-single').with({
-            'subscriptions' => [ 'Service["foo"]' ],
-            :ensure         => 'present',
-          })
+          is_expected.to contain_antelope__instance('antelope-single').with(
+            'subscriptions' => ['Service["foo"]'],
+            :ensure => 'present'
+          )
           is_expected.to contain_antelope__instance('antelope-csv')
           is_expected.to contain_antelope__instance('antelope-arr')
         end
@@ -95,6 +106,4 @@ describe 'antelope' do
       it_behaves_like 'Supported Platform'
     end
   end
-
-
 end
