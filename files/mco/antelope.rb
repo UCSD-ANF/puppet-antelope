@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module MCollective
   module Agent
-    class Antelope<RPC::Agent
-
+    class Antelope < RPC::Agent
       activate_when do
         File.executable?('/usr/local/bin/antelope_sync')
       end
@@ -11,21 +12,20 @@ module MCollective
                                                           'normal')
         case mode
         when 'dry-run'
-          opts='-n'
+          opts = '-n'
         when 'nostopstart'
-          opts='-S'
+          opts = '-S'
         when 'norestart'
-          opts-'-s'
+          opts - '-s'
         else
-          opts=''
+          opts = ''
         end
         cmd = ['/usr/local/bin/antelope_sync', opts].reject(&:empty?).join(' ')
-        reply[:exitcode] = run cmd, :stdout => :out, :stderr => :err,
-          :chomp => true
+        reply[:exitcode] = run cmd, stdout: :out, stderr: :err,
+                                    chomp: true
         reply[:stdout]   = :out
         reply[:stderr]   = :err
       end
-
     end
   end
 end
