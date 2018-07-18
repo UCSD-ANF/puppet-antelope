@@ -45,6 +45,7 @@ my $usageHelp="Usage: $0";
 my $badOptionHelp="Option not recognised";
 my $debugHelp="-d Turns on debugging mode";
 my $dryRunHelp="-n Runs Rsync in dry run mode";
+my $svcStopHelp="-S Do not stop or restart any antelope services stopped by $0";
 my $svcStartHelp="-s Do not restart any antelope services stopped by $0";
 my $excludeFileHelp="-e Path to Exclude file (default: $excludeFile)";
 my $includeFileHelp="-i Path to Include file (default: $includeFile)";
@@ -56,6 +57,7 @@ sub printHelpAndExit {
   print $usageHelp."\n";
   print $debugHelp."\n";
   print $dryRunHelp."\n";
+  print $svcStopHelp."\n";
   print $svcStartHelp."\n";
   print $excludeFileHelp."\n";
   print $includeFileHelp."\n";
