@@ -13,16 +13,6 @@ describe 'antelope::versioned_site_pf' do
       )
     }
 
-    context 'with ensure == garbage' do
-      let(:params) do
-        {
-          ensure: 'garbage',
-        }
-      end
-
-      it { is_expected.to raise_error(Puppet::Error, %r{does not match}) }
-    end
-
     context 'with ensure == present' do
       let(:params) do
         {
@@ -77,7 +67,7 @@ describe 'antelope::versioned_site_pf' do
       end
 
       it {
-        expect { is_expected.to raise_error(Puppet::Error) }
+        expect { is_expected.to compile.and_raise_error(%r{Can't specify both}) }
       }
     end
 
@@ -130,17 +120,10 @@ describe 'antelope::versioned_site_pf' do
     end
   end
 
-  Helpers::Data.unsupported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-      it_behaves_like 'Unsupported Platform'
-    end
-  end
-
-  Helpers::Data.supported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
       it_behaves_like 'Supported Platform'
     end
   end

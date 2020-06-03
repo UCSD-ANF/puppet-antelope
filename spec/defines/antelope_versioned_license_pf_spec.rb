@@ -29,11 +29,7 @@ describe 'antelope::versioned_license_pf' do
     end
 
     context 'with ensure == absent' do
-      let(:params) do
-        {
-          ensure: 'absent',
-        }
-      end
+      let(:params) { { ensure: 'absent' } }
 
       it {
         is_expected.to contain_file('antelope license.pf 5.3').with(
@@ -41,16 +37,6 @@ describe 'antelope::versioned_license_pf' do
           ensure: 'absent',
         )
       }
-    end
-
-    context 'with ensure == garbage' do
-      let(:params) do
-        {
-          ensure: 'garbage',
-        }
-      end
-
-      it { is_expected.to raise_error(Puppet::Error, %r{does not match}) }
     end
 
     context 'with params owner and group = pkgbuild' do
@@ -75,7 +61,7 @@ describe 'antelope::versioned_license_pf' do
         }
       end
 
-      it { is_expected.to raise_error(Puppet::Error) }
+      it { is_expected.to compile.and_raise_error(%r{Can't specify both}) }
     end
 
     context 'using template parameters' do
@@ -183,17 +169,10 @@ describe 'antelope::versioned_license_pf' do
     end
   end
 
-  Helpers::Data.unsupported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-      it_behaves_like 'Unsupported Platform'
-    end
-  end
-
-  Helpers::Data.supported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
       it_behaves_like 'Supported Platform'
     end
   end

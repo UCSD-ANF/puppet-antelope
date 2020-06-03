@@ -99,17 +99,9 @@ describe 'antelope' do
     end
   end
 
-  Helpers::Data.unsupported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
-
-      it_behaves_like 'Unsupported Platform'
-    end
-  end
-
-  Helpers::Data.supported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
       it_behaves_like 'Supported Platform'
     end

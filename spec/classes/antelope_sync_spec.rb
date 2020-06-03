@@ -3,6 +3,13 @@
 require 'spec_helper'
 
 describe 'antelope::sync' do
+  let(:pre_condition) do
+    [
+      'file{"/usr/local/bin":}',
+      'file{"/usr/local/etc":}',
+    ]
+  end
+
   shared_context 'Supported Platform' do
     context 'with ensure==absent' do
       let(:params) { { ensure: 'absent' } }
@@ -13,9 +20,7 @@ describe 'antelope::sync' do
     end
 
     context 'with ensure==present' do
-      baseparams = { ensure: 'present' }
-
-      let(:params) { baseparams }
+      let(:params) { { ensure: 'present'} }
 
       context 'without a host defined' do
         it { is_expected.to raise_error(Puppet::Error, %r{You must specify a value}) }
@@ -23,7 +28,7 @@ describe 'antelope::sync' do
 
       context 'with an anonymous rsync host defined' do
         let(:params) do
-          { host: 'rsync://my.sync.host' }.merge(baseparams)
+          super().merge(host: 'rsync://my.sync.host')
         end
 
         it {
@@ -46,7 +51,7 @@ describe 'antelope::sync' do
 
       context 'with an SSH host defined' do
         let(:params) do
-          { host: 'my.sync.host' }.merge(baseparams)
+          super().merge( host: 'my.sync.host')
         end
 
         it {
@@ -61,23 +66,9 @@ describe 'antelope::sync' do
     end # with ensure == present
   end
 
-  Helpers::Data.unsupported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
-
-      it_behaves_like 'Unsupported Platform'
-    end
-  end
-
-  Helpers::Data.supported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
-      let(:pre_condition) do
-        [
-          'file{"/usr/local/bin":}',
-          'file{"/usr/local/etc":}',
-        ]
-      end
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
       it_behaves_like 'Supported Platform'
     end

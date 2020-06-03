@@ -10,9 +10,10 @@ describe 'antelope_contrib_basedir fact', type: :fact do
   let(:fact) { Facter.fact(:antelope_contrib_basedir) }
 
   before :each do
-    expect(Facter::Util::Antelope).to receive(:get_versions).and_return([
-                                                                          '5.2-64', '5.4', '5.4post'
-                                                                        ])
+    expect(Facter::Util::Antelope).to receive(:get_versions)\
+      .and_return([
+                    '5.2-64', '5.4', '5.4post'
+                  ])
     allow(File).to receive(:directory?).and_call_original
     allow(File).to receive(:directory?).with(
       '/opt/antelope/5.2-64/confrib/bin',

@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-describe 'antelope::instance', type: 'define' do
-  baseparams = { dirs: '/foo,/bar,/baz' }
+describe 'antelope::instance', type: :define do
+  let(:params) { { dirs: '/foo,/bar,/baz' } }
   let(:title) { 'myantelope' }
 
   shared_context 'dirs param provided' do
@@ -13,7 +13,6 @@ describe 'antelope::instance', type: 'define' do
         'file { "/etc/facter/facts.d": ensure => "directory" }',
       ]
     end
-    let(:params) { baseparams }
   end
 
   shared_context 'dirs provided and ensure absent' do
@@ -95,7 +94,7 @@ describe 'antelope::instance', type: 'define' do
 
       context 'without managed fact' do
         let(:params) do
-          { 'manage_fact' => false }.merge(baseparams)
+          super().merge(manage_fact: false)
         end
 
         it {
@@ -106,7 +105,7 @@ describe 'antelope::instance', type: 'define' do
       end
       context 'with managed fact' do
         let(:params) do
-          { 'manage_fact' => true }.merge(baseparams)
+          super.merge(manage_fact: true)
         end
 
         it {
@@ -118,7 +117,7 @@ describe 'antelope::instance', type: 'define' do
 
       context 'with manage_rtsystemdirs = true' do
         let(:params) do
-          { 'manage_rtsystemdirs' => true }.merge(baseparams)
+          super.merge(manage_rtsystemdirs: true)
         end
 
         it { is_expected.to contain_antelope__rtsystemdir('/foo') }
@@ -131,9 +130,9 @@ describe 'antelope::instance', type: 'define' do
           end
 
           let(:params) do
-            { 'manage_rtsystemdirs' => true,
-              :user                 => 'someguy',
-              :group                => 'somegroup' }.merge(baseparams)
+            super().merge('manage_rtsystemdirs' => true,
+                          :user                 => 'someguy',
+                          :group                => 'somegroup')
           end
 
           it {
@@ -147,7 +146,7 @@ describe 'antelope::instance', type: 'define' do
 
       context 'with manage_rtsystemdirs = false' do
         let(:params) do
-          { 'manage_rtsystemdirs' => false }.merge(baseparams)
+          super().merge(manage_rtsystemdirs: false)
         end
 
         it { is_expected.not_to contain_antelope__rtsystemdir('/foo') }
@@ -200,23 +199,16 @@ describe 'antelope::instance', type: 'define' do
     end
   end
 
-  Helpers::Data.unsupported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-      it_behaves_like 'Unsupported Platform'
-    end
-  end
-
-  Helpers::Data.supported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
-
-      case platform
-      when 'centos7'
-        it_behaves_like 'RedHat EL7'
-      when 'centos6'
-        it_behaves_like 'RedHat not EL7'
+      if facts[:osfamily] == 'RedHat'
+        if facts[:operatingsystemmajrelease].to_i >= 7
+          it_behaves_like 'RedHat EL7'
+        else
+          it_behaves_like 'RedHat not EL7'
+        end
       else
         it_behaves_like 'Supported Platform'
       end

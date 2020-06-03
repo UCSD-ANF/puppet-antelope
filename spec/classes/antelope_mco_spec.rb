@@ -18,9 +18,7 @@ describe 'antelope::mco' do
     end
 
     context 'with ensure==present' do
-      baseparams = { ensure: 'present' }
-
-      let(:params) { baseparams }
+      let(:params) { { ensure: 'present' } }
 
       it {
         is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
@@ -33,7 +31,7 @@ describe 'antelope::mco' do
 
       context 'on a client_only system' do
         let(:params) do
-          { client_only: true }.merge(baseparams)
+          super().merge(client_only: true)
         end
 
         it {
@@ -68,17 +66,9 @@ describe 'antelope::mco' do
     end
   end
 
-  Helpers::Data.unsupported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
-
-      it_behaves_like 'Unsupported Platform'
-    end
-  end
-
-  Helpers::Data.supported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
       it_behaves_like 'Supported Platform'
     end
