@@ -10,7 +10,7 @@ describe 'antelope_contrib_basedir fact', type: :fact do
   let(:fact) { Facter.fact(:antelope_contrib_basedir) }
 
   before :each do
-    expect(Facter::Util::Antelope).to receive(:get_versions)\
+    allow(Facter::Util::Antelope).to receive(:get_versions)\
       .and_return([
                     '5.2-64', '5.4', '5.4post'
                   ])

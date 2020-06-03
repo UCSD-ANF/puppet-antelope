@@ -66,9 +66,7 @@ describe 'antelope::versioned_site_pf' do
         }
       end
 
-      it {
-        expect { is_expected.to compile.and_raise_error(%r{Can't specify both}) }
-      }
+      it { is_expected.to compile.and_raise_error(%r{Can't specify both}) }
     end
 
     context 'with basic params' do

@@ -20,7 +20,7 @@ describe 'antelope::sync' do
     end
 
     context 'with ensure==present' do
-      let(:params) { { ensure: 'present'} }
+      let(:params) { { ensure: 'present' } }
 
       context 'without a host defined' do
         it { is_expected.to raise_error(Puppet::Error, %r{You must specify a value}) }
@@ -51,7 +51,7 @@ describe 'antelope::sync' do
 
       context 'with an SSH host defined' do
         let(:params) do
-          super().merge( host: 'my.sync.host')
+          super().merge(host: 'my.sync.host')
         end
 
         it {

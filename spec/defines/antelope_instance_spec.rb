@@ -78,7 +78,7 @@ describe 'antelope::instance', type: :define do
         is_expected.to contain_file('/etc/init.d/myantelope').that_notifies(
           'Service[myantelope]',
         ).with_content(
-          /@dirs = \( "\/foo", "\/bar", "\/baz" \);/,
+          %r{@dirs = \( "\/foo", "\/bar", "\/baz" \);},
         )
       }
       it { is_expected.to contain_service('myantelope').that_requires('User[rt]') }

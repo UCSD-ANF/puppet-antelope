@@ -25,7 +25,7 @@ describe 'antelope' do
       it { is_expected.to contain_antelope__instance('antelope') }
       it {
         is_expected.to contain_file('/etc/init.d/antelope').with_content(
-          /@dirs = \( "\/export\/home\/rt\/rtsystems\/test" \);/,
+          %r{@dirs = \( "\/export\/home\/rt\/rtsystems\/test" \);},
         )
       }
     end
@@ -43,7 +43,7 @@ describe 'antelope' do
       it { is_expected.to contain_antelope__instance('antelope') }
       it {
         is_expected.to contain_file('/etc/init.d/antelope').with_content(
-          /@dirs = \( "\/export\/home\/rt\/rtsystems\/foo", "\/export\/home\/rt\/rtsystems\/bar" \);/,
+          %r{@dirs = \( "\/export\/home\/rt\/rtsystems\/foo", "\/export\/home\/rt\/rtsystems\/bar" \);},
         )
       }
     end
