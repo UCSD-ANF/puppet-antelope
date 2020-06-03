@@ -21,7 +21,7 @@ class antelope::mco(
   Antelope::Group           $group          = 'root',
   String                    $mode           = '0644',
   Boolean                   $client_only    = false,
-) inherits antelope::params {
+) {
 
   validate_re($ensure, '(present|absent)')
 

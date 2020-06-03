@@ -59,59 +59,40 @@
 #    }
 #
 define antelope::versioned_license_pf (
-  Enum['present', 'absent']       $ensure              = 'present',
-  Antelope::Version               $version             = $title,
-  Optional[String]                $source              = undef,
-  Optional[String]                $content             = undef,
-  Optional[String]                $license_keys        = undef,
-  Boolean                         $replace             = false,
+  Enum['present', 'absent']       $ensure = 'present',
+  Boolean                         $replace = false,
   Boolean                         $expiration_warnings = true,
-  Optional[Antelope::User]        $owner               = undef,
-  Optional[Antelope::Group]       $group               = undef,
-  Optional[String]                $mode                = undef,
-  Optional[Stdlib::Absolutepath]  $path                = undef,
+  Antelope::User                  $owner = lookup('antelope::user'),
+  Antelope::Group                 $group = lookup('antelope::group'),
+  String                          $mode  = lookup('antelope::dist_mode'),
+  Antelope::Version               $version = $title,
+  Optional[Stdlib::Absolutepath]  $path = undef,
+  Optional[String]                $source,
+  Optional[String]                $content,
+  Optional[String]                $license_keys,
 ) {
   include '::antelope'
 
   $file_ensure = $ensure
-  $file_path = $path ? {
-    undef   => "/opt/antelope/${version}/data/pf/license.pf",
-    default => $path,
-  }
+  $file_path = pick($path, "/opt/antelope/${version}/data/pf/license.pf")
 
   if $content != undef and $source != undef {
     fail('Cannot specify both content and source')
   }
 
-  $file_source = $source ? {
-    undef   => undef, # default value
-    default => $source,
-  }
+  $file_source = $source
 
-  $file_content = $source ? {
-    undef => $content ? {
-      undef   => template('antelope/license.pf.erb'), # default value
-      default => $content,
-    },
-    default => undef,
+  if $file_source {
+    $file_content = pick($content, template('antelope/license.pf.erb'))
   }
 
   $file_replace = $replace
 
-  $file_owner = $owner ? {
-    undef   => $antelope::dist_owner,
-    default => $owner,
-  }
+  $file_owner = $owner
 
-  $file_group = $group ? {
-    undef   => $antelope::dist_group,
-    default => $group,
-  }
+  $file_group = $group
 
-  $file_mode = $mode ? {
-    undef   => $antelope::dist_mode,
-    default => $mode,
-  }
+  $file_mode = $mode
 
   ### Managed resources
 

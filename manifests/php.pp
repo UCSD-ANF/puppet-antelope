@@ -6,8 +6,8 @@
 #  * The puppet-php module with support for the php::config class.
 #  See https://github.com/UCSD-ANF/puppet-php
 class antelope::php (
-  Antelope::Version         $version = $::antelope_latest_version,
-  Enum['present', 'absent'] $ensure  = 'absent'
+  Antelope::Version         $version,
+  Enum['present', 'absent'] $ensure
 ){
   php::config{ 'antelope':
     ensure  => $ensure,

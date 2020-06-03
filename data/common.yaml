@@ -1,1 +1,38 @@
---- {}
+---
+antelope::absent: false
+antelope::debug: false
+antelope::disable: false
+antelope::disableboot: false
+antelope::audit_only: false
+antelope::instance_subscribe: []
+antelope::user: &antelopeuser rt
+antelope::group: &antelopegroup antelope
+antelope::service_name: antelope
+antelope::service_provider: null
+antelope::manage_service_fact: &antelopesvcfact true
+antelope::manage_rtsystemdirs: true
+antelope::facts_dir: /etc/facter/facts.d
+antelope::delay: 10
+antelope::shutdownwait: &shutdownwait 120
+antelope::dist_owner: root
+antelope::dist_group: root
+antelope::dist_mode: '0644'
+antelope::dirs: null
+antelope::instances: null
+antelope::instance_ensure: present
+antelope::rtsystem_dir_mode: '0775'
+antelope::rtsystem_rtexec_mode: '0664'
+
+antelope::php::version: "%{alias('antelope::version')}"
+antelope::php::ensure: absent
+
+antelope::service_fact::facts_dir: "%{alias('antelope::facts_dir')}"
+
+antelope::sync::ensure: present
+antelope::sync::user: "%{alias('antelope::user')}"
+antelope::sync::owner: "%{alias('antelope::dist_owner')}"
+antelope::sync::group: "%{alias('antelope::dist_group')}"
+antelope::sync::exec_mode: '0555'
+antelope::sync::data_mode: '0444'
+antelope::sync::basedir: /usr/local
+antelope::sync::rsync_bin: /usr/bin/rsync

@@ -3,6 +3,32 @@
 require 'spec_helper'
 
 describe 'antelope' do
+  basefacts = {
+    antelope_contrib_basedir: {
+      '5.7' => '/contrib',
+      '5.8' => '/contrib',
+      '5.9' => '/contrib',
+      '5.10pre' => '/contrib',
+    },
+    antelope_latest_perl: 'perl5.26.1',
+    antelope_latest_python: 'python3.6.5',
+    antelope_latest_version: '5.10pre',
+    antelope_services: 'antelope',
+    antelope_versions: '5.7,5.8,5.9,5.10pre',
+    antelope_versions_array: [
+      '5.7',
+      '5.8',
+      '5.9',
+      '5.10pre',
+    ],
+    antelope_versions_supports_aldproxy: '5.7,5.8,5.9,5.10pre',
+    antelope_versions_supports_aldproxy_array: [
+      '5.7',
+      '5.8',
+      '5.9',
+      '5.10pre',
+    ],
+  }
   shared_context 'Supported Platform' do
     let(:pre_condition) do
       [
@@ -101,7 +127,7 @@ describe 'antelope' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let(:facts) { facts }
+      let(:facts) { facts.merge(basefacts) }
 
       it_behaves_like 'Supported Platform'
     end
