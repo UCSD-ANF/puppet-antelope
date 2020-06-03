@@ -33,7 +33,7 @@ module Facter
           end
         end
 
-        %i[perl python].each do |factname|
+        [:perl, :python].each do |factname|
           Facter::Antelope::Latest.add_latest(factname)
         end
       end

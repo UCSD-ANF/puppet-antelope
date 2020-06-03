@@ -7,17 +7,18 @@ describe 'antelope::sync' do
     context 'with ensure==absent' do
       let(:params) { { ensure: 'absent' } }
 
-      it { should contain_file('antelope_sync').with_ensure('absent') }
-      it { should contain_file('rsync_include').with_ensure('absent') }
-      it { should contain_file('rsync_exclude').with_ensure('absent') }
+      it { is_expected.to contain_file('antelope_sync').with_ensure('absent') }
+      it { is_expected.to contain_file('rsync_include').with_ensure('absent') }
+      it { is_expected.to contain_file('rsync_exclude').with_ensure('absent') }
     end
 
     context 'with ensure==present' do
       baseparams = { ensure: 'present' }
 
       let(:params) { baseparams }
+
       context 'without a host defined' do
-        it { should raise_error(Puppet::Error, /You must specify a value/) }
+        it { is_expected.to raise_error(Puppet::Error, %r{You must specify a value}) }
       end # without a host defined
 
       context 'with an anonymous rsync host defined' do
@@ -26,19 +27,19 @@ describe 'antelope::sync' do
         end
 
         it {
-          should contain_file('antelope_sync')\
+          is_expected.to contain_file('antelope_sync')\
             .with_path('/usr/local/bin/antelope_sync')\
             .with_mode('0555')\
             .with_owner('root')\
             .with_group('root')\
-            .with_content(/my @rsyncOpts=\("-a", '--partial', "--delete"\);/)
+            .with_content(%r{my @rsyncOpts=\("-a", '--partial', "--delete"\);})
         }
         it {
-          should contain_file('rsync_exclude')\
+          is_expected.to contain_file('rsync_exclude')\
             .with_path('/usr/local/etc/rsync_exclude')
         }
         it {
-          should contain_file('rsync_include')\
+          is_expected.to contain_file('rsync_include')\
             .with_path('/usr/local/etc/rsync_include')
         }
       end # with an anonymous rsync host defined
@@ -49,12 +50,12 @@ describe 'antelope::sync' do
         end
 
         it {
-          should contain_file('antelope_sync')\
+          is_expected.to contain_file('antelope_sync')\
             .with_path('/usr/local/bin/antelope_sync')\
             .with_mode('0555')\
             .with_owner('root')\
             .with_group('root')\
-            .with_content(/my @rsyncOpts=\("-a", '--partial', "--delete", "--rsh=ssh"\);/)
+            .with_content(%r{my @rsyncOpts=\("-a", '--partial', "--delete", "--rsh=ssh"\);})
         }
       end # with an SSH host defined
     end # with ensure == present

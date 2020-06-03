@@ -4,24 +4,26 @@ require 'spec_helper'
 
 describe 'antelope::versioned_license_pf' do
   let(:title) { '5.3' }
+
   shared_context 'Supported Platform' do
     it {
-      should contain_file('antelope license.pf 5.3').with(
+      is_expected.to contain_file('antelope license.pf 5.3').with(
         path: '/opt/antelope/5.3/data/pf/license.pf',
-        ensure: 'present'
+        ensure: 'present',
       )
     }
 
     context 'with ensure == present' do
       let(:params) do
         {
-          ensure: 'present'
+          ensure: 'present',
         }
       end
+
       it {
-        should contain_file('antelope license.pf 5.3').with(
+        is_expected.to contain_file('antelope license.pf 5.3').with(
           path: '/opt/antelope/5.3/data/pf/license.pf',
-          ensure: 'present'
+          ensure: 'present',
         )
       }
     end
@@ -29,13 +31,14 @@ describe 'antelope::versioned_license_pf' do
     context 'with ensure == absent' do
       let(:params) do
         {
-          ensure: 'absent'
+          ensure: 'absent',
         }
       end
+
       it {
-        should contain_file('antelope license.pf 5.3').with(
+        is_expected.to contain_file('antelope license.pf 5.3').with(
           path: '/opt/antelope/5.3/data/pf/license.pf',
-          ensure: 'absent'
+          ensure: 'absent',
         )
       }
     end
@@ -43,23 +46,23 @@ describe 'antelope::versioned_license_pf' do
     context 'with ensure == garbage' do
       let(:params) do
         {
-          ensure: 'garbage'
+          ensure: 'garbage',
         }
       end
 
-      it { should raise_error(Puppet::Error, /does not match/) }
+      it { is_expected.to raise_error(Puppet::Error, %r{does not match}) }
     end
 
     context 'with params owner and group = pkgbuild' do
       let(:params) do
         {
           owner: 'pkgbuild',
-          group: 'pkgbuild'
+          group: 'pkgbuild',
         }
       end
 
       it {
-        should contain_file('antelope license.pf 5.3')\
+        is_expected.to contain_file('antelope license.pf 5.3')\
           .with_owner('pkgbuild').with_group('pkgbuild')
       }
     end
@@ -68,23 +71,24 @@ describe 'antelope::versioned_license_pf' do
       let(:params) do
         {
           source: '/this/should/fail',
-          content: 'This garbage content should fail'
+          content: 'This garbage content should fail',
         }
       end
 
-      it { should raise_error(Puppet::Error) }
+      it { is_expected.to raise_error(Puppet::Error) }
     end
 
     context 'using template parameters' do
       context 'with a single license key' do
         let(:params) do
           {
-            'license_keys' => 'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1'
+            'license_keys' => 'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
           }
         end
+
         it {
-          should contain_file('antelope license.pf 5.3')\
-            .with_content(/^tabcdef/)
+          is_expected.to contain_file('antelope license.pf 5.3')\
+            .with_content(%r{^tabcdef})
         }
       end
 
@@ -93,44 +97,47 @@ describe 'antelope::versioned_license_pf' do
           {
             'license_keys' => [
               'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
-              'nabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1'
-            ]
+              'nabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo.ucsd.edu Antelope 5.1',
+            ],
           }
         end
+
         it {
-          should contain_file('antelope license.pf 5.3')\
-            .with_content(/^tabcdef.*\nnabcdef/)
+          is_expected.to contain_file('antelope license.pf 5.3')\
+            .with_content(%r{^tabcdef.*\nnabcdef})
         }
       end
 
       context 'with expiration_warnings unset' do
         it {
-          should_not contain_file('antelope license.pf 5.3')\
-            .with_content(/no_more_expiration_warnings/)
+          is_expected.not_to contain_file('antelope license.pf 5.3')\
+            .with_content(%r{no_more_expiration_warnings})
         }
       end
 
       context 'with expiration_warnings set to true' do
         let(:params) do
           {
-            'expiration_warnings' => true
+            'expiration_warnings' => true,
           }
         end
+
         it {
-          should_not contain_file('antelope license.pf 5.3')\
-            .with_content(/no_more_expiration_warnings/)
+          is_expected.not_to contain_file('antelope license.pf 5.3')\
+            .with_content(%r{no_more_expiration_warnings})
         }
       end
 
       context 'with expiration_warnings set to false' do
         let(:params) do
           {
-            'expiration_warnings' => false
+            'expiration_warnings' => false,
           }
         end
+
         it {
-          should contain_file('antelope license.pf 5.3')\
-            .with_content(/no_more_expiration_warnings/)
+          is_expected.to contain_file('antelope license.pf 5.3')\
+            .with_content(%r{no_more_expiration_warnings})
         }
       end
     end
@@ -138,12 +145,12 @@ describe 'antelope::versioned_license_pf' do
     context 'with a source parameter specified' do
       let(:params) do
         {
-          source: '/test/license.pf'
+          source: '/test/license.pf',
         }
       end
 
       it {
-        should contain_file('antelope license.pf 5.3')\
+        is_expected.to contain_file('antelope license.pf 5.3')\
           .with_source('/test/license.pf')
       }
     end
@@ -152,11 +159,12 @@ describe 'antelope::versioned_license_pf' do
       let(:title) { 'test antelope.pf' }
       let(:params) do
         {
-          version: '5.2-64'
+          version: '5.2-64',
         }
       end
+
       it {
-        should contain_file('antelope license.pf test antelope.pf')\
+        is_expected.to contain_file('antelope license.pf test antelope.pf')\
           .with_path('/opt/antelope/5.2-64/data/pf/license.pf')
       }
     end
@@ -164,12 +172,12 @@ describe 'antelope::versioned_license_pf' do
     context 'with a path defined' do
       let(:params) do
         {
-          path: '/path/to/test.pf'
+          path: '/path/to/test.pf',
         }
       end
 
       it {
-        should contain_file('antelope license.pf 5.3')\
+        is_expected.to contain_file('antelope license.pf 5.3')\
           .with_path('/path/to/test.pf')
       }
     end

@@ -8,7 +8,7 @@ module Facter
   module Antelope
     module AldProxyFact
       def self.add_facts
-        if %w[Linux Darwin].include? Facter.value(:kernel)
+        if ['Linux', 'Darwin'].include? Facter.value(:kernel)
           versions = Facter::Util::Antelope.get_versions
           unless versions.nil?
             versions = versions.delete_if do |version|

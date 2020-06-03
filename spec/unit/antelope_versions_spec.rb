@@ -5,9 +5,10 @@ require 'facter/antelope_versions'
 require 'facter/util/antelope'
 
 describe 'antelope_versions fact', type: :fact do
-  let(:fact) { Facter.fact(:antelope_versions) }
   subject(:antelope_versions) { fact.value }
 
+  let(:fact) { Facter.fact(:antelope_versions) }
+
   before :each do
     expect(Facter::Util::Antelope).to receive(:get_versions).and_return([
                                                                           '5.2-64', '5.4', '5.4post'
@@ -15,11 +16,12 @@ describe 'antelope_versions fact', type: :fact do
     Facter::Antelope::Versions.add_facts
   end
 
-  it { should eql('5.2-64,5.4,5.4post') }
+  it { is_expected.to eql('5.2-64,5.4,5.4post') }
 end
 describe 'antelope_versions_array fact', type: :fact do
-  let(:fact) { Facter.fact(:antelope_versions_array) }
   subject(:antelope_versions_array) { fact.value }
+
+  let(:fact) { Facter.fact(:antelope_versions_array) }
 
   before :each do
     expect(Facter::Util::Antelope).to receive(:get_versions).and_return([
@@ -28,5 +30,5 @@ describe 'antelope_versions_array fact', type: :fact do
     Facter::Antelope::Versions.add_facts
   end
 
-  it { should eql(['5.2-64', '5.4', '5.4post']) }
+  it { is_expected.to eql(['5.2-64', '5.4', '5.4post']) }
 end

@@ -7,7 +7,7 @@ describe 'antelope' do
     let(:pre_condition) do
       [
         "user { 'rt': }",
-        "file { '/etc/facter/facts.d': }"
+        "file { '/etc/facter/facts.d': }",
       ]
     end
 
@@ -18,13 +18,14 @@ describe 'antelope' do
     context 'with a single dir' do
       let(:params) do
         {
-          dirs: '/export/home/rt/rtsystems/test'
+          dirs: '/export/home/rt/rtsystems/test',
         }
       end
+
       it { is_expected.to contain_antelope__instance('antelope') }
       it {
         is_expected.to contain_file('/etc/init.d/antelope').with_content(
-          /@dirs = \( "\/export\/home\/rt\/rtsystems\/test" \);/
+          /@dirs = \( "\/export\/home\/rt\/rtsystems\/test" \);/,
         )
       }
     end
@@ -34,14 +35,15 @@ describe 'antelope' do
         {
           dirs: [
             '/export/home/rt/rtsystems/foo',
-            '/export/home/rt/rtsystems/bar'
-          ]
+            '/export/home/rt/rtsystems/bar',
+          ],
         }
       end
+
       it { is_expected.to contain_antelope__instance('antelope') }
       it {
         is_expected.to contain_file('/etc/init.d/antelope').with_content(
-          /@dirs = \( "\/export\/home\/rt\/rtsystems\/foo", "\/export\/home\/rt\/rtsystems\/bar" \);/
+          /@dirs = \( "\/export\/home\/rt\/rtsystems\/foo", "\/export\/home\/rt\/rtsystems\/bar" \);/,
         )
       }
     end
@@ -51,20 +53,20 @@ describe 'antelope' do
         instances: {
           'antelope-single' => {
             'user' => 'rt',
-            'dirs' => '/export/home/rt/rtsystems/single'
+            'dirs' => '/export/home/rt/rtsystems/single',
           },
           'antelope-csv' => {
             'user' => 'rt',
-            'dirs' => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2'
+            'dirs' => '/export/home/rt/rtsystems/csv1,/export/home/rt/rtsystems/csv2',
           },
           'antelope-arr' => {
             'user' => 'rt',
             'dirs' => [
               '/export/home/rt/rtsystems/arr1',
-              '/export/home/rt/rtsystems/arr2'
-            ]
-          }
-        }
+              '/export/home/rt/rtsystems/arr2',
+            ],
+          },
+        },
       }
 
       let(:params) { instance_params }
@@ -88,7 +90,7 @@ describe 'antelope' do
         it do
           is_expected.to contain_antelope__instance('antelope-single').with(
             'subscriptions' => ['Service[foo]'],
-            :ensure => 'present'
+            :ensure => 'present',
           )
           is_expected.to contain_antelope__instance('antelope-csv')
           is_expected.to contain_antelope__instance('antelope-arr')

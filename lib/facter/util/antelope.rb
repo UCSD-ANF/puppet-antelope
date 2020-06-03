@@ -10,9 +10,9 @@
 ##
 
 module Facter::Util::Antelope
-  VALID_KERNELS = %w[Linux SunOS Darwin].freeze
-  ANTELOPE_BASEDIR = '/opt/antelope'
-  RE_VERSION = /^(\d+)\.(\d+)(-64)?(pre|post|p)?$/
+  VALID_KERNELS = ['Linux', 'SunOS', 'Darwin'].freeze
+  ANTELOPE_BASEDIR = '/opt/antelope'.freeze
+  RE_VERSION = %r{^(\d+)\.(\d+)(-64)?(pre|post|p)?$}
 
   # Return a list of all Antelope versions installed on this system
   def self.get_versions

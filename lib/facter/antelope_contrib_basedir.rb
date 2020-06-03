@@ -8,7 +8,7 @@ module Facter
     module ContribFact
       def self.add_facts
         Facter.add(:antelope_contrib_basedir) do
-          confine kernel: %w[Linux SunOS Darwin]
+          confine kernel: ['Linux', 'SunOS', 'Darwin']
           result = {}
           begin
             Facter::Util::Antelope.get_versions.each do |version|

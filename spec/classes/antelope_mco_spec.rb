@@ -8,11 +8,11 @@ describe 'antelope::mco' do
       let(:params) { { ensure: 'absent' } }
 
       it {
-        should contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
+        is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
           .with_ensure('absent')
       }
       it {
-        should contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
+        is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
           .with_ensure('absent')
       }
     end
@@ -23,11 +23,11 @@ describe 'antelope::mco' do
       let(:params) { baseparams }
 
       it {
-        should contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
+        is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
           .with_ensure('present')
       }
       it {
-        should contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
+        is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
           .with_ensure('present')
       }
 
@@ -35,12 +35,13 @@ describe 'antelope::mco' do
         let(:params) do
           { client_only: true }.merge(baseparams)
         end
+
         it {
-          should contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
+          is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
             .with_ensure('present')
         }
         it {
-          should contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
+          is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
             .with_ensure('absent')
         }
       end
@@ -52,15 +53,15 @@ describe 'antelope::mco' do
             mco_etc: '/test/etc',
             owner: 'testowner',
             group: 'testgroup',
-            mode: '0666'
+            mode: '0666',
           }
         end
 
         it do
-          should contain_file('/test/basedir/agent/antelope.ddl').with(
+          is_expected.to contain_file('/test/basedir/agent/antelope.ddl').with(
             mode: '0666',
             owner: 'testowner',
-            group: 'testgroup'
+            group: 'testgroup',
           )
         end
       end
