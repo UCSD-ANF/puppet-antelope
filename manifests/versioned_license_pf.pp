@@ -59,21 +59,19 @@
 #    }
 #
 define antelope::versioned_license_pf (
-  $ensure              = 'present',
-  $version             = $title,
-  $source              = undef,
-  $content             = undef,
-  $license_keys        = undef,
-  $replace             = false,
-  $expiration_warnings = true,
-  $owner               = undef,
-  $group               = undef,
-  $mode                = undef,
-  $path                = undef,
+  Enum['present', 'absent']       $ensure              = 'present',
+  Antelope::Version               $version             = $title,
+  Optional[String]                $source              = undef,
+  Optional[String]                $content             = undef,
+  Optional[String]                $license_keys        = undef,
+  Boolean                         $replace             = false,
+  Boolean                         $expiration_warnings = true,
+  Optional[Antelope::User]        $owner               = undef,
+  Optional[Antelope::Group]       $group               = undef,
+  Optional[String]                $mode                = undef,
+  Optional[Stdlib::Absolutepath]  $path                = undef,
 ) {
   include '::antelope'
-
-  validate_re($ensure, ['present', 'absent'])
 
   $file_ensure = $ensure
   $file_path = $path ? {

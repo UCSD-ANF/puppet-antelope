@@ -111,26 +111,26 @@
 #  [*dist_mode*] - file mode for files in the $ANTELOPE tree. Default is 0644
 #
 class antelope (
-  $absent               = false,
-  $debug                = false,
-  $disable              = false,
-  $disableboot          = false,
-  $audit_only           = false,
-  $dirs                 = undef,
-  $instances            = undef,
-  $instance_subscribe   = [],
-  $version              = $facts['antelope_latest_version'],
-  $user                 = 'rt',
-  $group                = 'antelope',
-  $service_name         = 'antelope',
-  $service_provider     = $::antelope::params::service_provider,
-  $manage_service_fact  = true,
-  $manage_rtsystemdirs  = true,
-  $facts_dir            = '/etc/facter/facts.d',
-  $shutdownwait         = 120,
-  $dist_owner           = 'root',
-  $dist_group           = $::antelope::params::dist_group,
-  $dist_mode            = '0644',
+  Boolean                   $absent               = false,
+  Boolean                   $debug                = false,
+  Boolean                   $disable              = false,
+  Boolean                   $disableboot          = false,
+  Boolean                   $audit_only           = false,
+  Optional[Antelope::Dirs]  $dirs                 = undef,
+  Optional[Hash]            $instances            = undef,
+  Array                     $instance_subscribe   = [],
+  Antelope::Version         $version              = $facts['antelope_latest_version'],
+  Antelope::User            $user                 = 'rt',
+  Antelope::Group           $group                = 'antelope',
+  String                    $service_name         = 'antelope',
+  String                    $service_provider     = $::antelope::params::service_provider,
+  Boolean                   $manage_service_fact  = true,
+  Boolean                   $manage_rtsystemdirs  = true,
+  Stdlib::Absolutepath      $facts_dir            = '/etc/facter/facts.d',
+  Integer                   $shutdownwait         = 120,
+  Antelope::User            $dist_owner           = 'root',
+  Antelope::Group           $dist_group           = $::antelope::params::dist_group,
+  String                    $dist_mode            = '0644',
 ) inherits antelope::params {
 
   ### Sanity check
@@ -139,16 +139,6 @@ class antelope (
   if ( $dirs != undef and $instances != undef ) {
     fail('Cannot specify both dirs and instances.')
   }
-
-  if ( $instances != undef ) {
-    validate_hash($instances)
-    validate_array($instance_subscribe)
-  }
-
-  validate_bool($absent)
-  validate_bool($disable)
-  validate_bool($disableboot)
-  validate_bool($audit_only)
 
   $manage_package = $absent ? {
     true  => 'absent',
@@ -187,8 +177,6 @@ class antelope (
     },
     default => true,
   }
-
-  validate_bool($manage_singleton_instance)
 
   # We only manage the multiple instances if instances is defined.
   # Since we can't enumerate any pre-existing Antelope::Instances that

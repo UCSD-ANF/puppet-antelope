@@ -70,19 +70,19 @@
 #    }
 #
 define antelope::versioned_site_pf (
-  $ensure                   = 'present',
-  $version                  = $title,
-  $mailhost                 = '', # lint:ignore:empty_string_assignment
-  $mail_domain              = $::fqdn,
-  $default_seed_network     = 'XX',
-  $originating_organization = '', # lint:ignore:empty_string_assignment
-  $institution              = 'XXXX',
-  $source                   = undef,
-  $content                  = undef,
-  $owner                    = undef,
-  $group                    = undef,
-  $mode                     = undef,
-  $path                     = undef
+  Enum['present', 'absent']       $ensure                   = 'present',
+  Antelope::Version               $version                  = $title,
+  String                          $mailhost                 = '', # lint:ignore:empty_string_assignment
+  Stdlib::Fqdn                    $mail_domain              = $::fqdn,
+  String                          $default_seed_network     = 'XX',
+  String                          $originating_organization = '', # lint:ignore:empty_string_assignment
+  String                          $institution              = 'XXXX',
+  Optional[String]                $source                   = undef,
+  Optional[String]                $content                  = undef,
+  Optional[Antelope::User]        $owner                    = undef,
+  Optional[Antelope::Group]       $group                    = undef,
+  Optional[String]                $mode                     = undef,
+  Optional[Stdlib::Absolutepath]  $path                     = undef
 ) {
   include '::antelope'
 

@@ -14,13 +14,13 @@
 #
 # *mco_etc* is where MCollective config files are kept
 class antelope::mco(
-  $plugin_basedir = '/usr/libexec/mcollective',
-  $mco_etc        = '/etc/mcollective',
-  $ensure         = 'present',
-  $owner          = 'root',
-  $group          = 'root',
-  $mode           = '0644',
-  $client_only    = false,
+  Stdlib::Absolutepath      $plugin_basedir = '/usr/libexec/mcollective',
+  Stdlib::Absolutepath      $mco_etc        = '/etc/mcollective',
+  Enum['present', 'absent'] $ensure         = 'present',
+  Antelope::User            $owner          = 'root',
+  Antelope::Group           $group          = 'root',
+  String                    $mode           = '0644',
+  Boolean                   $client_only    = false,
 ) inherits antelope::params {
 
   validate_re($ensure, '(present|absent)')

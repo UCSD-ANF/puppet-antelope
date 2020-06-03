@@ -66,16 +66,16 @@
 #    }
 #
 define antelope::instance(
-  $servicename         = $title,
-  $ensure              = 'present',
-  $dirs                = undef,
-  $user                = 'rt',
-  $group               = undef,
-  $delay               = '0',
-  $shutdownwait        = '120',
-  $manage_fact         = undef,
-  $manage_rtsystemdirs = undef,
-  $subscriptions       = [],
+  String                    $servicename         = $title,
+  Enum['present', 'absent'] $ensure              = 'present',
+  Optional[Antelope::Dirs]  $dirs                = undef,
+  Antelope::User            $user                = 'rt',
+  Optional[Antelope::Group] $group               = undef,
+  Integer                   $delay               = 0,
+  Integer                   $shutdownwait        = 120,
+  Optional[Boolean]         $manage_fact         = undef,
+  Optional[Boolean]         $manage_rtsystemdirs = undef,
+  Array                     $subscriptions       = [],
 ) {
 
   include '::antelope'

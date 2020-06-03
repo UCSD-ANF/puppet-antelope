@@ -2,7 +2,7 @@
 # Installs a service fact for Antelope services
 # Sets up a basic concat resource that other classes can add to
 class antelope::service_fact(
-  $facts_dir = undef,
+  Optional[Stdlib::Absolutepath]  $facts_dir = undef,
 ) inherits antelope::params {
 
   include ::antelope
