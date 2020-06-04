@@ -80,8 +80,8 @@ define antelope::versioned_site_pf (
   Optional[String]                $source,
   Optional[String]                $content,
   Antelope::User                  $owner = lookup('antelope::dist_owner'),
-  Antelope::Group                 $group = lookup('antleope::dist_group'),
-  String                          $mode  = lookup('antleope::dist_mode'),
+  Antelope::Group                 $group = lookup('antelope::dist_group'),
+  String                          $mode  = lookup('antelope::dist_mode'),
   Optional[Stdlib::Absolutepath]  $path
 ) {
   include '::antelope'
