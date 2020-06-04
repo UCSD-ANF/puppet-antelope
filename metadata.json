@@ -1,25 +1,57 @@
 {
-    "name": "UCSD-ANF/puppet-antelope",
-    "version": "1.1.8",
-    "author": "UCSD-ANF",
-    "license": "BSD",
-    "summary": "Support the Antelope Real_time Monitoring System by Boulder Real-Time Technologies",
-    "source": "https://github.com/UCSD-ANF/puppet-antelope",
-    "project_page": "https://github.com/UCSD-ANF/puppet-antelope",
-    "issues_url": "https://github.com/UCSD-ANF/puppet-antelope/issues",
-    "tags": ["antelope", "sensors"],
-    "operatingsystem_support": [
-        {
-            "operatingsystem":"RedHat",
-            "operatingsystemrelease":[ "6.0", "7.0" ]
-        },
-        {
-            "operatingsystem": "Darwin",
-            "operatingsystemrelease": [ "10.11", "10.10" ]
-        }
-    ],
-    "dependencies": [
-        { "name": "puppetlabs/stdlib", "version_requirement": ">= 3.2.0" },
-        { "name": "puppetlabs/concat", "version_requirement": "> 1.1.2" }
-    ]
+  "name": "UCSDANF-puppet_antelope",
+  "version": "1.1.8",
+  "author": "UCSD-ANF",
+  "summary": "Support the Antelope Real_time Monitoring System by Boulder Real-Time Technologies",
+  "license": "BSD-2-Clause",
+  "source": "https://github.com/UCSD-ANF/puppet-antelope",
+  "project_page": "https://github.com/UCSD-ANF/puppet-antelope",
+  "issues_url": "https://github.com/UCSD-ANF/puppet-antelope/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 3.2.0"
+    },
+    {
+      "name": "puppetlabs/concat",
+      "version_requirement": "> 1.1.2"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Darwin",
+      "operatingsystemrelease": [
+        "14",
+        "15",
+        "16"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.10.0 < 7.0.0"
+    }
+  ],
+  "tags": [
+    "antelope",
+    "sensors"
+  ],
+  "pdk-version": "1.18.0",
+  "template-url": "pdk-default#1.18.0",
+  "template-ref": "tags/1.18.0-0-g095317c"
 }

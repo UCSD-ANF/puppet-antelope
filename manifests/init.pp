@@ -97,6 +97,10 @@
 #  to use /etc/puppetlabs/facter/facts.d. Note that this directory is
 #  auto-required if manage_service_fact is true.
 #
+#  [*delay*]
+#  Number of seconds to delay between startups. Default value of 0 means no
+#  delay.
+#
 #  [*shutdownwait*] - controls the Antelope init script timeout for how
 #  long it will wait before it forcibly kills an rtexec process. Only
 #  has an effect when the dirs parameter is used. Otherwise, the
@@ -111,27 +115,28 @@
 #  [*dist_mode*] - file mode for files in the $ANTELOPE tree. Default is 0644
 #
 class antelope (
-  $absent               = false,
-  $debug                = false,
-  $disable              = false,
-  $disableboot          = false,
-  $audit_only           = false,
-  $dirs                 = undef,
-  $instances            = undef,
-  $instance_subscribe   = [],
-  $version              = $facts['antelope_latest_version'],
-  $user                 = 'rt',
-  $group                = 'antelope',
-  $service_name         = 'antelope',
-  $service_provider     = $::antelope::params::service_provider,
-  $manage_service_fact  = true,
-  $manage_rtsystemdirs  = true,
-  $facts_dir            = '/etc/facter/facts.d',
-  $shutdownwait         = 120,
-  $dist_owner           = 'root',
-  $dist_group           = $::antelope::params::dist_group,
-  $dist_mode            = '0644',
-) inherits antelope::params {
+  Boolean                       $absent,
+  Boolean                       $debug,
+  Boolean                       $disable,
+  Boolean                       $disableboot,
+  Boolean                       $audit_only,
+  Array                         $instance_subscribe,
+  Antelope::User                $user,
+  Antelope::Group               $group,
+  String                        $service_name,
+  Boolean                       $manage_service_fact,
+  Boolean                       $manage_rtsystemdirs,
+  Stdlib::Absolutepath          $facts_dir,
+  Integer                       $delay,
+  Integer                       $shutdownwait,
+  Antelope::User                $dist_owner,
+  Antelope::Group               $dist_group,
+  String                        $dist_mode,
+  Antelope::Version             $version = $facts['antelope_latest_version'],
+  Optional[String]              $service_provider,
+  Optional[Antelope::Dirs]      $dirs,
+  Optional[Antelope::Instances] $instances,
+) {
 
   ### Sanity check
 
@@ -139,16 +144,6 @@ class antelope (
   if ( $dirs != undef and $instances != undef ) {
     fail('Cannot specify both dirs and instances.')
   }
-
-  if ( $instances != undef ) {
-    validate_hash($instances)
-    validate_array($instance_subscribe)
-  }
-
-  validate_bool($absent)
-  validate_bool($disable)
-  validate_bool($disableboot)
-  validate_bool($audit_only)
 
   $manage_package = $absent ? {
     true  => 'absent',
@@ -159,10 +154,7 @@ class antelope (
     true    => false,
     default => $disable ? {
       true    => false,
-      default => $absent ? {
-        true  => false,
-        false => true,
-      },
+      default => !$absent,
     },
   }
 
@@ -187,8 +179,6 @@ class antelope (
     },
     default => true,
   }
-
-  validate_bool($manage_singleton_instance)
 
   # We only manage the multiple instances if instances is defined.
   # Since we can't enumerate any pre-existing Antelope::Instances that
@@ -220,10 +210,7 @@ class antelope (
     false => undef,
   }
 
-  $manage_file_replace = $audit_only ? {
-    true  => false,
-    false => true,
-  }
+  $manage_file_replace = !$audit_only
 
   # Set up resource hashes.
   if $manage_plural_instances {
@@ -246,6 +233,7 @@ class antelope (
     manage_fact         => $manage_service_fact,
     manage_rtsystemdirs => $manage_rtsystemdirs,
     shutdownwait        => $shutdownwait,
+    delay               => $delay,
   }
 
   ### Managed resources
@@ -255,9 +243,17 @@ class antelope (
   # We manage antelope instances only if the 'instances' or 'dirs'
   # parameters were provided.
   if $instances_real != undef {
-    create_resources('antelope::instance', $instances_real, $instance_defaults )
+    #create_resources('antelope::instance', $instances_real, $instance_defaults )
+    $instances_real.each |String $index, Hash $value| {
+      antelope::instance {
+        $index :
+          * => $value;
+        default :
+          * => $instance_defaults;
+      }
+    }
   } else {
-    notice('Not managing a singleton nor plural instance of Antelope.')
+    notice('Neither managing a singleton nor plural instance of Antelope.')
   }
 
 }

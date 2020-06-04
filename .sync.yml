@@ -1,0 +1,23 @@
+spec/spec_helper.rb:
+  mock_with: ':rspec'
+  coverate_report: true
+spec/default_facts.yml:
+  extra_facts:
+    antelope_contrib_basedir:
+      '5.7': '/contrib'
+      '5.8': '/contrib'
+      '5.9': '/contrib'
+      '5.10pre': '/contrib'
+    antelope_latest_perl: 'perl5.26.1'
+    antelope_latest_python: 'python3.6.5'
+    antelope_latest_version: '5.10pre'
+    antelope_services: 'antelope'
+    antelope_versions: '5.7,5.8,5.9,5.10pre'
+    antelope_versions_array: ['5.7', '5.8', '5.9', '5.10pre']
+    antelope_versions_supports_aldproxy: '5.7,5.8,5.9,5.10pre'
+    antelope_versions_supports_aldproxy_array: ['5.7', '5.8', '5.9', '5.10pre']
+Gemfile:
+  optional:
+    ':development':
+      - gem: 'byebug'
+        version: '~> 11.1'

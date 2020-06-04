@@ -5,17 +5,19 @@
 ##
 ## a set of utility methods to interact with a BRTT Antelope installation.
 ##
-## Copyright (C) 2013-2017 The Regents of The University of California
+## Copyright (C) 2013-2020 The Regents of The University of California
 ## Author: Geoff Davis <gadavis@ucsd.edu>
 ##
 
 module Facter::Util::Antelope
-  VALID_KERNELS = %w[Linux SunOS Darwin].freeze
-  ANTELOPE_BASEDIR = '/opt/antelope'
-  RE_VERSION = /^(\d+)\.(\d+)(-64)?(pre|post|p)?$/
+  # @summary
+  #   Utility functions for working with Antelope
+  VALID_KERNELS = ['Linux', 'SunOS', 'Darwin'].freeze
+  ANTELOPE_BASEDIR = '/opt/antelope'.freeze
+  RE_VERSION = %r{^(\d+)\.(\d+)(-64)?(pre|post|p)?$}
 
   # Return a list of all Antelope versions installed on this system
-  def self.get_versions
+  def self.versions
     dirs = Dir.entries(ANTELOPE_BASEDIR)
     versions = []
 
@@ -43,40 +45,44 @@ module Facter::Util::Antelope
   def self.sort_versions(a, b)
     amatch = RE_VERSION.match(a)
     bmatch = RE_VERSION.match(b)
+
     if Integer(amatch[1]) < Integer(bmatch[1])
       return -1
-    elsif Integer(amatch[1]) > Integer(bmatch[1])
+    end
+    if Integer(amatch[1]) > Integer(bmatch[1])
+      return 1
+    end
+
+    # major is equal
+    if Integer(amatch[2]) < Integer(bmatch[2])
+      return -1
+    end
+    if Integer(amatch[2]) > Integer(bmatch[2])
+      return 1
+    end
+
+    # major and minor are equal
+    # check the bits
+    if amatch[3].nil? && !bmatch[3].nil?
+      return 1
+    end
+    if bmatch[3].nil? && !amatch[3].nil?
+      return +1
+    end
+
+    # Major, minor, and bits are equal
+    # Check the suffix for pre release versus post-release
+    if amatch[4] == bmatch[4]
+      # tie-break with a
+      return 0
+    elsif amatch[4] == 'pre'
+      return -1
+    elsif bmatch[4] == 'pre'
+      return 1
+    elsif (amatch[4] == 'p') || (amatch[4] == 'post')
       return 1
     else
-      # major is equal
-      if Integer(amatch[2]) < Integer(bmatch[2])
-        return -1
-      elsif Integer(amatch[2]) > Integer(bmatch[2])
-        return 1
-      else
-        # major and minor are equal
-        # check the bits
-        if amatch[3].nil? && !bmatch[3].nil?
-          return 1
-        elsif bmatch[3].nil? && !amatch[3].nil?
-          return +1
-        else
-          # Major, minor, and bits are equal
-          # Check the suffix for pre release versus post-release
-          if amatch[4] == bmatch[4]
-            # tie-break with a
-            return 0
-          elsif amatch[4] == 'pre'
-            return -1
-          elsif bmatch[4] == 'pre'
-            return 1
-          elsif (amatch[4] == 'p') || (amatch[4] == 'post')
-            return 1
-          else
-            return -1
-          end
-        end
-      end
+      return -1
     end
   end
 end
