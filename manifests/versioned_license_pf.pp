@@ -59,61 +59,39 @@
 #    }
 #
 define antelope::versioned_license_pf (
-  $ensure              = 'present',
-  $version             = $title,
-  $source              = undef,
-  $content             = undef,
-  $license_keys        = undef,
-  $replace             = false,
-  $expiration_warnings = true,
-  $owner               = undef,
-  $group               = undef,
-  $mode                = undef,
-  $path                = undef,
+  Enum['present', 'absent']         $ensure               = 'present',
+  Boolean                           $replace              = false,
+  Boolean                           $expiration_warnings  = true,
+  Antelope::User                    $owner                = lookup('antelope::user'),
+  Antelope::Group                   $group                = lookup('antelope::group'),
+  String                            $mode                 = lookup('antelope::dist_mode'),
+  Antelope::Version                 $version              = $title,
+  Optional[Stdlib::Absolutepath]    $path                 = undef,
+  Optional[String]                  $source               = undef,
+  Optional[String]                  $content              = undef,
+  Optional[Variant[String, Array]]  $license_keys         = undef,
 ) {
   include '::antelope'
 
-  validate_re($ensure, ['present', 'absent'])
-
   $file_ensure = $ensure
-  $file_path = $path ? {
-    undef   => "/opt/antelope/${version}/data/pf/license.pf",
-    default => $path,
-  }
+  $file_path = pick($path, "/opt/antelope/${version}/data/pf/license.pf")
 
   if $content != undef and $source != undef {
     fail('Cannot specify both content and source')
   }
 
-  $file_source = $source ? {
-    undef   => undef, # default value
-    default => $source,
-  }
+  $file_source = $source
 
-  $file_content = $source ? {
-    undef => $content ? {
-      undef   => template('antelope/license.pf.erb'), # default value
-      default => $content,
-    },
-    default => undef,
+  if !$file_source {
+    $file_content = pick($content, template('antelope/license.pf.erb'))
+  } else {
+    $file_content = undef
   }
 
   $file_replace = $replace
-
-  $file_owner = $owner ? {
-    undef   => $antelope::dist_owner,
-    default => $owner,
-  }
-
-  $file_group = $group ? {
-    undef   => $antelope::dist_group,
-    default => $group,
-  }
-
-  $file_mode = $mode ? {
-    undef   => $antelope::dist_mode,
-    default => $mode,
-  }
+  $file_owner = $owner
+  $file_group = $group
+  $file_mode = $mode
 
   ### Managed resources
 

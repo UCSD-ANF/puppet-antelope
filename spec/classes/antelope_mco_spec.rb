@@ -8,39 +8,38 @@ describe 'antelope::mco' do
       let(:params) { { ensure: 'absent' } }
 
       it {
-        should contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
+        is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
           .with_ensure('absent')
       }
       it {
-        should contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
+        is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
           .with_ensure('absent')
       }
     end
 
     context 'with ensure==present' do
-      baseparams = { ensure: 'present' }
-
-      let(:params) { baseparams }
+      let(:params) { { ensure: 'present' } }
 
       it {
-        should contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
+        is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
           .with_ensure('present')
       }
       it {
-        should contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
+        is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
           .with_ensure('present')
       }
 
       context 'on a client_only system' do
         let(:params) do
-          { client_only: true }.merge(baseparams)
+          super().merge(client_only: true)
         end
+
         it {
-          should contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
+          is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.ddl')\
             .with_ensure('present')
         }
         it {
-          should contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
+          is_expected.to contain_file('/usr/libexec/mcollective/agent/antelope.rb')\
             .with_ensure('absent')
         }
       end
@@ -52,32 +51,24 @@ describe 'antelope::mco' do
             mco_etc: '/test/etc',
             owner: 'testowner',
             group: 'testgroup',
-            mode: '0666'
+            mode: '0666',
           }
         end
 
         it do
-          should contain_file('/test/basedir/agent/antelope.ddl').with(
+          is_expected.to contain_file('/test/basedir/agent/antelope.ddl').with(
             mode: '0666',
             owner: 'testowner',
-            group: 'testgroup'
+            group: 'testgroup',
           )
         end
       end
     end
   end
 
-  Helpers::Data.unsupported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
-
-      it_behaves_like 'Unsupported Platform'
-    end
-  end
-
-  Helpers::Data.supported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
       it_behaves_like 'Supported Platform'
     end

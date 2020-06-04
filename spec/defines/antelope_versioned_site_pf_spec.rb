@@ -4,34 +4,25 @@ require 'spec_helper'
 
 describe 'antelope::versioned_site_pf' do
   let(:title) { '5.3pre' }
+
   shared_context 'Supported Platform' do
     it {
-      should contain_file('antelope site.pf 5.3pre').with(
+      is_expected.to contain_file('antelope site.pf 5.3pre').with(
         path: '/opt/antelope/5.3pre/data/pf/site.pf',
-        ensure: 'present'
+        ensure: 'present',
       )
     }
-
-    context 'with ensure == garbage' do
-      let(:params) do
-        {
-          ensure: 'garbage'
-        }
-      end
-
-      it { should raise_error(Puppet::Error, /does not match/) }
-    end
 
     context 'with ensure == present' do
       let(:params) do
         {
-          ensure: 'present'
+          ensure: 'present',
         }
       end
 
       it {
-        should contain_file('antelope site.pf 5.3pre').with(
-          ensure: 'present'
+        is_expected.to contain_file('antelope site.pf 5.3pre').with(
+          ensure: 'present',
         )
       }
     end
@@ -39,13 +30,13 @@ describe 'antelope::versioned_site_pf' do
     context 'with ensure == absent' do
       let(:params) do
         {
-          ensure: 'absent'
+          ensure: 'absent',
         }
       end
 
       it {
-        should contain_file('antelope site.pf 5.3pre').with(
-          ensure: 'absent'
+        is_expected.to contain_file('antelope site.pf 5.3pre').with(
+          ensure: 'absent',
         )
       }
     end
@@ -54,15 +45,15 @@ describe 'antelope::versioned_site_pf' do
       let(:params) do
         {
           owner: 'pkgbuild',
-          group: 'pkgbuild'
+          group: 'pkgbuild',
         }
       end
 
       it {
-        should contain_file('antelope site.pf 5.3pre').with(
+        is_expected.to contain_file('antelope site.pf 5.3pre').with(
           owner: 'pkgbuild',
           group: 'pkgbuild',
-          ensure: 'present'
+          ensure: 'present',
         )
       }
     end
@@ -71,13 +62,11 @@ describe 'antelope::versioned_site_pf' do
       let(:params) do
         {
           source: '/this/should/fail',
-          content: 'This garbage content should fail'
+          content: 'This garbage content should fail',
         }
       end
 
-      it {
-        expect { should raise_error(Puppet::Error) }
-      }
+      it { is_expected.to compile.and_raise_error(%r{Cannot specify both}) }
     end
 
     context 'with basic params' do
@@ -87,17 +76,17 @@ describe 'antelope::versioned_site_pf' do
           mail_domain: 'domain.example.com',
           default_seed_network: 'EX',
           originating_organization: 'Example.com Inc.',
-          institution: 'EXPL'
+          institution: 'EXPL',
         }
       end
 
       it {
-        should contain_file('antelope site.pf 5.3pre')\
-          .with_content(/mailhost smtp\.example\.com/)\
-          .with_content(/mail_domain domain\.example\.com/)\
-          .with_content(/default_seed_network   EX/)\
-          .with_content(/originating_organization Example\.com Inc\./)\
-          .with_content(/Institution EXPL/)
+        is_expected.to contain_file('antelope site.pf 5.3pre')\
+          .with_content(%r{mailhost smtp\.example\.com})\
+          .with_content(%r{mail_domain domain\.example\.com})\
+          .with_content(%r{default_seed_network   EX})\
+          .with_content(%r{originating_organization Example\.com Inc\.})\
+          .with_content(%r{Institution EXPL})
       }
     end
 
@@ -105,11 +94,12 @@ describe 'antelope::versioned_site_pf' do
       let(:title) { 'test antelope.pf' }
       let(:params) do
         {
-          version: '5.2-64'
+          version: '5.2-64',
         }
       end
+
       it {
-        should contain_file('antelope site.pf test antelope.pf')\
+        is_expected.to contain_file('antelope site.pf test antelope.pf')\
           .with_path('/opt/antelope/5.2-64/data/pf/site.pf')
       }
     end
@@ -117,28 +107,21 @@ describe 'antelope::versioned_site_pf' do
     context 'with a path defined' do
       let(:params) do
         {
-          path: '/path/to/test.pf'
+          path: '/path/to/test.pf',
         }
       end
 
       it {
-        should contain_file('antelope site.pf 5.3pre')\
+        is_expected.to contain_file('antelope site.pf 5.3pre')\
           .with_path('/path/to/test.pf')
       }
     end
   end
 
-  Helpers::Data.unsupported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) { facts }
 
-      it_behaves_like 'Unsupported Platform'
-    end
-  end
-
-  Helpers::Data.supported_platforms.each do |platform|
-    context "on #{platform}" do
-      include_context platform
       it_behaves_like 'Supported Platform'
     end
   end

@@ -66,41 +66,25 @@
 #    }
 #
 define antelope::instance(
-  $servicename         = $title,
-  $ensure              = 'present',
-  $dirs                = undef,
-  $user                = 'rt',
-  $group               = undef,
-  $delay               = '0',
-  $shutdownwait        = '120',
-  $manage_fact         = undef,
-  $manage_rtsystemdirs = undef,
-  $subscriptions       = [],
+  Enum['present', 'absent'] $ensure = lookup('antelope::instance_ensure'),
+  Antelope::User            $user = lookup('antelope::user'),
+  Integer                   $delay = lookup('antelope::delay'),
+  Integer                   $shutdownwait = lookup('antelope::shutdownwait'),
+  Array                     $subscriptions = lookup('antelope::instance_subscribe'),
+  String                    $servicename = $title,
+  Optional[Antelope::Dirs]  $dirs,
+  Optional[Antelope::Group] $group = lookup('antelope::group'),
+  Optional[Boolean]         $manage_fact = lookup('antelope::manage_service_fact'),
+  Optional[Boolean]         $manage_rtsystemdirs = lookup('antelope::manage_rtsystemdirs'),
+
 ) {
 
   include '::antelope'
 
   # Sanity test parameters
-  validate_re($ensure,'^(ab|pre)sent')
-  validate_string($user)
-  if $group != undef { validate_string($group) }
-  validate_string($servicename)
-  validate_string($delay)
-  validate_array($subscriptions)
-  if $manage_fact != undef {
-    validate_bool($manage_fact)
-  }
-  if $manage_rtsystemdirs != undef {
-    validate_bool($manage_rtsystemdirs)
-  }
-
   if $dirs == undef {
     if ($ensure == 'present') {
       fail('service enabled but no dirs specified')
-    }
-  } else {
-    unless (is_string($dirs) or is_array($dirs)) {
-      fail('dirs must be undef, a string, or an array')
     }
   }
 
@@ -110,7 +94,7 @@ define antelope::instance(
 
 
   # Set local variables based on the desired state
-  # In our management model, we don't ensure the service is running
+  # In our management model, we do not ensure the service is running
   $file_ensure    = $ensure ? { 'present' => 'file', default => $ensure }
   $link_ensure    = $ensure ? { 'present' => 'link', default => $ensure }
   $service_enable = $ensure ? { 'present' => true  , default => false }

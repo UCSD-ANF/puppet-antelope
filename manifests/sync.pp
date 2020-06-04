@@ -37,18 +37,20 @@
 # Can also be specified with the global variable $::antelope_site_tree
 #
 class antelope::sync(
-  $ensure    = present,
-  $host      = undef, # must be set if ensure is present
-  $user      = 'rt',
-  $site_tree = undef,
-  $basedir   = '/usr/local',
-  $rsync_bin = '/usr/bin/rsync',
-) inherits antelope::params {
-
+  Enum['present', 'absent']    $ensure,
+  Antelope::User               $user,
+  Antelope::User               $owner,
+  Antelope::Group              $group,
+  String                       $exec_mode,
+  String                       $data_mode,
+  Stdlib::Absolutepath         $basedir,
+  Stdlib::Absolutepath         $rsync_bin,
+  Optional[String]             $site_tree = undef,
+  Optional[Antelope::Synchost] $host      = undef, # must be set if ensure is present
+) {
   include ::antelope
 
   ### Validate variables
-  validate_re($ensure, '^(pre|ab)sent$')
 
   if $ensure == 'present' {
     if !$host { fail('You must specify a value for host.') }
@@ -57,11 +59,10 @@ class antelope::sync(
   ### Class local variables
 
   $manage_file_ensure = $ensure
-  $manage_file_owner = 'root'
-  $manage_file_group = $::osfamily ? {
-    'Darwin'  => 'wheel',
-    default   => 'root',
-  }
+  $manage_file_owner = $owner
+  $manage_file_group = $group
+  $manage_file_exec_mode = $exec_mode
+  $manage_file_data_mode = $data_mode
 
   ### The following variables are used in template evaluation
   $confdir   = "${basedir}/etc"
@@ -77,7 +78,7 @@ class antelope::sync(
   file { 'antelope_sync':
     ensure  => $manage_file_ensure,
     path    => "${bindir}/antelope_sync",
-    mode    => '0555',
+    mode    => $manage_file_exec_mode,
     owner   => $manage_file_owner,
     group   => $manage_file_group,
     content => template('antelope/sync/antelope_sync.erb'),
@@ -89,23 +90,20 @@ class antelope::sync(
   }
 
   # Exclude and include lists
-  file { 'rsync_exclude':
-    ensure  => $manage_file_ensure,
-    path    => "${confdir}/rsync_exclude",
-    mode    => '0444',
-    owner   => $manage_file_owner,
-    group   => $manage_file_group,
-    source  => 'puppet:///modules/antelope/sync/rsync_exclude',
-    require => File[$confdir],
-  }
-
-  file { 'rsync_include':
-    ensure  => $manage_file_ensure,
-    path    => "${confdir}/rsync_include",
-    mode    => '0444',
-    owner   => $manage_file_owner,
-    group   => $manage_file_group,
-    source  => 'puppet:///modules/antelope/sync/rsync_include',
-    require => File[$confdir],
+  file {
+    'rsync_exclude':
+      path   => "${confdir}/rsync_exclude",
+      source => 'puppet:///modules/antelope/sync/rsync_exclude',
+    ;
+    'rsync_include':
+      path   => "${confdir}/rsync_include",
+      source => 'puppet:///modules/antelope/sync/rsync_include',
+    ;
+    default:
+      ensure  => $manage_file_ensure,
+      mode    => $manage_file_data_mode,
+      owner   => $manage_file_owner,
+      group   => $manage_file_group,
+      require => File[$confdir],
   }
 }

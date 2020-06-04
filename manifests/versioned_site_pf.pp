@@ -70,35 +70,25 @@
 #    }
 #
 define antelope::versioned_site_pf (
-  $ensure                   = 'present',
-  $version                  = $title,
-  $mailhost                 = '', # lint:ignore:empty_string_assignment
-  $mail_domain              = $::fqdn,
-  $default_seed_network     = 'XX',
-  $originating_organization = '', # lint:ignore:empty_string_assignment
-  $institution              = 'XXXX',
-  $source                   = undef,
-  $content                  = undef,
-  $owner                    = undef,
-  $group                    = undef,
-  $mode                     = undef,
-  $path                     = undef
+  Enum['present', 'absent']       $ensure                   = 'present',
+  String                          $mailhost                 = '',
+  Stdlib::Fqdn                    $mail_domain              = $::facts['fqdn'],
+  String                          $default_seed_network     = 'XX',
+  String                          $originating_organization = '',
+  String                          $institution              = 'XXXX',
+  Antelope::Version               $version                  = $title,
+  Optional[String]                $source                   = undef,
+  Optional[String]                $content                  = undef,
+  Antelope::User                  $owner                    = lookup('antelope::dist_owner'),
+  Antelope::Group                 $group                    = lookup('antelope::dist_group'),
+  String                          $mode                     = lookup('antelope::dist_mode'),
+  Optional[Stdlib::Absolutepath]  $path                     = undef
 ) {
   include '::antelope'
 
-  validate_re($ensure, ['present', 'absent'])
-  validate_string($mailhost)
-  validate_string($mail_domain)
-  validate_string($default_seed_network)
-  validate_string($originating_organization)
-  validate_string($institution)
-
   $file_ensure = $ensure
 
-  $file_path = $path ? {
-    undef   => "/opt/antelope/${version}/data/pf/site.pf",
-    default => $path,
-  }
+  $file_path   = pick($path, "/opt/antelope/${version}/data/pf/site.pf")
 
   if $content != undef and $source != undef {
     fail('Cannot specify both content and source')
@@ -106,27 +96,19 @@ define antelope::versioned_site_pf (
 
   $file_source = $source
 
-  $file_content = $source ? {
+  $file_content = $file_source ? {
     undef => $content ? {
-      undef   => template('antelope/site.pf.erb'), # default value
+      undef => template('antelope/site.pf.erb'),
       default => $content,
     },
+    default => undef,
   }
 
-  $file_owner = $owner ? {
-    undef   => $antelope::dist_owner,
-    default => $owner,
-  }
+  $file_owner = $owner
 
-  $file_group = $group ? {
-    undef   => $antelope::dist_group,
-    default => $group,
-  }
+  $file_group = $group
 
-  $file_mode = $mode ? {
-    undef   => $antelope::dist_mode,
-    default => $mode,
-  }
+  $file_mode = $mode
 
   file { "antelope site.pf ${title}" :
     ensure  => $file_ensure,
