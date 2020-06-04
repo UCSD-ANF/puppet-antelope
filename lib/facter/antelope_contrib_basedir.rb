@@ -8,31 +8,23 @@ module Facter::Antelope
     # @summary
     #   A facter fact to determine the location of the Antelope Contributed Software.
     #   This varies between older versions of Antelope and newer ones.
-    class << self
-      def contrib_subdir_exists?(version)
-        File.directory?("/opt/antelope/#{version}/contrib/bin")
-      end
 
-      # Determines the contrib directories for all installed versions of Antelope.
-      def contrib_dirs
-        result = {}
-        Facter::Util::Antelope.versions.each do |version|
-          result[version] = if contrib_subdir_exists?(version)
-                              '/contrib'
-                            else
-                              ''
-                            end
-        end
-        result
-      end
+    def self.contrib_subdir_exists?(version)
+      File.directory?("/opt/antelope/#{version}/contrib/bin")
+    end
 
-      def add_facts
-        Facter.add(:antelope_contrib_basedir) do
-          #confine kernel: Facter::Util::Antelope::VALID_KERNELS
-          setcode do
-            contrib_dirs
-          end
-        end
+    # Determines the contrib directories for all installed versions of Antelope.
+    def self.contrib_dirs
+      #result = {'junk'=>'value'}
+      result = Facter::Util::Antelope.versions.map { |version|
+        ["#{version}", self.contrib_subdir_exists?(version)? '/contrib': '']}.to_h
+      result
+    end
+
+    def self.add_facts
+      Facter.add(:antelope_contrib_basedir) do
+        confine kernel: Facter::Util::Antelope::VALID_KERNELS
+        setcode { Facter::Antelope::Contrib.contrib_dirs }
       end
     end
   end
