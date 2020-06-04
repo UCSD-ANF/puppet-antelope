@@ -70,19 +70,19 @@
 #    }
 #
 define antelope::versioned_site_pf (
-  Enum['present', 'absent']       $ensure,
-  String                          $mailhost = '',
-  Stdlib::Fqdn                    $mail_domain = $::facts['fqdn'],
-  String                          $default_seed_network = 'XX',
+  Enum['present', 'absent']       $ensure                   = 'present',
+  String                          $mailhost                 = '',
+  Stdlib::Fqdn                    $mail_domain              = $::facts['fqdn'],
+  String                          $default_seed_network     = 'XX',
   String                          $originating_organization = '',
-  String                          $institution = 'XXXX',
-  Antelope::Version               $version = $title,
-  Optional[String]                $source,
-  Optional[String]                $content,
-  Antelope::User                  $owner = lookup('antelope::dist_owner'),
-  Antelope::Group                 $group = lookup('antelope::dist_group'),
-  String                          $mode  = lookup('antelope::dist_mode'),
-  Optional[Stdlib::Absolutepath]  $path
+  String                          $institution              = 'XXXX',
+  Antelope::Version               $version                  = $title,
+  Optional[String]                $source                   = undef,
+  Optional[String]                $content                  = undef,
+  Antelope::User                  $owner                    = lookup('antelope::dist_owner'),
+  Antelope::Group                 $group                    = lookup('antelope::dist_group'),
+  String                          $mode                     = lookup('antelope::dist_mode'),
+  Optional[Stdlib::Absolutepath]  $path                     = undef
 ) {
   include '::antelope'
 
