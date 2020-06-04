@@ -37,16 +37,16 @@
 # Can also be specified with the global variable $::antelope_site_tree
 #
 class antelope::sync(
-  Enum['present', 'absent'] $ensure,
-  Antelope::User            $user,
-  Antelope::User            $owner,
-  Antelope::Group           $group,
-  String                    $exec_mode,
-  String                    $data_mode,
-  Stdlib::Absolutepath      $basedir,
-  Stdlib::Absolutepath      $rsync_bin,
-  Optional[String]          $site_tree = undef,
-  Optional[Stdlib::Host]    $host      = undef, # must be set if ensure is present
+  Enum['present', 'absent']    $ensure,
+  Antelope::User               $user,
+  Antelope::User               $owner,
+  Antelope::Group              $group,
+  String                       $exec_mode,
+  String                       $data_mode,
+  Stdlib::Absolutepath         $basedir,
+  Stdlib::Absolutepath         $rsync_bin,
+  Optional[String]             $site_tree = undef,
+  Optional[Antelope::Synchost] $host      = undef, # must be set if ensure is present
 ) {
   include ::antelope
 
