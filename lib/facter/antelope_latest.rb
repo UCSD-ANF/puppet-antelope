@@ -7,6 +7,7 @@
 require 'facter/util/antelope'
 
 module Facter::Antelope
+  # Generate facts for the latest (highest version) components of Antelope.
   module Latest
     def self.add_latest(id)
       factname = "antelope_latest_#{id}"

@@ -9,9 +9,9 @@
 ## Author: Geoff Davis <gadavis@ucsd.edu>
 ##
 
+# @summary
+#   Utility functions for working with Antelope
 module Facter::Util::Antelope
-  # @summary
-  #   Utility functions for working with Antelope
   VALID_KERNELS = ['Linux', 'SunOS', 'Darwin'].freeze
   ANTELOPE_BASEDIR = '/opt/antelope'.freeze
   RE_VERSION = %r{^(\d+)\.(\d+)(-64)?(pre|post|p)?$}
@@ -73,16 +73,17 @@ module Facter::Util::Antelope
     # Major, minor, and bits are equal
     # Check the suffix for pre release versus post-release
     if amatch[4] == bmatch[4]
-      # tie-break with a
       return 0
-    elsif amatch[4] == 'pre'
-      return -1
-    elsif bmatch[4] == 'pre'
-      return 1
-    elsif (amatch[4] == 'p') || (amatch[4] == 'post')
-      return 1
-    else
+    end
+    if amatch[4] == 'pre'
       return -1
     end
+    if bmatch[4] == 'pre'
+      return 1
+    end
+    if (amatch[4] == 'p') || (amatch[4] == 'post')
+      return 1
+    end
+    -1
   end
 end
