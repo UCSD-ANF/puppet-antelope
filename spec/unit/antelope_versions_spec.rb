@@ -2,18 +2,36 @@ require 'spec_helper'
 require 'facter/antelope_versions'
 require 'facter/util/antelope'
 
-describe 'antelope_versions fact', type: :fact do
-  subject(:antelope_versions) { fact.value }
+describe 'Antelope Version Facts' do
+  let(:test_versions) { ['5.2-64', '5.4', '5.4post'] }
 
-  let(:fact) { Facter.fact(:antelope_versions) }
-
-  before :each do
-    allow(Facter::Util::Antelope).to receive(:versions)\
-      .and_return([
-                    '5.2-64', '5.4', '5.4post'
-                  ])
-    Facter::Antelope::Versions.add_facts
+  shared_context 'mocked versions' do
+    before :each do
+      allow(Facter::Util::Antelope).to receive(:versions)\
+        .and_return(test_versions).at_least(:once)
+      Facter::Antelope::Versions.add_facts
+    end
   end
 
-  it { is_expected.to eql('5.2-64,5.4,5.4post') }
+  describe 'antelope_versions fact', type: :fact do
+    subject(:antelope_versions) { fact.value }
+
+    let(:fact) { Facter.fact(:antelope_versions) }
+    let(:expected_versions) { test_versions.join(',') }
+
+    include_context 'mocked versions'
+
+    it { is_expected.to eql(expected_versions) }
+  end
+
+  describe 'antelope_versions_array fact', type: :fact do
+    subject(:antelope_versions_array) { fact.value }
+
+    let(:fact) { Facter.fact(:antelope_versions_array) }
+    let(:expected_versions) { test_versions }
+
+    include_context 'mocked versions'
+
+    it { is_expected.to eql(expected_versions) }
+  end
 end
