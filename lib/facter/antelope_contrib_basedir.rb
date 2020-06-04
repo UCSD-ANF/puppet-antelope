@@ -4,20 +4,19 @@
 require 'facter/util/antelope'
 
 module Facter::Antelope
+  # @summary
+  #   A facter fact to determine the location of the Antelope Contributed Software.
+  #   This varies between older versions of Antelope and newer ones.
   module Contrib
-    # @summary
-    #   A facter fact to determine the location of the Antelope Contributed Software.
-    #   This varies between older versions of Antelope and newer ones.
-
     def self.contrib_subdir_exists?(version)
       File.directory?("/opt/antelope/#{version}/contrib/bin")
     end
 
     # Determines the contrib directories for all installed versions of Antelope.
     def self.contrib_dirs
-      #result = {'junk'=>'value'}
       result = Facter::Util::Antelope.versions.map { |version|
-        ["#{version}", self.contrib_subdir_exists?(version)? '/contrib': '']}.to_h
+        [version, contrib_subdir_exists?(version) ? '/contrib' : '']
+      }.to_h
       result
     end
 

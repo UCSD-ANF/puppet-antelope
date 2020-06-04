@@ -63,7 +63,7 @@ describe 'Antelope Contrib Basedir Specs' do
       include_context 'mocked contrib_subdir_exists?'
 
       it 'returns expected contrib basedirs' do
-        skip("In test harness, Facter.fact hash.value with version numbers as keys is broken")
+        skip('In test harness, Facter.fact hash.value with version numbers as keys is broken')
         is_expected.to eq(expected_contrib_basedir)
       end
     end

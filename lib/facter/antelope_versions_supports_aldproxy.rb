@@ -5,6 +5,8 @@
 require 'facter/util/antelope'
 
 module Facter::Antelope
+  # Create Fact for versions of Antelope that support the
+  # ALD Proxy license daemon.
   module AldProxyFact
     def self.add_facts
       versions = Facter::Util::Antelope.versions
