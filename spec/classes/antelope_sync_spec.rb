@@ -10,7 +10,7 @@ describe 'antelope::sync' do
     ]
   end
 
-  shared_context 'Supported Platform' do
+  shared_context 'Supported Platform' do |dist_group = 'root'|
     context 'with ensure==absent' do
       let(:params) { { ensure: 'absent' } }
 
@@ -36,7 +36,7 @@ describe 'antelope::sync' do
             .with_path('/usr/local/bin/antelope_sync')\
             .with_mode('0555')\
             .with_owner('root')\
-            .with_group('root')\
+            .with_group(dist_group)\
             .with_content(%r{my @rsyncOpts=\("-a", '--partial', "--delete"\);})
         }
         it {
@@ -59,7 +59,7 @@ describe 'antelope::sync' do
             .with_path('/usr/local/bin/antelope_sync')\
             .with_mode('0555')\
             .with_owner('root')\
-            .with_group('root')\
+            .with_group(dist_group)\
             .with_content(%r{my @rsyncOpts=\("-a", '--partial', "--delete", "--rsh=ssh"\);})
         }
       end # with an SSH host defined
@@ -70,7 +70,10 @@ describe 'antelope::sync' do
     context "on #{os}" do
       let(:facts) { facts }
 
-      it_behaves_like 'Supported Platform'
+      case facts[:osfamily]
+      when 'Darwin' then it_behaves_like 'Supported Platform', 'wheel'
+      else it_behaves_like 'Supported Platform'
+      end
     end
   end
 end
