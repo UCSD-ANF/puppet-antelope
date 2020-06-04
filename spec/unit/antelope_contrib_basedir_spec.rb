@@ -15,7 +15,7 @@ describe 'Antelope Contrib Basedir Specs' do
     }
   end
 
-  describe Facter::Util::Contrib do
+  describe Facter::Antelope::Contrib do
     context 'with versions == 5.2-64, 5.4, 5.4post' do
       before(:each) do
         allow(Facter::Util::Antelope).to receive(:versions).and_return(version_dirs.keys)
@@ -37,15 +37,17 @@ describe 'Antelope Contrib Basedir Specs' do
     after(:each) { Facter.clear }
 
     context 'when versions == 5.2-64, 5.4, 5.4post' do
-      it 'returns expected contrib basedirs' do
-        # expect(Facter::Util::Contrib).to receive(:contrib_dirs)
-        expect(Facter::Util::Antelope).to receive(:versions).and_return(version_dirs.keys).at_least(:once)
+      before(:each) do
+        allow(Facter::Util::Antelope).to receive(:versions).and_return(version_dirs.keys).at_least(:once)
         version_dirs.each do |version, dir_exists|
-          expect(Facter::Util::Contrib).to receive(:contrib_subdir_exists?)\
+          allow(Facter::Antelope::Contrib).to receive(:contrib_subdir_exists?)\
             .with(version).at_least(:once).and_return(dir_exists)
         end
-        # byebug
+        Facter::Antelope::Contrib.add_facts
+      end
 
+      it 'returns expected contrib basedirs' do
+        skip("facter fact testing doesn't work in PDK 1.1.18")
         expect(Facter.fact(:antelope_contrib_basedir).value).to eq(expected_contrib_basedir)
       end
     end
