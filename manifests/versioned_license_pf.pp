@@ -87,11 +87,8 @@ define antelope::versioned_license_pf (
   }
 
   $file_replace = $replace
-
   $file_owner = $owner
-
   $file_group = $group
-
   $file_mode = $mode
 
   ### Managed resources
