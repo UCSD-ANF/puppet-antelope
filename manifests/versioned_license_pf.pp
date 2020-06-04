@@ -59,17 +59,17 @@
 #    }
 #
 define antelope::versioned_license_pf (
-  Enum['present', 'absent']       $ensure = 'present',
-  Boolean                         $replace = false,
-  Boolean                         $expiration_warnings = true,
-  Antelope::User                  $owner = lookup('antelope::user'),
-  Antelope::Group                 $group = lookup('antelope::group'),
-  String                          $mode  = lookup('antelope::dist_mode'),
-  Antelope::Version               $version = $title,
-  Optional[Stdlib::Absolutepath]  $path = undef,
-  Optional[String]                $source,
-  Optional[String]                $content,
-  Optional[String]                $license_keys,
+  Enum['present', 'absent']         $ensure               = 'present',
+  Boolean                           $replace              = false,
+  Boolean                           $expiration_warnings  = true,
+  Antelope::User                    $owner                = lookup('antelope::user'),
+  Antelope::Group                   $group                = lookup('antelope::group'),
+  String                            $mode                 = lookup('antelope::dist_mode'),
+  Antelope::Version                 $version              = $title,
+  Optional[Stdlib::Absolutepath]    $path                 = undef,
+  Optional[String]                  $source               = undef,
+  Optional[String]                  $content              = undef,
+  Optional[Variant[String, Array]]  $license_keys         = undef,
 ) {
   include '::antelope'
 
@@ -82,8 +82,10 @@ define antelope::versioned_license_pf (
 
   $file_source = $source
 
-  if $file_source {
+  if !$file_source {
     $file_content = pick($content, template('antelope/license.pf.erb'))
+  } else {
+    $file_content = undef
   }
 
   $file_replace = $replace
