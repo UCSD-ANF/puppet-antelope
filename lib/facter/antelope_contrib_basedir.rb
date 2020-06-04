@@ -3,27 +3,30 @@
 # Fact: antelope_contribbasedir
 require 'facter/util/antelope'
 
-module Facter
-  module Antelope
-    module ContribFact
-      def self.add_facts
-        Facter.add(:antelope_contrib_basedir) do
-          confine kernel: ['Linux', 'SunOS', 'Darwin']
-          result = {}
-          begin
-            Facter::Util::Antelope.get_versions.each do |version|
-              result[version] = ''
-              result[version] = '/contrib' if \
-                File.directory?("/opt/antelope/#{version}/contrib/bin")
-            end
-          rescue StandardError
-            result = nil
-          end
-          setcode { result } unless result.nil?
-        end
+module Facter::Util::Contrib
+  # @summary
+  #   A facter fact to determine the location of the Antelope Contributed Software.
+  #   This varies between older versions of Antelope and newer ones.
+  class << self
+    def contrib_subdir_exists?(version)
+      File.directory?("/opt/antelope/#{version}/contrib/bin")
+    end
+
+    # Determines the contrib directories for all installed versions of Antelope.
+    def contrib_dirs
+      result = {}
+      Facter::Util::Antelope.versions.each do |version|
+        result[version] = if contrib_subdir_exists?(version)
+                            '/contrib'
+                          else
+                            ''
+                          end
       end
+      result
     end
   end
 end
 
-Facter::Antelope::ContribFact.add_facts
+Facter.add(:antelope_contrib_basedir) do
+  setcode { Facter::Util::Contrib.contrib_dirs }
+end
