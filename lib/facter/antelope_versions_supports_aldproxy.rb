@@ -7,7 +7,6 @@ require 'facter/util/antelope'
 module Facter::Antelope
   module AldProxyFact
     def self.add_facts
-      confine kernel: Facter::Util::Antelope::VALID_KERNELS
       versions = Facter::Util::Antelope.versions
       unless versions.nil?
         versions = versions.delete_if do |version|
@@ -15,9 +14,11 @@ module Facter::Antelope
         end
       end
       Facter.add(:antelope_versions_supports_aldproxy) do
+        confine kernel: Facter::Util::Antelope::VALID_KERNELS
         setcode { versions.join(',') } unless versions.nil?
       end
       Facter.add(:antelope_versions_supports_aldproxy_array) do
+        confine kernel: Facter::Util::Antelope::VALID_KERNELS
         setcode { versions } unless versions.nil?
       end
     end

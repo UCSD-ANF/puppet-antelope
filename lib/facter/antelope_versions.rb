@@ -12,12 +12,13 @@ require 'facter/util/antelope'
 module Facter::Antelope
   module Versions
     def self.add_facts
-      confine kernel: Facter::Util::Antelope::VALID_KERNELS
       versions = Facter::Util::Antelope.versions
       Facter.add(:antelope_versions) do
+        confine kernel: Facter::Util::Antelope::VALID_KERNELS
         setcode { versions.join(',') } unless versions.nil?
       end
       Facter.add(:antelope_versions_array) do
+        confine kernel: Facter::Util::Antelope::VALID_KERNELS
         setcode { versions } unless versions.nil?
       end
     end
