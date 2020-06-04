@@ -105,7 +105,7 @@ describe 'antelope::instance', type: :define do
       end
       context 'with managed fact' do
         let(:params) do
-          super.merge(manage_fact: true)
+          super().merge(manage_fact: true)
         end
 
         it {
@@ -117,7 +117,7 @@ describe 'antelope::instance', type: :define do
 
       context 'with manage_rtsystemdirs = true' do
         let(:params) do
-          super.merge(manage_rtsystemdirs: true)
+          super().merge(manage_rtsystemdirs: true)
         end
 
         it { is_expected.to contain_antelope__rtsystemdir('/foo') }
@@ -130,9 +130,9 @@ describe 'antelope::instance', type: :define do
           end
 
           let(:params) do
-            super().merge('manage_rtsystemdirs' => true,
-                          :user                 => 'someguy',
-                          :group                => 'somegroup')
+            super().merge(manage_rtsystemdirs: true,
+                          user: 'someguy',
+                          group: 'somegroup')
           end
 
           it {
