@@ -8,7 +8,7 @@ describe 'antelope_versions_array fact', type: :fact do
   let(:fact) { Facter.fact(:antelope_versions_array) }
 
   before :each do
-    allow(Facter::Util::Antelope).to receive(:get_versions)\
+    allow(Facter::Util::Antelope).to receive(:versions)\
       .and_return([
                     '5.2-64', '5.4', '5.4post'
                   ])

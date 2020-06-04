@@ -11,19 +11,19 @@ require 'facter/util/antelope'
     let(:fact) { Facter.fact(a.to_sym) }
 
     before :each do
-      allow(Facter::Util::Antelope).to receive(:get_versions)\
+      allow(Facter::Util::Antelope).to receive(:versions)\
         .and_return([
                       '5.2-64', '5.4', '5.4post'
-                    ])
+                    ]).at_least(:once)
       allow(File).to receive('exist?').with(
         '/opt/antelope/5.2-64/bin/ald_proxy',
-      ).and_return(false)
+      ).and_return(false).at_least(:once)
       allow(File).to receive('exist?').with(
         '/opt/antelope/5.4/bin/ald_proxy',
-      ).and_return(true)
+      ).and_return(true).at_least(:once)
       allow(File).to receive('exist?').with(
         '/opt/antelope/5.4post/bin/ald_proxy',
-      ).and_return(true)
+      ).and_return(true).at_least(:once)
       Facter::Antelope::AldProxyFact.add_facts
     end
 
