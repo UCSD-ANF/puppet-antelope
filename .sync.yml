@@ -1,5 +1,6 @@
 spec/spec_helper.rb:
   mock_with: ':rspec'
+  coverate_report: true
 spec/default_facts.yml:
   extra_facts:
     antelope_contrib_basedir:
@@ -15,3 +16,8 @@ spec/default_facts.yml:
     antelope_versions_array: ['5.7', '5.8', '5.9', '5.10pre']
     antelope_versions_supports_aldproxy: '5.7,5.8,5.9,5.10pre'
     antelope_versions_supports_aldproxy_array: ['5.7', '5.8', '5.9', '5.10pre']
+Gemfile:
+  optional:
+    ':development':
+      - gem: 'byebug'
+        version: '~> 11.1'
