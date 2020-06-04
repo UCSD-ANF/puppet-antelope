@@ -96,8 +96,12 @@ define antelope::versioned_site_pf (
 
   $file_source = $source
 
-  if $file_source {
-    $file_content = pick($content, template('antelope/site.pf.erb'))
+  $file_content = $file_source ? {
+    undef => $content ? {
+      undef => template('antelope/site.pf.erb'),
+      default => $content,
+    },
+    default => undef,
   }
 
   $file_owner = $owner
