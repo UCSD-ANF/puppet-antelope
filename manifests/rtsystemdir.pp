@@ -1,16 +1,26 @@
-# rtsystemdir.pp
+# @summary Manages permissions inside an Antelope real-time system directory
 #
-# Manage permissions inside the Antelope real-time system specified by $path
+# This defined type manages permissions for files and directories within
+# an Antelope real-time system directory, specifically focusing on the
+# rtexec.pf file permissions.
 #
-# == Parameters
+# @param owner
+#   The username that the real-time system should run as
+# @param group
+#   The group that the real-time system should run as
+# @param dir_mode
+#   File mode for directories in the real-time system
+# @param rtexec_mode
+#   File mode for the rtexec.pf file
+# @param path
+#   The path to the real-time system directory (defaults to title)
 #
-# [*path*]
-#   The path to the real-time system directory. Typically set to something like
-# "/export/home/rt/rtsystems/foo". Defaults to the value of title - this is
-# the *namevar*
+# @example Manage permissions for a real-time system
+#   antelope::rtsystemdir { '/export/home/rt/rtsystems/foo':
+#     owner => 'rt',
+#     group => 'rt',
+#   }
 #
-# [*owner*]
-#  The ownername that the real-time system should run as. Defaults to 'rt'
 define antelope::rtsystemdir (
   Antelope::User  $owner = lookup('antelope::user'),
   Antelope::Group $group = lookup('antelope::group'),

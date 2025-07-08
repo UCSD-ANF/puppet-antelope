@@ -1,6 +1,15 @@
-# Autorequires: File[$facts_dir]
-# Installs a service fact for Antelope services
-# Sets up a basic concat resource that other classes can add to
+# @summary Installs a service fact for Antelope services
+#
+# This class sets up a basic concat resource that other classes can add to
+# in order to build the antelope_services fact. The fact contains a comma-separated
+# list of all Antelope service instances.
+#
+# @param facts_dir
+#   Path to the facter facts.d directory
+#
+# @example Basic usage
+#   include antelope::service_fact
+#
 class antelope::service_fact (
   Stdlib::Absolutepath  $facts_dir,
 ) {
