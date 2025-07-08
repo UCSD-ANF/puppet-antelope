@@ -1,71 +1,42 @@
-# instance.pp
+# @summary Installs and manages an Antelope real-time system instance
 #
-# Install an Antelope init script and optionally manage permissions on key
-# parameter files for a list of real-time systems
+# This defined type creates an Antelope service instance with associated
+# init scripts and manages permissions for real-time system directories.
 #
-# == Parameters
+# @param ensure
+#   Whether the service should be present or absent
+# @param user
+#   Username that the Antelope real-time systems should run as
+# @param delay
+#   Number of seconds to delay between startups
+# @param shutdownwait
+#   How long to wait in seconds for real-time system shutdown
+# @param subscriptions
+#   Array of resources that will cause this instance to stop/restart
+# @param servicename
+#   Name of the init script (defaults to title)
+# @param dirs
+#   List of directories containing real-time systems
+# @param group
+#   Group that Antelope should run as
+# @param manage_fact
+#   Whether to manage the antelope_services fact
+# @param manage_rtsystemdirs
+#   Whether to manage permissions in real-time system directories
 #
-# [*servicename*]
-#   The name of the init resource name, after /etc/init.d. Typically set to
-# "antelope". Defaults to the value of title - this is the namevar
+# @example Two real-time systems under user rt
+#   antelope::instance { 'antelope':
+#     dirs => ['/rtsystems/usarray', '/rtsystems/roadnet'],
+#   }
 #
-# [*dirs*]
-#   List of directories containing real-time systems.
-# e.g. "/export/home/rt/dirs/usarray"
+# @example Single real-time system with subscriptions
+#   antelope::instance { 'antelope-rtida':
+#     dirs          => '/rtsystems/ida',
+#     user          => 'rtida',
+#     subscriptions => [Service['automounter']],
+#   }
 #
-# [*user*]
-#   The username that the Antelope real-time systems should run as. Defaults
-#  to 'rt'.
-#
-# [*delay*]
-#   Number of seconds to delay between startups. Default value of 0 means no
-# delay.
-#
-# [*ensure*]
-#   Controls whether the service should be there or not
-#
-# [*shutdownwait*]
-#   How long to wait in seconds for a real-time system to shutdown. Defaults
-#   to 120 seconds.
-#
-# [*manage_fact*]
-#   If false, does not manage the facter fact antelope_instances.
-#   Defaults to true
-#
-# [*manage_rtsystemdirs*]
-#   If true, will manage permissions inside each directory specified in *dirs*
-#
-# [*subscriptions*]
-#   If set, this Antelope instance will be stopped and restarted
-#   Defaults to undef
-#
-#
-# == Autorequires
-# This resource auto-requires the following resources:
-#  User[$user]
-#
-# == Examples
-#
-# Two real-time systems running under user rt
-#    antelope::instance{
-#      'antelope':
-#        dirs => [ '/export/home/rt/dirs/usarray',
-#                      '/export/home/rt/dirs/roadnet', ],
-#    }
-#
-# A single real-time system running under user rtida
-# that pauses its service when either the automounter or yum update.
-#    antelope::instance {
-#      'antelope-rtida':
-#        dirs          => '/export/home/rtida/dirs/ida',
-#        user          => 'rt',
-#        subscriptions => [
-#          Service['automounter'],
-#          Exec['yum -y upgrade'],
-#        ],
-#    }
-#
-define antelope::instance(
+define antelope::instance (
   Enum['present', 'absent'] $ensure = lookup('antelope::instance_ensure'),
   Antelope::User            $user = lookup('antelope::user'),
   Integer                   $delay = lookup('antelope::delay'),
@@ -78,7 +49,6 @@ define antelope::instance(
   Optional[Boolean]         $manage_rtsystemdirs = lookup('antelope::manage_rtsystemdirs'),
 
 ) {
-
   include '::antelope'
 
   # Sanity test parameters
@@ -92,13 +62,11 @@ define antelope::instance(
     fail('delay parameter must be an integer')
   }
 
-
   # Set local variables based on the desired state
   # In our management model, we do not ensure the service is running
   $file_ensure    = $ensure ? { 'present' => 'file', default => $ensure }
   $link_ensure    = $ensure ? { 'present' => 'link', default => $ensure }
   $service_enable = $ensure ? { 'present' => true  , default => false }
-
 
   # Set variables that require the antelope class
   $manage_fact_real = $manage_fact ? {
@@ -131,7 +99,6 @@ define antelope::instance(
   } else {
     $real_dirs = undef
   }
-
 
   ### Managed resources
 

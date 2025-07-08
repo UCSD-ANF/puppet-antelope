@@ -1,118 +1,75 @@
-# Class: antelope
+# @summary Manages the Antelope Real-Time Environmental Monitoring suite
 #
-# Manages the Antelope Real-Time Environmental Monitoring suite
-# from Boulder Real-Time Technologies
-
-# Description:
+# This class manages Antelope Real-Time Environmental Monitoring software
+# from Boulder Real-Time Technologies. It supports Antelope versions 5.9
+# through 5.15 on modern operating systems.
 #
-# This class is designed to be used as a singleton instance. If the
-# 'dirs' or 'instances' parameter is provided, it automatically manages
-# one or more antelope::instance resource types.
+# @param absent
+#   Ensure Antelope is not installed when true
+# @param debug
+#   Enable debugging options
+# @param disable
+#   Don't start services and remove init scripts
+# @param disableboot
+#   Install init scripts but disable them at boot
+# @param audit_only
+#   Make no changes to the system, only track changes
+# @param instance_subscribe
+#   Array of resources that will cause Antelope service restart
+# @param user
+#   Username that Antelope real-time systems should run as
+# @param group
+#   Group that Antelope should run as
+# @param service_name
+#   Name of the Antelope service
+# @param manage_service_fact
+#   Create antelope_services fact when true
+# @param manage_rtsystemdirs
+#   Manage permissions in real-time system directories
+# @param facts_dir
+#   Path to facter facts.d directory
+# @param delay
+#   Seconds to delay between service startups
+# @param shutdownwait
+#   Timeout in seconds for service shutdown
+# @param dist_owner
+#   User that should own files in ANTELOPE tree
+# @param dist_group
+#   Group that should own files in ANTELOPE tree
+# @param dist_mode
+#   File mode for files in ANTELOPE tree
+# @param version
+#   Antelope version to use (defaults to latest detected)
+# @param service_provider
+#   Override default service provider (systemd/redhat)
+# @param dirs
+#   Directories to manage as Antelope real-time systems.
+#   Mutually exclusive with instances parameter.
+# @param instances
+#   Hash of antelope::instance resources to create.
+#   Mutually exclusive with dirs parameter.
 #
-# Autorequires:
+# @example Basic usage
+#   include antelope
 #
-# Although nothing is autorequired directly from this class, some
-# resources will be required if the 'dirs' or 'instances' parameters
-# are not null. In particular, the antelope::instance defined
-# type will autorequire several resources, including:
-# * the user that the antelope instance is to run as
-# * the directories that contain the real-time systems
-# * the directory that the antelope_services fact should be installed
-#   into, if the manage_service_fact parameter is set to true on this
-#   class, or if the manage_fact parameter is set to true on any
-#   declaration of antelope::instance
+# @example With real-time system directories
+#   class { 'antelope':
+#     dirs => ['/rtsystems/usarray', '/rtsystems/ci'],
+#   }
 #
-# Dependencies:
-#
-#  This module is dependent on the following modules:
-#
-#  * puppetlabs-stdlib as stdlib
-#  * For puppet 2.6, puppetlabs-create_resources. 2.7 ships with that
-#  function in core
-#  * puppetlabs/concat if $instance_fact is true
-#
-# Parameters:
-#  [*absent*] - make sure that Antelope is not installed
-#
-#  [*debug*] - Turn on some debugging options
-#
-#  [*disable*] - Don't start up any services. Removes init scripts
-#
-#  [*disableboot*] - installs init scripts but set's them to not start
-#   at boot
-#
-#  [*audit_only*] - makes no changes to the system, just tracks changes
-#
-#  [*dirs*] - Directories to manage as Antelope rtsystems.
-#  *Must be used exclusive of instances parameter.* This parameter can
-#  be specified several ways:
-#  As a string - This is either a single, or a comma separated list of
-#    directories containing real-time systems. An antelope::instance
-#    called $service_name is created with the run-time user of $user
-#  As an array - list of directories containing real-time systems. An
-#    antelope::instance called $service_name is created with the
-#    run-time user $user
-#
-#  [*instances*] - Creates one or more antelope::instance blocks
-#  *Must be used exclusive of dirs parameter.*
-#  This parameter should be provided as a hash of hashes. The keys of
-#    the outer hash are used as the instance name. Subkeys are any
-#    valid parameter to the antelope::instance defined type.
-#    Format:
-#    {
-#      'servicename' => {
-#        user => 'rt',
-#        dirs => 'dirname' ,
-#      }
-#      'anotherservicename' = {
-#        user        => 'rt2',
-#        dirs        => [ 'foo', 'bar', 'baz' ],
-#        manage_fact => false,
-#      }
-#    }
-#
-#  [*instance_subscribe*] - Used to work around the sometime fragile
-#  Antelope service.  If $instances is set, expects an array of
-#  items that will pause the Antelope service before and restart the
-#  Antelope service before the item(s) are refreshed. Affects all
-#  instances, unless specifically overidden in the $instances hash.
-#    Format:
-#    [
-#      Service['automounter'],
-#      Exec['/usr/local/bin/antelope_sync'],
-#    ]
-#
-#  [*manage_service_fact*] - if true, creates a fact in the facter
-#  facts.d directory (specified by the parameter $facts_dir) called
-#  antelope_services. This fact will contain a comma separated list
-#  of antelope::instance names. Defaults to true.
-#
-#  [*service_provider*]
-#  Override the default service provider. Default is 'redhat' on EL7 systems,
-#  and undef on other systems
-#
-#  [*facts_dir*] - path to the facts.d directory that is parsed by
-#  facter for externally provided facts. Defaults to
-#  "/etc/facter/facts.d". On Puppet Enterprise, it may make more sense
-#  to use /etc/puppetlabs/facter/facts.d. Note that this directory is
-#  auto-required if manage_service_fact is true.
-#
-#  [*delay*]
-#  Number of seconds to delay between startups. Default value of 0 means no
-#  delay.
-#
-#  [*shutdownwait*] - controls the Antelope init script timeout for how
-#  long it will wait before it forcibly kills an rtexec process. Only
-#  has an effect when the dirs parameter is used. Otherwise, the
-#  shutdown wait should be specified inside of the instances hash.
-#
-#  [*dist_owner*] - user that should own files in the $ANTELOPE tree.
-#  Defaults to 'root'
-#
-#  [*dist_group*] - group that should own files in the $ANTELOPE tree.
-#  Defaults are os-specific, 'wheel' on Darwin and 'root' on Linux
-#
-#  [*dist_mode*] - file mode for files in the $ANTELOPE tree. Default is 0644
+# @example Multiple instances
+#   class { 'antelope':
+#     instances => {
+#       'antelope-primary' => {
+#         user => 'rt',
+#         dirs => '/rtsystems/primary',
+#       },
+#       'antelope-backup' => {
+#         user => 'rtbackup',
+#         dirs => '/rtsystems/backup',
+#       },
+#     },
+#   }
 #
 class antelope (
   Boolean                       $absent,
@@ -137,7 +94,6 @@ class antelope (
   Optional[Antelope::Dirs]      $dirs,
   Optional[Antelope::Instances] $instances,
 ) {
-
   ### Sanity check
 
   # verify that dirs and instances weren't both specified
@@ -160,7 +116,7 @@ class antelope (
 
   $manage_service_ensure = $disable ? {
     true    => 'stopped',
-    default =>  $absent ? {
+    default => $absent ? {
       true    => 'stopped',
       default => 'running',
     },
@@ -255,5 +211,4 @@ class antelope (
   } else {
     notice('Neither managing a singleton nor plural instance of Antelope.')
   }
-
 }

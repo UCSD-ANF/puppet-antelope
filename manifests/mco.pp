@@ -1,19 +1,28 @@
+# @summary Install Antelope MCollective plugins
 #
-# Class: antelope::mco
+# This class installs MCollective plugins for Antelope on systems with
+# Antelope installed. These plugins allow remote management of Antelope
+# services via MCollective.
 #
-# Install Antelope MCollective Plugins
+# @param plugin_basedir
+#   Directory where MCollective plugins are stored (libdir)
+# @param mco_etc
+#   Directory where MCollective config files are kept
+# @param ensure
+#   Whether the plugins should be present or absent
+# @param owner
+#   File owner for installed plugins
+# @param group
+#   File group for installed plugins
+# @param mode
+#   File mode for installed plugins
+# @param client_only
+#   Install only client plugins when true
 #
-# This is a generic class that will install MCollective Plugins for Antelope on
-# systems with Antelope installed.
+# @example Install MCollective plugins
+#   include antelope::mco
 #
-# For background on MCollective directories, see
-# https://docs.puppetlabs.com/mcollective/deploy/plugins.html#method-2-copying-plugins-into-the-libdir
-#
-# *plugin_basedir* is where MCollective plugins are stored on your system, aka
-# the "libdir".
-#
-# *mco_etc* is where MCollective config files are kept
-class antelope::mco(
+class antelope::mco (
   Stdlib::Absolutepath      $plugin_basedir = '/usr/libexec/mcollective',
   Stdlib::Absolutepath      $mco_etc        = '/etc/mcollective',
   Enum['present', 'absent'] $ensure         = 'present',
@@ -22,7 +31,6 @@ class antelope::mco(
   String                    $mode           = '0644',
   Boolean                   $client_only    = false,
 ) {
-
   validate_re($ensure, '(present|absent)')
 
   $server_ensure = $client_only ? {
@@ -38,14 +46,13 @@ class antelope::mco(
   }
 
   # Installed on MCO clients (management stations) and servers
-  file {"${plugin_basedir}/agent/antelope.ddl":
+  file { "${plugin_basedir}/agent/antelope.ddl":
     source => 'puppet:///modules/antelope/mco/antelope.ddl',
   }
 
   # Only install this on servers
-  file {"${plugin_basedir}/agent/antelope.rb":
+  file { "${plugin_basedir}/agent/antelope.rb":
     ensure => $server_ensure,
     source => 'puppet:///modules/antelope/mco/antelope.rb',
   }
-
 }

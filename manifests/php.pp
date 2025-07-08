@@ -1,15 +1,21 @@
-# Enable Antelope PHP extensions
+# @summary Enable Antelope PHP extensions
 #
-# Requirements:
-#  * This requires that you have build the Antelope PHP extensions from
-#  the Antelope Contributed software repository.
-#  * The puppet-php module with support for the php::config class.
-#  See https://github.com/UCSD-ANF/puppet-php
+# This class enables Antelope PHP extensions that have been built from
+# the Antelope Contributed software repository.
+#
+# @param version
+#   Antelope version to use for PHP extensions
+# @param ensure
+#   Whether the PHP extensions should be present or absent
+#
+# @example Enable Antelope PHP extensions
+#   include antelope::php
+#
 class antelope::php (
   Antelope::Version         $version,
   Enum['present', 'absent'] $ensure
-){
-  php::config{ 'antelope':
+) {
+  php::config { 'antelope':
     ensure  => $ensure,
     content => template('antelope/php.erb'),
   }

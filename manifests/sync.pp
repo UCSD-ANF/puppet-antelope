@@ -1,42 +1,42 @@
-# This class installs a syncronization script for copying an existing
-# golden master Antelope installation.
+# @summary Installs a synchronization script for copying Antelope installations
 #
-# The script uses rsync under the hood, and connects to the source
-# system over either rsync:// or SSH. SSH uses the user and
-# host variables to compute the ssh credentials
+# This class creates an rsync-based synchronization script for copying an
+# existing golden master Antelope installation. The script supports both
+# rsync:// protocol and rsync over SSH.
 #
-# It depends on passwordless SSH being set up. It also needs a working
-# copy of rsync installed in /usr/bin on Linux and Darwin
+# @param ensure
+#   Whether files should be present or absent on the filesystem
+# @param user
+#   Username for the rsync command (source system)
+# @param owner
+#   Local file owner for created files
+# @param group
+#   Local file group for created files
+# @param exec_mode
+#   File mode for executable files
+# @param data_mode
+#   File mode for data files
+# @param basedir
+#   Base directory for installing sync scripts
+# @param rsync_bin
+#   Path to the rsync binary
+# @param site_tree
+#   Optional site-local Antelope tree to synchronize
+# @param host
+#   Source hostname for rsync (required when ensure is present)
 #
-# Autorequires:
-#  * File[/usr/local/bin]
-#  * File[/usr/local/etc]
+# @example Basic synchronization setup
+#   class { 'antelope::sync':
+#     host => 'build.example.com',
+#   }
 #
-# Parameters:
+# @example With site-specific tree
+#   class { 'antelope::sync':
+#     host      => 'rsync://build.example.com',
+#     site_tree => '/opt/anf',
+#   }
 #
-# [*ensure*] - if 'present', files are placed on the filesystem. If 'absent',
-# files are removed from the filesystem if they were present.
-# Default: 'present'
-#
-# [*host*] - the source hostname for the rsync command
-# Can also be specified by the global variable
-# $::antelope_sync_host
-# This parameter can either be a bare hostname, or optionally include the
-# prefex rsync:// in which case it will use the native rsync protocol instead
-# of rsync over ssh.
-# Examples:
-# * 'rsync://build.test.domain'
-# * 'build.test.domain'
-#
-# [*user*] - the source username for the rsync command
-# Can also be specified by the global variables $::antelope_sync_user
-# or $::antelope_user. Defaults to 'rt'
-#
-# [*site_tree*] - optional site-local Antelope tree to synchronize.
-# Defaults to undef. Example value is /opt/anf
-# Can also be specified with the global variable $::antelope_site_tree
-#
-class antelope::sync(
+class antelope::sync (
   Enum['present', 'absent']    $ensure,
   Antelope::User               $user,
   Antelope::User               $owner,
@@ -67,10 +67,9 @@ class antelope::sync(
   ### The following variables are used in template evaluation
   $confdir   = "${basedir}/etc"
   $bindir    = "${basedir}/bin"
-  $sync_dirs = flatten(['/opt/antelope', $site_tree ])
+  $sync_dirs = flatten(['/opt/antelope', $site_tree])
   $sync_host = $host
   $sync_user = $user
-
 
   ### Managed resources
 
