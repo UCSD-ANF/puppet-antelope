@@ -1,0 +1,25 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Type should be one of the following:
+# * feat: new feature
+# * fix: bug fix
+# * docs: documentation
+# * style: formatting, missing semi colons, etc; no code change
+# * refactor: refactoring production code
+# * test: adding tests, refactoring test; no production code change
+# * chore: updating build tasks, package manager configs, etc; no production code change
+#
+# Scope is optional and should be the module or area affected (e.g. manifests, types, facts)
+#
+# Subject should:
+# * use imperative, present tense: "change" not "changed" or "changes"
+# * not capitalize first letter
+# * not end with a dot
+#
+# Body should include motivation for the change and contrast with previous behavior
+#
+# Footer should contain any information about Breaking Changes and reference GitHub issues
