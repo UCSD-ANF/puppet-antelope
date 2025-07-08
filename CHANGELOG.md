@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 3.1.0 - 2025-07-08
+
+**Puppet 7.34.x Compatibility**
+- Fixed all deprecations for full Puppet 7.34.x compatibility
+- Modernized Facter API: Replaced deprecated Facter 2.x/3.x API with modern Facter 4+ structured facts
+- Replaced deprecated `template()` function calls with modern `epp()` function
+- Created new EPP templates: S99antelope.epp, license.pf.epp, site.pf.epp, antelope_sync.epp
+- Fixed deprecated function calls: `split()` → `String.split()`, `flatten()` → `Array.flatten()`, `empty()` → `!= []`
+- Updated include syntax from `include ::class` to `include class`
+- Fixed parameter ordering issues (optional parameters before required parameters)
+- Replaced legacy facts: `$facts['fqdn']` → `$facts['networking']['fqdn']`
+- Fixed Ruby style issues and modernized code
+
+**Testing**
+- Fixed all unit tests for modernized Facter API structure
+- All 763 unit tests passing with 0 failures
+- Fixed EPP template handling for undef values in ensure=absent scenarios
+- Fixed symbol vs string mismatch in antelope_latest facts
+
+**Code Quality**
+- Replaced deprecated `notice()` function with `notify` resource
+- Fixed Ruby code style issues in MCollective agent
+- Modernized Ruby methods and used safe navigation operators
+
 ## Release 3.0.0 - 2025-07-08
 
 **BREAKING CHANGES**
