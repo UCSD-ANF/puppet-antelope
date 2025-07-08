@@ -19,7 +19,7 @@ my $verbose=$FALSE;
 my $dryRun=$FALSE;
 my $rsyncBin="<%= $rsync_bin %>";
 my $sourceHost="<%= $sync_host %>";
-<% if $sync_host =~ /^rsync:\/\// or $sync_host =~ /::$/ { -%>
+<% if $sync_host and ($sync_host =~ /^rsync:\/\// or $sync_host =~ /::$/) { -%>
 my @rsyncOpts=("-a", '--partial', "--delete");
 <% } else { -%>
 my $sourceUser="<%= $sync_user %>";
@@ -97,7 +97,7 @@ sub serviceStart ( $ ) {
 
 sub treeSync ( $ ) {
   my $syncdir=shift;
-<% if $sync_host =~ /^rsync:\/\// or $sync_host =~ /::$/ { -%>
+<% if $sync_host and ($sync_host =~ /^rsync:\/\// or $sync_host =~ /::$/) { -%>
   my $srcpath= $sourceHost . $syncdir . "/";
 <% } else { -%>
   my $srcpath= $sourceUser . "@" . $sourceHost . ":" . $syncdir . "/";

@@ -7,9 +7,9 @@ describe 'Antelope Version Facts' do
 
   shared_context 'mocked versions' do
     before :each do
+      Facter.clear
       allow(Facter::Util::Antelope).to receive(:versions)\
         .and_return(test_versions).at_least(:once)
-      Facter::Antelope::Versions.add_facts
     end
   end
 

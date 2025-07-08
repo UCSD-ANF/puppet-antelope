@@ -22,7 +22,7 @@ Facter.add(:antelope_latest_perl, type: :simple) do
   setcode do
     latest_antelope = Facter.value(:antelope_latest_version)
     res = nil
-    res = Facter::Util::Antelope.getid(latest_antelope, 'perl') if latest_antelope
+    res = Facter::Util::Antelope.getid(latest_antelope, :perl) if latest_antelope
     res
   end
 end
@@ -32,7 +32,7 @@ Facter.add(:antelope_latest_python, type: :simple) do
   setcode do
     latest_antelope = Facter.value(:antelope_latest_version)
     res = nil
-    res = Facter::Util::Antelope.getid(latest_antelope, 'python') if latest_antelope
+    res = Facter::Util::Antelope.getid(latest_antelope, :python) if latest_antelope
     res
   end
 end

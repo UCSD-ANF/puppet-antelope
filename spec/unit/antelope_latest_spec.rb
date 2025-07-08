@@ -10,7 +10,6 @@ describe 'antelope_latest_perl fact', type: :fact do
 
   before :each do
     Facter.clear
-    Facter::Antelope::Latest.add_facts
   end
 
   after :each do
