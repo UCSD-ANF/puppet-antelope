@@ -1,6 +1,6 @@
 spec/spec_helper.rb:
   mock_with: ':rspec'
-  coverate_report: true
+  coverage_report: true
 spec/default_facts.yml:
   extra_facts:
     antelope_contrib_basedir:
@@ -21,3 +21,7 @@ Gemfile:
     ':development':
       - gem: 'byebug'
         version: '~> 11.1'
+      - gem: 'pry'
+        version: '~> 0.14'
+      - gem: 'pry-byebug'
+        version: '~> 3.10'

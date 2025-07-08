@@ -11,14 +11,15 @@ Geoff Davis <gadavis@ucsd.edu>
 
 ## Requirements
 
-* Puppet version >= 3
-* [puppetlabs-stdlib][puppetlabs-stdlib] module from PuppetLabs. Ships with
- Puppet Enterprise, also available on the Module Forge and on Github
-* `osfamily` fact. Supported by Facter 1.6.1+. Or you can use the code blurb
- below
-* [puppetlabs-concat][puppetlabs-concat] module - also available on the forge.
- Only required if managing the `antelope_services` fact - see below
-* A supported Operating System for Antelope. Currently Linux or OS X
+* Puppet version >= 6.0.0
+* [puppetlabs-stdlib][puppetlabs-stdlib] module from PuppetLabs (version >= 6.0.0)
+* [puppetlabs-concat][puppetlabs-concat] module (version >= 6.0.0)
+* A supported Operating System for Antelope:
+  - RedHat/CentOS 7, 8, 9
+  - Rocky Linux 8, 9
+  - AlmaLinux 8, 9
+  - Ubuntu 20.04, 22.04, 24.04
+  - macOS 11+
 
 [puppetlabs-stdlib]: https://github.com/puppetlabs/puppetlabs-stdlib
 [puppetlabs-concat]: https://github.com/puppetlabs/puppetlabs-concat

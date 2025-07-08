@@ -4,7 +4,8 @@ require:
 - rubocop-i18n
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: '2.1'
+  TargetRubyVersion: 3.0
+  NewCops: enable
   Include:
   - "./**/*.rb"
   Exclude:

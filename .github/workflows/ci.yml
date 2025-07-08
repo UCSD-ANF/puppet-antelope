@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ['3.2']
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+    - name: Run static analysis
+      run: bundle exec rake check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint
+
+  spec:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        puppet-version: ['~> 6.0', '~> 7.0', '~> 8.0']
+        ruby-version: ['3.0', '3.1', '3.2']
+        exclude:
+          - puppet-version: '~> 6.0'
+            ruby-version: '3.1'
+          - puppet-version: '~> 6.0'
+            ruby-version: '3.2'
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+    - name: Run unit tests
+      run: bundle exec rake parallel_spec
+      env:
+        PUPPET_GEM_VERSION: ${{ matrix.puppet-version }}
+
+  acceptance:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        puppet-version: ['~> 7.0', '~> 8.0']
+        ruby-version: ['3.2']
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+    - name: Run acceptance tests
+      run: bundle exec rake beaker
+      env:
+        PUPPET_GEM_VERSION: ${{ matrix.puppet-version }}
