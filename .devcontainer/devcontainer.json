@@ -1,0 +1,28 @@
+{
+  "name": "Puppet Development",
+  "image": "puppet/pdk:3.4.0",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "dockerDashComposeVersion": "v2"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "puppet.puppet-vscode",
+        "ms-vscode.vscode-yaml",
+        "redhat.vscode-yaml",
+        "ms-vscode.vscode-json",
+        "GitHub.vscode-pull-request-github",
+        "ms-vscode.vscode-ruby"
+      ]
+    }
+  },
+  "postCreateCommand": ".devcontainer/setup.sh",
+  "remoteUser": "vscode",
+  "mounts": [
+    "source=puppet-devcontainer-gems,target=/usr/local/bundle,type=volume"
+  ]
+}
