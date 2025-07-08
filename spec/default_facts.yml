@@ -17,7 +17,7 @@ antelope_contrib_basedir:
   '5.15': "/contrib"
 antelope_latest_perl: perl5.38.2
 antelope_latest_python: python3.12.3
-antelope_latest_version: 5.15
+antelope_latest_version: '5.15'
 antelope_services: antelope
 antelope_versions: 5.9,5.10,5.11,5.12,5.13,5.14,5.15
 antelope_versions_array:
