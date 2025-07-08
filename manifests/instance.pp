@@ -38,40 +38,74 @@
 #
 define antelope::instance (
   String                    $servicename = $title,
-  Enum['present', 'absent'] $ensure = lookup('antelope::instance_ensure'),
-  Antelope::User            $user = lookup('antelope::user'),
-  Integer                   $delay = lookup('antelope::delay'),
-  Integer                   $shutdownwait = lookup('antelope::shutdownwait'),
-  Array                     $subscriptions = lookup('antelope::instance_subscribe'),
-  Optional[Antelope::Dirs]  $dirs = undef,
-  Optional[Antelope::Group] $group = lookup('antelope::group'),
-  Optional[Boolean]         $manage_fact = lookup('antelope::manage_service_fact'),
-  Optional[Boolean]         $manage_rtsystemdirs = lookup('antelope::manage_rtsystemdirs'),
+  Optional[Enum['present', 'absent']] $ensure = undef,
+  Optional[Antelope::User]            $user = undef,
+  Optional[Integer]                   $delay = undef,
+  Optional[Integer]                   $shutdownwait = undef,
+  Optional[Array]                     $subscriptions = undef,
+  Optional[Antelope::Dirs]            $dirs = undef,
+  Optional[Antelope::Group]           $group = undef,
+  Optional[Boolean]                   $manage_fact = undef,
+  Optional[Boolean]                   $manage_rtsystemdirs = undef,
 ) {
   include antelope
 
+  # Set parameter defaults from antelope class
+  $_ensure = $ensure ? {
+    undef   => lookup('antelope::instance_ensure'),
+    default => $ensure,
+  }
+  $_user = $user ? {
+    undef   => $antelope::user,
+    default => $user,
+  }
+  $_delay = $delay ? {
+    undef   => $antelope::delay,
+    default => $delay,
+  }
+  $_shutdownwait = $shutdownwait ? {
+    undef   => $antelope::shutdownwait,
+    default => $shutdownwait,
+  }
+  $_subscriptions = $subscriptions ? {
+    undef   => $antelope::instance_subscribe,
+    default => $subscriptions,
+  }
+  $_group = $group ? {
+    undef   => $antelope::group,
+    default => $group,
+  }
+  $_manage_fact = $manage_fact ? {
+    undef   => $antelope::manage_service_fact,
+    default => $manage_fact,
+  }
+  $_manage_rtsystemdirs = $manage_rtsystemdirs ? {
+    undef   => $antelope::manage_rtsystemdirs,
+    default => $manage_rtsystemdirs,
+  }
+
   # Sanity test parameters
   if $dirs == undef {
-    if ($ensure == 'present') {
+    if ($_ensure == 'present') {
       fail('service enabled but no dirs specified')
     }
   }
 
   # Set local variables based on the desired state
   # In our management model, we do not ensure the service is running
-  $file_ensure    = $ensure ? { 'present' => 'file', default => $ensure }
-  $link_ensure    = $ensure ? { 'present' => 'link', default => $ensure }
-  $service_enable = $ensure ? { 'present' => true  , default => false }
+  $file_ensure    = $_ensure ? { 'present' => 'file', default => $_ensure }
+  $link_ensure    = $_ensure ? { 'present' => 'link', default => $_ensure }
+  $service_enable = $_ensure ? { 'present' => true  , default => false }
 
   # Set variables that require the antelope class
-  $manage_fact_real = $manage_fact ? {
+  $manage_fact_real = $_manage_fact ? {
     undef   => $antelope::manage_service_fact,
-    default => $manage_fact,
+    default => $_manage_fact,
   }
 
-  $manage_rtsystemdirs_real = $manage_rtsystemdirs ? {
+  $manage_rtsystemdirs_real = $_manage_rtsystemdirs ? {
     undef   => $antelope::manage_rtsystemdirs,
-    default => $manage_rtsystemdirs,
+    default => $_manage_rtsystemdirs,
   }
 
   # Determine the path to the init script
@@ -80,7 +114,7 @@ define antelope::instance (
   # Generate a shutdown reason that we may or may not use later.
   $reason = join([
       "Puppet ${module_name}: pause ${servicename} (per refresh of",
-      join($subscriptions,', '),
+      join($_subscriptions,', '),
       "), using ${initfilename}.",
   ], ' ')
   $stop_reason = shellquote($reason)
@@ -105,8 +139,8 @@ define antelope::instance (
   # Create the rtsystemdir resources
   if ( $real_dirs != undef and $manage_rtsystemdirs_real ) {
     antelope::rtsystemdir { $real_dirs :
-      owner => $user,
-      group => $group,
+      owner => $_user,
+      group => $_group,
     }
   }
 
@@ -119,9 +153,9 @@ define antelope::instance (
         'antelope_latest_perl' => $antelope_latest_perl,
         'service_title'        => $service_title,
         'real_dirs'            => $real_dirs,
-        'user'                 => $user,
-        'delay'                => $delay,
-        'shutdownwait'         => $shutdownwait,
+        'user'                 => $_user,
+        'delay'                => $_delay,
+        'shutdownwait'         => $_shutdownwait,
     }),
   }
 
@@ -142,21 +176,21 @@ define antelope::instance (
     }
   }
 
-  if ($ensure == 'present') {
+  if ($_ensure == 'present') {
     # declare relations based on desired behavior
     File[$initfilename] ~> Service[$servicename]
-    User[$user]         -> Service[$servicename]
+    User[$_user]         -> Service[$servicename]
 
     # If we were handed something to "subscribe" to, ensure our
     # new service is off when it is refreshed and on afterward.
-    if $subscriptions != [] {
+    if $_subscriptions != [] {
       exec { "${initfilename} stop":
         command     => "${initfilename} stop ${stop_reason}",
-        notify      => $subscriptions,
+        notify      => $_subscriptions,
         refreshonly => true,
       }
       exec { "${initfilename} start":
-        subscribe   => $subscriptions,
+        subscribe   => $_subscriptions,
         refreshonly => true,
       }
     }

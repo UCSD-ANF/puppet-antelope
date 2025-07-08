@@ -22,19 +22,37 @@
 #   }
 #
 define antelope::rtsystemdir (
-  Antelope::User  $owner = lookup('antelope::user'),
-  Antelope::Group $group = lookup('antelope::group'),
-  String          $dir_mode = lookup('antelope::rtsystem_dir_mode'),
-  String          $rtexec_mode = lookup('antelope::rtsystem_rtexec_mode'),
-  String          $path = $title,
+  Optional[Antelope::User]  $owner = undef,
+  Optional[Antelope::Group] $group = undef,
+  Optional[String]          $dir_mode = undef,
+  Optional[String]          $rtexec_mode = undef,
+  String                    $path = $title,
 ) {
   include antelope
 
-  $manage_file_owner = $owner
-  $manage_file_group = $group
+  # Set parameter defaults from antelope class
+  $_owner = $owner ? {
+    undef   => $antelope::user,
+    default => $owner,
+  }
+  $_group = $group ? {
+    undef   => $antelope::group,
+    default => $group,
+  }
+  $_dir_mode = $dir_mode ? {
+    undef   => lookup('antelope::rtsystem_dir_mode'),
+    default => $dir_mode,
+  }
+  $_rtexec_mode = $rtexec_mode ? {
+    undef   => lookup('antelope::rtsystem_rtexec_mode'),
+    default => $rtexec_mode,
+  }
+
+  $manage_file_owner = $_owner
+  $manage_file_group = $_group
   $manage_file_ensure = 'present'
 
-  $manage_rtexec_mode     = $rtexec_mode
+  $manage_rtexec_mode     = $_rtexec_mode
   $manage_rtexec_filename = "${path}/rtexec.pf"
   $manage_rtexec_replace  = false
 

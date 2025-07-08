@@ -40,9 +40,9 @@ define antelope::versioned_license_pf (
   Enum['present', 'absent']         $ensure               = 'present',
   Boolean                           $replace              = false,
   Boolean                           $expiration_warnings  = true,
-  Antelope::User                    $owner                = lookup('antelope::user'),
-  Antelope::Group                   $group                = lookup('antelope::group'),
-  String                            $mode                 = lookup('antelope::dist_mode'),
+  Optional[Antelope::User]          $owner                = undef,
+  Optional[Antelope::Group]         $group                = undef,
+  Optional[String]                  $mode                 = undef,
   Antelope::Version                 $version              = $title,
   Optional[Stdlib::Absolutepath]    $path                 = undef,
   Optional[String]                  $source               = undef,
@@ -50,6 +50,20 @@ define antelope::versioned_license_pf (
   Optional[Variant[String, Array]]  $license_keys         = undef,
 ) {
   include antelope
+
+  # Set parameter defaults from antelope class
+  $_owner = $owner ? {
+    undef   => $antelope::user,
+    default => $owner,
+  }
+  $_group = $group ? {
+    undef   => $antelope::group,
+    default => $group,
+  }
+  $_mode = $mode ? {
+    undef   => $antelope::dist_mode,
+    default => $mode,
+  }
 
   $file_ensure = $ensure
   $file_path = pick($path, "/opt/antelope/${version}/data/pf/license.pf")
@@ -70,9 +84,9 @@ define antelope::versioned_license_pf (
   }
 
   $file_replace = $replace
-  $file_owner = $owner
-  $file_group = $group
-  $file_mode = $mode
+  $file_owner = $_owner
+  $file_group = $_group
+  $file_mode = $_mode
 
   ### Managed resources
 

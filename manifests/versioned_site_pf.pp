@@ -50,12 +50,26 @@ define antelope::versioned_site_pf (
   Antelope::Version               $version                  = $title,
   Optional[String]                $source                   = undef,
   Optional[String]                $content                  = undef,
-  Antelope::User                  $owner                    = lookup('antelope::dist_owner'),
-  Antelope::Group                 $group                    = lookup('antelope::dist_group'),
-  String                          $mode                     = lookup('antelope::dist_mode'),
+  Optional[Antelope::User]        $owner                    = undef,
+  Optional[Antelope::Group]       $group                    = undef,
+  Optional[String]                $mode                     = undef,
   Optional[Stdlib::Absolutepath]  $path                     = undef
 ) {
   include antelope
+
+  # Set parameter defaults from antelope class
+  $_owner = $owner ? {
+    undef   => $antelope::dist_owner,
+    default => $owner,
+  }
+  $_group = $group ? {
+    undef   => $antelope::dist_group,
+    default => $group,
+  }
+  $_mode = $mode ? {
+    undef   => $antelope::dist_mode,
+    default => $mode,
+  }
 
   $file_ensure = $ensure
 
@@ -81,11 +95,11 @@ define antelope::versioned_site_pf (
     default => undef,
   }
 
-  $file_owner = $owner
+  $file_owner = $_owner
 
-  $file_group = $group
+  $file_group = $_group
 
-  $file_mode = $mode
+  $file_mode = $_mode
 
   file { "antelope site.pf ${title}" :
     ensure  => $file_ensure,
