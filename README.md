@@ -25,6 +25,40 @@ Geoff Davis <gadavis@ucsd.edu>
 [puppetlabs-concat]: https://github.com/puppetlabs/puppetlabs-concat
 
 
+# Development
+
+## Git Commit Template
+
+This repository uses [Conventional Commits](https://www.conventionalcommits.org/) for consistent commit formatting. After cloning the repository, set up the git commit template:
+
+```bash
+git config commit.template .gitmessage
+```
+
+This will configure git to use the provided template when creating commits, which includes:
+- Semantic commit format (type, scope, subject)
+- Helpful guidelines and examples
+- Common commit types (feat, fix, docs, style, refactor, test, chore)
+
+### Commit Types
+
+- **feat**: new feature
+- **fix**: bug fix
+- **docs**: documentation changes
+- **style**: formatting, linting fixes; no code changes
+- **refactor**: code refactoring without functional changes
+- **test**: adding/updating tests
+- **chore**: build tasks, dependency updates, etc.
+
+### Example Commits
+
+```bash
+feat(manifests): add support for Antelope 5.16
+fix(sync): resolve pick() function error with undefined facts
+docs(readme): add development setup instructions
+style(manifests): fix indentation warnings
+```
+
 # Usage
 
 ## Facts
