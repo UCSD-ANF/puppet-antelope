@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 2.1.1 - 2025-07-07
+
+**Code Quality**
+- Removed legacy `validate_*` function calls in favor of modern Puppet data types
+- Removed redundant `validate_bool($manage_plural_instances)` from `manifests/init.pp`
+- Removed redundant `validate_re($ensure, '(present|absent)')` from `manifests/mco.pp`
+- Modernized code to follow current Puppet best practices
+
 ## Release 2.1.0 - 2025-07-07
 
 **Features**
