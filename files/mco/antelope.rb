@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-module MCollective::Agent
-  # MCollective Agent for BRTT Antelope
-  #
-  # Defines a single action, called sync.
-  class Antelope < RPC::Agent
+# MCollective Agent for BRTT Antelope
+#
+# Defines a single action, called sync.
+class MCollective::Agent::Antelope < MCollective::RPC::Agent
     activate_when do
       File.executable?('/usr/local/bin/antelope_sync')
     end
@@ -18,7 +17,7 @@ module MCollective::Agent
       when 'nostopstart'
         opts = '-S'
       when 'norestart'
-        opts - '-s'
+        opts = '-s'
       else
         opts = ''
       end
@@ -28,5 +27,4 @@ module MCollective::Agent
       reply[:stdout]   = :out
       reply[:stderr]   = :err
     end
-  end
 end

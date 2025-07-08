@@ -1,0 +1,15 @@
+# Antelope License file managed by Puppet
+# Do not edit manually
+<% if $license_keys { -%>
+<% if $license_keys =~ Array { -%>
+<% $license_keys.each |$license_key| { -%>
+<%= $license_key %>
+<% } -%>
+<% } elsif $license_keys != '' { -%>
+<%= $license_keys %>
+<% } -%>
+<% } -%>
+
+<% if $expiration_warnings == false { -%>
+no_more_expiration_warnings
+<% } -%>

@@ -1,10 +1,10 @@
-<% if osfamily == 'RedHat' -%>
-#!/opt/antelope/<%= antelope_latest_perl %>/bin/perl
-<% else -%>
+<% if $osfamily == 'RedHat' { -%>
+#!/opt/antelope/<%= $antelope_latest_perl %>/bin/perl
+<% } else { -%>
 : # use perl
-eval 'exec /opt/antelope/<%= antelope_latest_perl %>/bin/perl -S $0 "$@"'
+eval 'exec /opt/antelope/<%= $antelope_latest_perl %>/bin/perl -S $0 "$@"'
 if 0;
-<% end -%>
+<% } -%>
 
 ##----------------------------------------------------------------------------
 ## !! WARNING !!
@@ -12,7 +12,7 @@ if 0;
 ## removed at the next Puppet run.
 ##----------------------------------------------------------------------------
 # chkconfig: 345 99 1
-# description: Antelope Real-Time System Instace <%= service_title %>
+# description: Antelope Real-Time System Instace <%= $service_title %>
 # To restart systems on reboot
 #  1) edit @dirs and $user below to fill in the directories
 #     where systems are running and the user who runs them.
@@ -30,20 +30,19 @@ if 0;
 #
 #  4) test it by executing "/etc/init.d/antelope start"  as root.
 
-<% if real_dirs.is_a? Array
-  dirsout = ''
-  dirsout = real_dirs.collect{ |d| "\"#{d}\"" }.join(', ')
-elsif real_dirs != ''
-  dirsout = "\"#{real_dirs}\""
-end
--%>
-@dirs = ( <%= dirsout %> );    #actual directories of rtexec.pf, eg:
+<%- if $real_dirs =~ Array { -%>
+@dirs = ( <%= $real_dirs.map |$d| { "\"${d}\"" }.join(', ') %> );    #actual directories of rtexec.pf, eg:
+<%- } elsif $real_dirs != '' { -%>
+@dirs = ( "<%= $real_dirs %>" );    #actual directories of rtexec.pf, eg:
+<%- } else { -%>
+@dirs = ( );    #actual directories of rtexec.pf, eg:
+<%- } -%>
 		#      @dirs = ("/home/rt/knet", "/home/rt/anza") ;
-$user = "<%= user %>" ;  # actual user that runs rtexec
+$user = "<%= $user %>" ;  # actual user that runs rtexec
 @remote = () ;  # remote machines on which to run /etc/init.d/antelope (like @dirs above).
 $rsh = "ssh" ;  # command to get a remote shell without password prompting
-$sleep = <%= delay %> ;    # specify # seconds to delay between startups.
-$shutdownwait = <%= shutdownwait %>;    # specify number of seconds to wait for shutdown
+$sleep = <%= $delay %> ;    # specify # seconds to delay between startups.
+$shutdownwait = <%= $shutdownwait %>;    # specify number of seconds to wait for shutdown
 $lockfile = "/var/lock/subsys/antelope";    # lockfile for init.d 
 
 if ( -x "/bin/logger" ) {
@@ -66,7 +65,7 @@ if ( @ARGV < 1 ) {
     = getpwnam($user) ;
 
 if ( $< != 0 ) {
-    &syslog("  must be root to run $0\n") ;
+    &syslog("  must be root to run $0\n") ;
     exit 1 ;
 }
 
@@ -99,10 +98,10 @@ if ( @dirs > 0 && $sleep > 0 && $action eq "start" ) {
 }
 
 if ( $action eq "start" ) {
-    <%- if osfamily == 'RedHat' -%>
+    <% if $osfamily == 'RedHat' { -%>
     # create lockfile
     open LOCKFILE, '>', $lockfile and close LOCKFILE or die "Failed to create $lockfile: $!";
-    <%- end -%>
+    <% } -%>
     foreach $dir ( @dirs ) {
 	&syslog ( "starting Antelope realtime system in $dir as $user." ) ;
 	    if ( -d $dir && -x $dir ) {
@@ -137,10 +136,10 @@ if ( $action eq "start" ) {
     }
 
 } elsif ( $action eq "stop" ) {
-    <%- if osfamily == 'RedHat' -%>
+    <% if $osfamily == 'RedHat' { -%>
     # Remove lockfile
     unlink $lockfile;
-    <%- end -%>
+    <% } -%>
     foreach $dir ( @dirs ) {
 	if ( -d $dir && -x $dir ) {
 	    &syslog ( "system shutting down -- Antelope stopping realtime system in $dir as $user." ) ;

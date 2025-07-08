@@ -71,7 +71,7 @@ define antelope::versioned_license_pf (
   Optional[String]                  $content              = undef,
   Optional[Variant[String, Array]]  $license_keys         = undef,
 ) {
-  include '::antelope'
+  include antelope
 
   $file_ensure = $ensure
   $file_path = pick($path, "/opt/antelope/${version}/data/pf/license.pf")
@@ -83,7 +83,10 @@ define antelope::versioned_license_pf (
   $file_source = $source
 
   if !$file_source {
-    $file_content = pick($content, template('antelope/license.pf.erb'))
+    $file_content = pick($content, epp('antelope/license.pf.epp', {
+      'license_keys'         => $license_keys,
+      'expiration_warnings'  => $expiration_warnings,
+    }))
   } else {
     $file_content = undef
   }
@@ -105,5 +108,4 @@ define antelope::versioned_license_pf (
     group   => $file_group,
     mode    => $file_mode,
   }
-
 }

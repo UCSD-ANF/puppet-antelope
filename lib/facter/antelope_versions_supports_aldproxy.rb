@@ -4,26 +4,24 @@
 #
 require 'facter/util/antelope'
 
-module Facter::Antelope
-  # Create Fact for versions of Antelope that support the
-  # ALD Proxy license daemon.
-  module AldProxyFact
-    def self.add_facts
-      versions = Facter::Util::Antelope.versions
-      unless versions.nil?
-        versions = versions.delete_if do |version|
-          File.exist?("/opt/antelope/#{version}/bin/ald_proxy") != true
-        end
-      end
-      Facter.add(:antelope_versions_supports_aldproxy) do
-        confine kernel: Facter::Util::Antelope::VALID_KERNELS
-        setcode { versions.join(',') } unless versions.nil?
-      end
-      Facter.add(:antelope_versions_supports_aldproxy_array) do
-        confine kernel: Facter::Util::Antelope::VALID_KERNELS
-        setcode { versions } unless versions.nil?
-      end
+# Modern Facter 4+ structured facts
+Facter.add(:antelope_versions_supports_aldproxy, type: :simple) do
+  confine kernel: Facter::Util::Antelope::VALID_KERNELS
+  setcode do
+    versions = Facter::Util::Antelope.versions
+    filtered_versions = versions&.select do |version|
+      File.exist?("/opt/antelope/#{version}/bin/ald_proxy")
+    end
+    filtered_versions&.join(',')
+  end
+end
+
+Facter.add(:antelope_versions_supports_aldproxy_array, type: :simple) do
+  confine kernel: Facter::Util::Antelope::VALID_KERNELS
+  setcode do
+    versions = Facter::Util::Antelope.versions
+    versions&.select do |version|
+      File.exist?("/opt/antelope/#{version}/bin/ald_proxy")
     end
   end
 end
-Facter::Antelope::AldProxyFact.add_facts

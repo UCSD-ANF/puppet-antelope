@@ -11,31 +11,30 @@ my $TRUE=1;
 my $FALSE=0;
 
 # Defaults
-my $excludeFile="<%= confdir %>/rsync_exclude";
-my $includeFile="<%= confdir %>/rsync_include";
+my $excludeFile="<%= $confdir %>/rsync_exclude";
+my $includeFile="<%= $confdir %>/rsync_include";
 my $debug=$FALSE;
 my $quiet=$FALSE;
 my $verbose=$FALSE;
 my $dryRun=$FALSE;
-my $rsyncBin="<%= rsync_bin %>";
-my $sourceHost="<%= sync_host %>";
-<%- if sync_host =~ /^rsync:\/\// or sync_host =~ /::$/ then -%>
+my $rsyncBin="<%= $rsync_bin %>";
+my $sourceHost="<%= $sync_host %>";
+<% if $sync_host =~ /^rsync:\/\// or $sync_host =~ /::$/ { -%>
 my @rsyncOpts=("-a", '--partial', "--delete");
-<%- else -%>
-my $sourceUser="<%= sync_user %>";
+<% } else { -%>
+my $sourceUser="<%= $sync_user %>";
 my @rsyncOpts=("-a", '--partial', "--delete", "--rsh=ssh");
-<%- end -%>
+<% } -%>
 
 # Other globals
 my %option = ();
-my @syncdirs = (<%= sync_dirs.collect{ |d| "\"#{d}\"" }.join(', ') %>);
+my @syncdirs = (<%= $sync_dirs.map |$d| { "\"${d}\"" }.join(', ') %>);
 my @services = (<%=
-# calculate services based on Facter.
-if antelope_services && !antelope_services.empty? then
-  antelope_services.split(',').collect{ |d|
-      "\"#{d}\""
-  }.join(', ')
-end
+if $antelope_services and $antelope_services != '' {
+  $antelope_services.split(',').map |$d| { "\"${d}\"" }.join(', ')
+} else {
+  ''
+}
 %>);
 my $svcStop  = $TRUE;
 my $svcStart = $TRUE;
@@ -98,11 +97,11 @@ sub serviceStart ( $ ) {
 
 sub treeSync ( $ ) {
   my $syncdir=shift;
-<%- if sync_host =~ /^rsync:\/\// or sync_host =~ /::$/ then -%>
+<% if $sync_host =~ /^rsync:\/\// or $sync_host =~ /::$/ { -%>
   my $srcpath= $sourceHost . $syncdir . "/";
-<%- else -%>
+<% } else { -%>
   my $srcpath= $sourceUser . "@" . $sourceHost . ":" . $syncdir . "/";
-<%- end -%>
+<% } -%>
   my $destpath=$syncdir;
   my @cmd = $rsyncBin;
   push @cmd, @rsyncOpts;

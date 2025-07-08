@@ -48,7 +48,7 @@ class antelope::sync (
   Optional[String]             $site_tree = undef,
   Optional[Antelope::Synchost] $host      = undef, # must be set if ensure is present
 ) {
-  include ::antelope
+  include antelope
 
   ### Validate variables
 
@@ -67,9 +67,10 @@ class antelope::sync (
   ### The following variables are used in template evaluation
   $confdir   = "${basedir}/etc"
   $bindir    = "${basedir}/bin"
-  $sync_dirs = flatten(['/opt/antelope', $site_tree])
+  $sync_dirs = ['/opt/antelope', $site_tree].flatten()
   $sync_host = $host
   $sync_user = $user
+  $antelope_services = pick($facts['antelope_services'], '')
 
   ### Managed resources
 
@@ -80,7 +81,15 @@ class antelope::sync (
     mode    => $manage_file_exec_mode,
     owner   => $manage_file_owner,
     group   => $manage_file_group,
-    content => template('antelope/sync/antelope_sync.erb'),
+    content => epp('antelope/sync/antelope_sync.epp', {
+      'confdir'           => $confdir,
+      'bindir'            => $bindir,
+      'sync_dirs'         => $sync_dirs,
+      'sync_host'         => $sync_host,
+      'sync_user'         => $sync_user,
+      'antelope_services' => $antelope_services,
+      'rsync_bin'         => $rsync_bin,
+    }),
     require => [
       File[$bindir],
       File['rsync_include'],

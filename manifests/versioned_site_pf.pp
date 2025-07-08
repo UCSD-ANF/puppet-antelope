@@ -43,7 +43,7 @@
 define antelope::versioned_site_pf (
   Enum['present', 'absent']       $ensure                   = 'present',
   String                          $mailhost                 = '',
-  Stdlib::Fqdn                    $mail_domain              = $facts['fqdn'],
+  Stdlib::Fqdn                    $mail_domain              = $facts['networking']['fqdn'],
   String                          $default_seed_network     = 'XX',
   String                          $originating_organization = '',
   String                          $institution              = 'XXXX',
@@ -55,7 +55,7 @@ define antelope::versioned_site_pf (
   String                          $mode                     = lookup('antelope::dist_mode'),
   Optional[Stdlib::Absolutepath]  $path                     = undef
 ) {
-  include '::antelope'
+  include antelope
 
   $file_ensure = $ensure
 
@@ -69,7 +69,13 @@ define antelope::versioned_site_pf (
 
   $file_content = $file_source ? {
     undef => $content ? {
-      undef => template('antelope/site.pf.erb'),
+      undef => epp('antelope/site.pf.epp', {
+        'mailhost'                 => $mailhost,
+        'mail_domain'              => $mail_domain,
+        'default_seed_network'     => $default_seed_network,
+        'originating_organization' => $originating_organization,
+        'institution'              => $institution,
+      }),
       default => $content,
     },
     default => undef,

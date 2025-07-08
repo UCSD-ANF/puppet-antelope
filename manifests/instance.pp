@@ -37,19 +37,18 @@
 #   }
 #
 define antelope::instance (
+  String                    $servicename = $title,
   Enum['present', 'absent'] $ensure = lookup('antelope::instance_ensure'),
   Antelope::User            $user = lookup('antelope::user'),
   Integer                   $delay = lookup('antelope::delay'),
   Integer                   $shutdownwait = lookup('antelope::shutdownwait'),
   Array                     $subscriptions = lookup('antelope::instance_subscribe'),
-  String                    $servicename = $title,
-  Optional[Antelope::Dirs]  $dirs,
+  Optional[Antelope::Dirs]  $dirs = undef,
   Optional[Antelope::Group] $group = lookup('antelope::group'),
   Optional[Boolean]         $manage_fact = lookup('antelope::manage_service_fact'),
   Optional[Boolean]         $manage_rtsystemdirs = lookup('antelope::manage_rtsystemdirs'),
-
 ) {
-  include '::antelope'
+  include antelope
 
   # Sanity test parameters
   if $dirs == undef {
@@ -90,11 +89,16 @@ define antelope::instance (
   if $dirs != undef {
     $real_dirs = $dirs =~ Array ? {
       true  => $dirs,
-      false => split($dirs,','),
+      false => $dirs.split(','),
     }
   } else {
     $real_dirs = undef
   }
+
+  # Variables for template evaluation
+  $osfamily = $facts['os']['family']
+  $antelope_latest_perl = pick($facts['antelope_latest_perl'], '5.30')
+  $service_title = $servicename
 
   ### Managed resources
 
@@ -110,7 +114,15 @@ define antelope::instance (
   file { $initfilename :
     ensure  => $file_ensure,
     mode    => '0755',
-    content => template('antelope/S99antelope.erb'),
+    content => epp('antelope/S99antelope.epp', {
+      'osfamily'             => $osfamily,
+      'antelope_latest_perl' => $antelope_latest_perl,
+      'service_title'        => $service_title,
+      'real_dirs'            => $real_dirs,
+      'user'                 => $user,
+      'delay'                => $delay,
+      'shutdownwait'         => $shutdownwait,
+    }),
   }
 
   service { $servicename:
@@ -121,7 +133,7 @@ define antelope::instance (
   }
 
   if $manage_fact_real {
-    include ::antelope::service_fact
+    include antelope::service_fact
 
     concat::fragment { "${antelope::service_fact::file}_${name}":
       target  => $antelope::service_fact::file,
@@ -137,7 +149,7 @@ define antelope::instance (
 
     # If we were handed something to "subscribe" to, ensure our
     # new service is off when it is refreshed and on afterward.
-    if !empty($subscriptions) {
+    if $subscriptions != [] {
       exec { "${initfilename} stop":
         command     => "${initfilename} stop ${stop_reason}",
         notify      => $subscriptions,

@@ -1,10 +1,10 @@
 # Autorequires: File[$facts_dir]
 # Installs a service fact for Antelope services
 # Sets up a basic concat resource that other classes can add to
-class antelope::service_fact(
+class antelope::service_fact (
   Stdlib::Absolutepath  $facts_dir,
-){
-  include ::antelope
+) {
+  include antelope
 
   $file = "${facts_dir}/antelope_services"
 

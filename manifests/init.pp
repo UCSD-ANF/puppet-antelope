@@ -89,10 +89,10 @@ class antelope (
   Antelope::User                $dist_owner,
   Antelope::Group               $dist_group,
   String                        $dist_mode,
+  Optional[String]              $service_provider = undef,
+  Optional[Antelope::Dirs]      $dirs = undef,
+  Optional[Antelope::Instances] $instances = undef,
   Antelope::Version             $version = $facts['antelope_latest_version'],
-  Optional[String]              $service_provider,
-  Optional[Antelope::Dirs]      $dirs,
-  Optional[Antelope::Instances] $instances,
 ) {
   ### Sanity check
 
@@ -174,7 +174,7 @@ class antelope (
       "${service_name}" => {
         dirs   => $dirs,
         ensure => $manage_instance_ensure,
-      }
+      },
     }
   } else {
     $instances_real = undef
@@ -207,6 +207,8 @@ class antelope (
       }
     }
   } else {
-    notice('Neither managing a singleton nor plural instance of Antelope.')
+    notify { 'antelope_no_instances':
+      message => 'Neither managing a singleton nor plural instance of Antelope.',
+    }
   }
 }
