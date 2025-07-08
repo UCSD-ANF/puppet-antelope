@@ -23,9 +23,6 @@ antelope::instance_ensure: present
 antelope::rtsystem_dir_mode: '0775'
 antelope::rtsystem_rtexec_mode: '0664'
 
-antelope::php::version: "%{alias('antelope::version')}"
-antelope::php::ensure: absent
-
 antelope::service_fact::facts_dir: "%{alias('antelope::facts_dir')}"
 
 antelope::sync::ensure: present
