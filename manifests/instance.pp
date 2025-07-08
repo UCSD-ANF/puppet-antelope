@@ -79,9 +79,9 @@ define antelope::instance (
 
   # Generate a shutdown reason that we may or may not use later.
   $reason = join([
-    "Puppet ${module_name}: pause ${servicename} (per refresh of",
-    join($subscriptions,', '),
-    "), using ${initfilename}.",
+      "Puppet ${module_name}: pause ${servicename} (per refresh of",
+      join($subscriptions,', '),
+      "), using ${initfilename}.",
   ], ' ')
   $stop_reason = shellquote($reason)
 
@@ -115,13 +115,13 @@ define antelope::instance (
     ensure  => $file_ensure,
     mode    => '0755',
     content => epp('antelope/S99antelope.epp', {
-      'osfamily'             => $osfamily,
-      'antelope_latest_perl' => $antelope_latest_perl,
-      'service_title'        => $service_title,
-      'real_dirs'            => $real_dirs,
-      'user'                 => $user,
-      'delay'                => $delay,
-      'shutdownwait'         => $shutdownwait,
+        'osfamily'             => $osfamily,
+        'antelope_latest_perl' => $antelope_latest_perl,
+        'service_title'        => $service_title,
+        'real_dirs'            => $real_dirs,
+        'user'                 => $user,
+        'delay'                => $delay,
+        'shutdownwait'         => $shutdownwait,
     }),
   }
 

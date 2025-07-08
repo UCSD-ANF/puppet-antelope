@@ -42,10 +42,10 @@
 #
 define antelope::versioned_site_pf (
   Enum['present', 'absent']       $ensure                   = 'present',
-  String                          $mailhost                 = '',
+  Optional[String]                $mailhost                 = undef,
   Stdlib::Fqdn                    $mail_domain              = $facts['networking']['fqdn'],
   String                          $default_seed_network     = 'XX',
-  String                          $originating_organization = '',
+  Optional[String]                $originating_organization = undef,
   String                          $institution              = 'XXXX',
   Antelope::Version               $version                  = $title,
   Optional[String]                $source                   = undef,
@@ -70,11 +70,11 @@ define antelope::versioned_site_pf (
   $file_content = $file_source ? {
     undef => $content ? {
       undef => epp('antelope/site.pf.epp', {
-        'mailhost'                 => $mailhost,
-        'mail_domain'              => $mail_domain,
-        'default_seed_network'     => $default_seed_network,
-        'originating_organization' => $originating_organization,
-        'institution'              => $institution,
+          'mailhost'                 => $mailhost ? { undef => '', default => $mailhost },
+          'mail_domain'              => $mail_domain,
+          'default_seed_network'     => $default_seed_network,
+          'originating_organization' => $originating_organization ? { undef => '', default => $originating_organization },
+          'institution'              => $institution,
       }),
       default => $content,
     },

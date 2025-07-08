@@ -1,62 +1,40 @@
+# @summary Creates a license.pf parameter file for a specific Antelope version
 #
-# === Defined type antelope::versioned_license_pf
-# Define a license.pf parameter file for a particular version of
-# Antelope.
+# This defined type creates a license.pf parameter file for a particular version
+# of Antelope. Multiple instances can be created for different versions to
+# support testing scenarios.
 #
-# This is a define rather than a class because we need to be able to
-# support more than one version of Antelope being installed on a
-# particular system for testing.
+# @param ensure
+#   Whether the license.pf file should be present or absent
+# @param replace
+#   Whether to replace the contents if the file exists
+# @param expiration_warnings
+#   Whether to show expiration warnings in license.pf
+# @param owner
+#   File owner
+# @param group
+#   File group
+# @param mode
+#   File mode
+# @param version
+#   Antelope version (defaults to title)
+# @param path
+#   Override default file path
+# @param source
+#   Source file to copy (mutually exclusive with content)
+# @param content
+#   File content (mutually exclusive with source)
+# @param license_keys
+#   Array containing license keys, one per array element
 #
-# === Parameters
-#
-# Parameters affecting behavior of this define:
-# *[ensure]*
-#  Either present or absent. If absent, file is removed. Default: present
-#
-# *[version]*
-#  The version of Antelope that this license.pf instance will belong to
-#  Defaults to $title. This is the namevar.
-#
-# *[source]*
-#  If set, this file is copied directly with no template evaluation
-#  performed. 'template' and 'source' cannot both be set. Defaults to
-#  undef.
-#
-# *[content]*
-#  If set, this is used as the file's contents. This allows you to
-#  specify your own template in case the default template doesn't work
-#  for you. Defaults to template('puppet/license.pf.erb'). It is an
-#  error to define both template and source at the same time.
-#
-# *[replace]*
-#  If true or yes, the contents of the file will be replaced if it
-#  exists. If false or no (the default) any existing contents are left
-#  in place
-#
-# *[path]*
-#  If set, this is used as the filename for the license file. This allows you
-#  specify an arbitrary location for license files for staging purposes.
-#  Defaults to '/opt/antelope/$version/data/pf/license.pf'
-#
-# Parameters affecting template evaluation:
-#
-# *[license_keys]*
-#  An array containing license keys, one per array element.
-#
-# *[expiration_warnings]*
-#  If false, the parameter 'no_more_expiration_warnings' is set in
-#  license.pf. If true, it's not set in license.pf
-#
-# === Example
-#
-#    # Set the license.pf for the latest version of Antelope:
-#    antelope::versioned_license_pf( $antelope_latest_version :
-#      license_keys    => [
-#        'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo',
-#        'tbbadef1234567890abcdef1234567890abcdef12 2014 May 01 # node bar',
-#      ],
-#      replace => true,
-#    }
+# @example Set the license.pf for the latest version of Antelope
+#   antelope::versioned_license_pf { $facts['antelope_latest_version']:
+#     license_keys => [
+#       'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo',
+#       'tbbadef1234567890abcdef1234567890abcdef12 2014 May 01 # node bar',
+#     ],
+#     replace => true,
+#   }
 #
 define antelope::versioned_license_pf (
   Enum['present', 'absent']         $ensure               = 'present',
@@ -84,8 +62,8 @@ define antelope::versioned_license_pf (
 
   if !$file_source {
     $file_content = pick($content, epp('antelope/license.pf.epp', {
-      'license_keys'         => $license_keys,
-      'expiration_warnings'  => $expiration_warnings,
+          'license_keys'         => $license_keys,
+          'expiration_warnings'  => $expiration_warnings,
     }))
   } else {
     $file_content = undef
