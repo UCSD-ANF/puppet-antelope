@@ -43,7 +43,7 @@
 define antelope::versioned_site_pf (
   Enum['present', 'absent']       $ensure                   = 'present',
   String                          $mailhost                 = '',
-  Stdlib::Fqdn                    $mail_domain              = $::facts['fqdn'],
+  Stdlib::Fqdn                    $mail_domain              = $facts['fqdn'],
   String                          $default_seed_network     = 'XX',
   String                          $originating_organization = '',
   String                          $institution              = 'XXXX',

@@ -50,7 +50,7 @@
 # === Example
 #
 #    # Set the license.pf for the latest version of Antelope:
-#    antelope::versioned_license_pf( $::antelope_latest_version :
+#    antelope::versioned_license_pf( $antelope_latest_version :
 #      license_keys    => [
 #        'tabcdef1234567890abcdef1234567890abcdef12 2014 May 01 # node foo',
 #        'tbbadef1234567890abcdef1234567890abcdef12 2014 May 01 # node bar',
