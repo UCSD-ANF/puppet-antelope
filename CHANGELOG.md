@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 3.1.1 - 2025-07-08
+
+**Bug Fixes**
+- Fixed `pick()` function logic errors that caused runtime failures with undefined facts
+- Fixed `pick($facts['antelope_services'], '')` to properly handle undefined facts
+- Fixed `pick($facts['antelope_latest_version'], '5.15')` to use proper fallback value
+
+**Code Quality**
+- Replaced `lookup()` calls with direct class parameter references to eliminate lookup_in_parameter warnings
+- Fixed all puppet-lint warnings (indentation, style, documentation)
+- Fixed all rubocop warnings (Ruby code style, indentation, constant freezing)
+- Removed trailing whitespace and added proper final newlines in spec files
+- Fixed inconsistent indentation throughout codebase
+
+**Development**
+- Established semantic commit workflow with git commit message template
+- Updated CONTRIBUTING.md with semantic commit guidelines
+- Added Development section to README.md with commit template setup
+- All PDK validation checks now pass with no warnings
+
 ## Release 3.1.0 - 2025-07-08
 
 **Puppet 7.34.x Compatibility**
