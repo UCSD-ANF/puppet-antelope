@@ -17,7 +17,7 @@ describe 'antelope::service_fact' do
   shared_context 'Supported Platform' do
     context 'with default parameters' do
       it { is_expected.to compile }
-      
+
       it {
         is_expected.to contain_concat('/etc/facter/facts.d/antelope_services').with(
           require: 'File[/etc/facter/facts.d]',
@@ -71,7 +71,7 @@ describe 'antelope::service_fact' do
       end
 
       it { is_expected.to compile }
-      
+
       it {
         is_expected.to contain_concat('/custom/facts/dir/antelope_services').with(
           require: 'File[/custom/facts/dir]',

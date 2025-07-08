@@ -14,7 +14,7 @@ describe 'antelope::rtsystemdir', type: :define do
   shared_context 'Supported Platform' do
     context 'with default parameters' do
       it { is_expected.to compile }
-      
+
       it {
         is_expected.to contain_file('/export/home/rt/rtsystems/test/rtexec.pf').with(
           ensure: 'present',
@@ -43,7 +43,7 @@ describe 'antelope::rtsystemdir', type: :define do
       end
 
       it { is_expected.to compile }
-      
+
       it {
         is_expected.to contain_file('/export/home/rt/rtsystems/test/rtexec.pf').with(
           ensure: 'present',
@@ -63,7 +63,7 @@ describe 'antelope::rtsystemdir', type: :define do
       end
 
       it { is_expected.to compile }
-      
+
       it {
         is_expected.to contain_file('/custom/path/rtsystem/rtexec.pf').with(
           ensure: 'present',

@@ -12,8 +12,8 @@
 # @summary
 #   Utility functions for working with Antelope
 module Facter::Util::Antelope
-  VALID_KERNELS = ['Linux', 'SunOS', 'Darwin']
-  ANTELOPE_BASEDIR = '/opt/antelope'.freeze
+  VALID_KERNELS = ['Linux', 'SunOS', 'Darwin'].freeze
+  ANTELOPE_BASEDIR = '/opt/antelope'
   RE_VERSION = %r{^(\d+)\.(\d+)(-64)?(pre|post|p)?$}
 
   # Return a list of all Antelope versions installed on this system
