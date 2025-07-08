@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 3.0.0 - 2025-07-08
+
+**BREAKING CHANGES**
+- Removed deprecated PHP functionality (manifests/php.pp, templates/php.erb)
+- PHP support is no longer available in modern Antelope versions
+- Removed PHP configuration from data/common.yaml
+
+**Code Quality**
+- Removed legacy `validate_*` function calls in favor of modern Puppet data types
+- Removed redundant `validate_bool()`, `validate_re()`, and `is_integer()` checks
+- Replaced `is_array()` with modern `=~ Array` syntax
+- Modernized global variable references (`$::facts` → `$facts`, removed `::` prefixes)
+- Fixed duplicate pry gem dependency in Gemfile
+- Fixed antelope_latest_version fact to be string for proper type validation
+
+**Testing**
+- Added comprehensive test coverage for `rtsystemdir` and `service_fact` classes
+- Improved test coverage from 33.82% to 42.03%
+- All 764 tests pass with modern Puppet versions
+- Enhanced test environment compatibility
+
+**Migration Guide**
+- Remove any references to `antelope::php` class from your Puppet manifests
+- PHP extensions for Antelope are no longer supported in this module
+
 ## Release 2.1.0 - 2025-07-07
 
 **Features**
