@@ -44,9 +44,10 @@ parameter to false for each `antelope::instance` that you manually define.
 
 ### Other facts
 
-* `antelope_versions`       - All versions of Antelope installed on the system
+* `antelope_versions`       - All versions of Antelope installed on the system (supports 5.9 through 5.15)
 * `antelope_latest_version` - The newest version of Antelope installed on the system
 * `antelope_latest_perl`    - the version of Perl that ships with `antelope_latest_version`
+* `antelope_latest_python`  - the version of Python that ships with `antelope_latest_version`
 
 ## Classes
 

@@ -8,24 +8,33 @@ networking:
   mac: "AA:AA:AA:AA:AA:AA"
 is_pe: false
 antelope_contrib_basedir:
-  '5.7': "/contrib"
-  '5.8': "/contrib"
   '5.9': "/contrib"
-  5.10pre: "/contrib"
-antelope_latest_perl: perl5.26.1
-antelope_latest_python: python3.6.5
-antelope_latest_version: 5.10pre
+  '5.10': "/contrib"
+  '5.11': "/contrib"
+  '5.12': "/contrib"
+  '5.13': "/contrib"
+  '5.14': "/contrib"
+  '5.15': "/contrib"
+antelope_latest_perl: perl5.38.2
+antelope_latest_python: python3.12.3
+antelope_latest_version: 5.15
 antelope_services: antelope
-antelope_versions: 5.7,5.8,5.9,5.10pre
+antelope_versions: 5.9,5.10,5.11,5.12,5.13,5.14,5.15
 antelope_versions_array:
-- '5.7'
-- '5.8'
 - '5.9'
-- 5.10pre
-antelope_versions_supports_aldproxy: 5.7,5.8,5.9,5.10pre
+- '5.10'
+- '5.11'
+- '5.12'
+- '5.13'
+- '5.14'
+- '5.15'
+antelope_versions_supports_aldproxy: 5.9,5.10,5.11,5.12,5.13,5.14,5.15
 antelope_versions_supports_aldproxy_array:
-- '5.7'
-- '5.8'
 - '5.9'
-- 5.10pre
+- '5.10'
+- '5.11'
+- '5.12'
+- '5.13'
+- '5.14'
+- '5.15'
 
