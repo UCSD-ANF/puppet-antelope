@@ -145,8 +145,6 @@ class antelope (
     default => true,
   }
 
-  validate_bool($manage_plural_instances)
-
   $manage_instance_ensure = $dirs ? {
     ''      => 'absent',
     undef   => 'absent',

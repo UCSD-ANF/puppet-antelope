@@ -58,10 +58,6 @@ define antelope::instance (
     }
   }
 
-  if ($ensure == 'present' and ! is_integer($delay)) {
-    fail('delay parameter must be an integer')
-  }
-
   # Set local variables based on the desired state
   # In our management model, we do not ensure the service is running
   $file_ensure    = $ensure ? { 'present' => 'file', default => $ensure }
@@ -92,7 +88,7 @@ define antelope::instance (
 
   # array of directories that gets evaluated by the template
   if $dirs != undef {
-    $real_dirs = is_array($dirs) ? {
+    $real_dirs = $dirs =~ Array ? {
       true  => $dirs,
       false => split($dirs,','),
     }
@@ -121,7 +117,7 @@ define antelope::instance (
     enable     => $service_enable,
     hasrestart => false,
     hasstatus  => false,
-    provider   => $::antelope::service_provider,
+    provider   => $antelope::service_provider,
   }
 
   if $manage_fact_real {
@@ -152,7 +148,7 @@ define antelope::instance (
         refreshonly => true,
       }
     }
-    if $::osfamily == 'RedHat' {
+    if $facts['os']['family'] == 'RedHat' {
       # chkconfig is kinda dumb, try to force it to do the right thing
       exec { "chkconfig ${servicename} reset":
         path        => '/sbin',
