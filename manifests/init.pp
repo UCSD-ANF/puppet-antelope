@@ -92,7 +92,7 @@ class antelope (
   Optional[String]              $service_provider = undef,
   Optional[Antelope::Dirs]      $dirs = undef,
   Optional[Antelope::Instances] $instances = undef,
-  Antelope::Version             $version = $facts['antelope_latest_version'],
+  Antelope::Version             $version = pick($facts['antelope_latest_version'], '5.15'),
 ) {
   ### Sanity check
 

@@ -70,7 +70,7 @@ class antelope::sync (
   $sync_dirs = ['/opt/antelope', $site_tree].flatten()
   $sync_host = $host
   $sync_user = $user
-  $antelope_services = pick($facts['antelope_services'], '')
+  $antelope_services = $facts['antelope_services']
 
   ### Managed resources
 
@@ -82,13 +82,13 @@ class antelope::sync (
     owner   => $manage_file_owner,
     group   => $manage_file_group,
     content => epp('antelope/sync/antelope_sync.epp', {
-      'confdir'           => $confdir,
-      'bindir'            => $bindir,
-      'sync_dirs'         => $sync_dirs,
-      'sync_host'         => $sync_host,
-      'sync_user'         => $sync_user,
-      'antelope_services' => $antelope_services,
-      'rsync_bin'         => $rsync_bin,
+        'confdir'           => $confdir,
+        'bindir'            => $bindir,
+        'sync_dirs'         => $sync_dirs,
+        'sync_host'         => $sync_host,
+        'sync_user'         => $sync_user,
+        'antelope_services' => $antelope_services,
+        'rsync_bin'         => $rsync_bin,
     }),
     require => [
       File[$bindir],
@@ -102,11 +102,11 @@ class antelope::sync (
     'rsync_exclude':
       path   => "${confdir}/rsync_exclude",
       source => 'puppet:///modules/antelope/sync/rsync_exclude',
-    ;
+      ;
     'rsync_include':
       path   => "${confdir}/rsync_include",
       source => 'puppet:///modules/antelope/sync/rsync_include',
-    ;
+      ;
     default:
       ensure  => $manage_file_ensure,
       mode    => $manage_file_data_mode,
