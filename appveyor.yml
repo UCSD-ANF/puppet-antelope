@@ -20,10 +20,6 @@ environment:
       RUBY_VERSION: 32-x64
       CHECK: syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop
     -
-      PUPPET_GEM_VERSION: ~> 6.0
-      RUBY_VERSION: 30-x64
-      CHECK: parallel_spec
-    -
       PUPPET_GEM_VERSION: ~> 7.0
       RUBY_VERSION: 31-x64
       CHECK: parallel_spec

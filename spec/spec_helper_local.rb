@@ -1,7 +1,7 @@
 RSpec.configure do |config|
   # supply tests with a possibility to test for the future parser
   config.add_setting :puppet_future
-  config.puppet_future = Puppet.version.to_f >= 4.0
+  config.puppet_future = Puppet.version.to_f >= 7.0
 
   config.before :each do
     # Ensure that we don't accidentally cache facts and environment between

@@ -1,6 +1,6 @@
 {
   "name": "UCSDANF-puppet_antelope",
-  "version": "3.1.1",
+  "version": "4.0.0",
   "author": "UCSD-ANF",
   "summary": "Support the Antelope Real_time Monitoring System by Boulder Real-Time Technologies",
   "license": "BSD-2-Clause",
@@ -68,7 +68,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 6.0.0 < 9.0.0"
+      "version_requirement": ">= 7.0.0 < 9.0.0"
     }
   ],
   "tags": [

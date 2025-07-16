@@ -11,7 +11,7 @@ Geoff Davis <gadavis@ucsd.edu>
 
 ## Requirements
 
-* Puppet version >= 6.0.0
+* Puppet version >= 7.0.0
 * [puppetlabs-stdlib][puppetlabs-stdlib] module from PuppetLabs (version >= 6.0.0)
 * [puppetlabs-concat][puppetlabs-concat] module (version >= 6.0.0)
 * A supported Operating System for Antelope:

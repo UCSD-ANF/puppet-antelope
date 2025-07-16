@@ -9,14 +9,25 @@
 ## Author: Geoff Davis <gadavis@ucsd.edu>
 ##
 
-# @summary
-#   Utility functions for working with Antelope
+# Utility functions for working with Antelope
+#
+# This module provides helper methods for working with BRTT Antelope installations,
+# including version detection, path handling, and environment setup.
 module Facter::Util::Antelope
+  # Valid operating system kernels for Antelope
+  # @return [Array<String>] List of supported kernel names
   VALID_KERNELS = ['Linux', 'SunOS', 'Darwin'].freeze
+
+  # Base directory where Antelope is installed
+  # @return [String] Absolute path to Antelope installation directory
   ANTELOPE_BASEDIR = '/opt/antelope'
+
+  # Regular expression to match Antelope version strings
+  # @return [Regexp] Pattern for matching version strings like "5.15" or "5.2-64"
   RE_VERSION = %r{^(\d+)\.(\d+)(-64)?(pre|post|p)?$}
 
-  # Return a list of all Antelope versions installed on this system
+  # @summary Return a list of all Antelope versions installed on this system
+  # @return [Array<String>, nil] Array of version strings sorted from oldest to newest, or nil if error
   def self.versions
     dirs = Dir.entries(ANTELOPE_BASEDIR)
     versions = []
@@ -33,6 +44,10 @@ module Facter::Util::Antelope
     nil
   end
 
+  # @summary Get information about an Antelope installation using the getid command
+  # @param version [String] Antelope version string
+  # @param id [Symbol] Type of information to retrieve (e.g., :perl, :python)
+  # @return [String] Result from the getid command
   def self.getid(version, id)
     antelopepath = "#{Facter::Util::Antelope::ANTELOPE_BASEDIR}/#{version}"
     res = `ANTELOPE=#{antelopepath}; export ANTELOPE; #{antelopepath}/bin/getid #{id} 2> /dev/null`
@@ -40,8 +55,12 @@ module Facter::Util::Antelope
     res
   end
 
-  # Sort Antelope versions from oldest to newest
-  # 5.2-64 < 5.2-64p < 5.3pre < 5.3 < 5.3post
+  # @summary Sort Antelope versions from oldest to newest
+  # @param a [String] First version string to compare
+  # @param b [String] Second version string to compare
+  # @return [Integer] -1 if a < b, 0 if a == b, 1 if a > b
+  # @example Version ordering
+  #   5.2-64 < 5.2-64p < 5.3pre < 5.3 < 5.3post
   def self.sort_versions(a, b)
     amatch = RE_VERSION.match(a)
     bmatch = RE_VERSION.match(b)

@@ -2,7 +2,9 @@
 
 # MCollective Agent for BRTT Antelope
 #
-# Defines a single action, called sync.
+# This agent provides remote management capabilities for Antelope installations
+# through MCollective. It defines a single action called 'sync' that can execute
+# the antelope_sync script with various modes.
 class MCollective::Agent::Antelope < MCollective::RPC::Agent
   activate_when do
     File.executable?('/usr/local/bin/antelope_sync')

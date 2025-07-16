@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## Release 4.0.0 - 2025-07-16
+
+**BREAKING CHANGES**
+- Minimum Puppet version increased from 6.0.0 to 7.0.0
+- Dropped support for Puppet 6.x
+- Module now supports only Puppet 7.x and 8.x
+
+**CI/CD Changes**
+- Removed Puppet 6 testing from GitLab CI pipeline
+- Removed Puppet 6 testing from GitHub Actions workflow
+- Removed Puppet 6 testing from AppVeyor configuration
+- Updated spec helper to require Puppet 7.0+
+
+**Documentation**
+- Updated README.md to reflect Puppet 7.0.0+ requirement
+- Updated MODERNIZATION.md with new version requirements
+- Updated all documentation references from Puppet 6+ to Puppet 7+
+
+**Migration Guide**
+- Users must upgrade to Puppet 7.0.0 or higher before upgrading to this version
+- No functional changes to module behavior, only minimum version requirements
+- Dependency modules (stdlib, concat) continue to support their existing version ranges
+
 ## Release 3.1.1 - 2025-07-08
 
 **Bug Fixes**

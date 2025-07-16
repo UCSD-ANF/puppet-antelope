@@ -3,7 +3,9 @@
 # Fact: antelope_contribbasedir
 require 'facter/util/antelope'
 
-# Helper method to check if contrib subdirectory exists
+# @summary Helper method to check if contrib subdirectory exists
+# @param version [String] Antelope version string
+# @return [Boolean] true if contrib subdirectory exists, false otherwise
 def contrib_subdir_exists?(version)
   File.directory?("/opt/antelope/#{version}/contrib/bin")
 end

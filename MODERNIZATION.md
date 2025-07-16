@@ -5,7 +5,7 @@ This document summarizes the modernization changes made to bring the puppet-ante
 ## Major Changes
 
 ### Puppet and Ruby Version Updates
-- **Puppet**: Updated from `>= 4.10.0 < 7.0.0` to `>= 6.0.0 < 9.0.0`
+- **Puppet**: Updated from `>= 4.10.0 < 7.0.0` to `>= 7.0.0 < 9.0.0`
 - **Ruby**: Updated from 2.4.3 to 3.2.0
 - **Dependencies**: Updated stdlib and concat to support versions up to 10.x
 
@@ -32,7 +32,7 @@ This document summarizes the modernization changes made to bring the puppet-ante
 ## Breaking Changes
 
 ### Minimum Requirements
-- **Puppet 6.0.0+** now required (was 4.10.0+)
+- **Puppet 7.0.0+** now required (was 4.10.0+)
 - **Ruby 3.0+** recommended for development
 - **Unsupported OS versions** removed from metadata
 
@@ -43,7 +43,7 @@ This document summarizes the modernization changes made to bring the puppet-ante
 ## Migration Guide
 
 ### For Users
-1. Ensure Puppet 6.0.0 or higher is installed
+1. Ensure Puppet 7.0.0 or higher is installed
 2. Update any dependency specifications in your Puppetfile
 3. Test on supported operating systems
 
@@ -56,7 +56,7 @@ This document summarizes the modernization changes made to bring the puppet-ante
 
 All changes have been configured to maintain backward compatibility within the supported version ranges. The module should continue to work with:
 
-- Puppet 6.x, 7.x, and 8.x
+- Puppet 7.x and 8.x
 - Supported operating systems as listed in metadata.json
 - Existing module functionality unchanged
 
