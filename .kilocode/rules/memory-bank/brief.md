@@ -1,0 +1,1 @@
+This repository contains Puppet Code to work with the Antelope Real-Time System by Boulder Real-Time Technologies (BRTT). It is used in Puppet configurations maintained by the UC San Diego Array Network Facility (UCSD-ANF). It uses PDK for development.

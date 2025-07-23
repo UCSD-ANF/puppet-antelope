@@ -1,0 +1,164 @@
+# Technical Overview
+
+## Core Technologies
+
+### Puppet Infrastructure
+- **Puppet Version Support**: 4.10.0 through 6.x
+- **PDK Version**: 1.18.0 (Puppet Development Kit)
+- **Hiera Version**: 5.x with YAML backend
+- **Module Structure**: Modern Puppet 4+ patterns with typed parameters
+
+### Programming Languages
+- **Puppet DSL**: Primary configuration language
+- **Ruby**: 2.4.5 through 2.5.7 for Facter facts and testing
+- **ERB Templates**: Configuration file generation
+- **YAML**: Hiera data and configuration
+
+## Dependencies
+
+### Required Puppet Modules
+- **puppetlabs/stdlib**: >= 6.0.0 < 7.0.0
+  - Standard library functions and types
+- **puppetlabs/concat**: > 6.0.0 < 7.0.0
+  - File fragment assembly for service facts
+
+### System Dependencies
+- **rsync**: For synchronization functionality
+- **ssh**: For secure synchronization transport
+- **MCollective**: Optional remote management framework
+
+## Development Tools
+
+### Build and Test Framework
+- **PDK (Puppet Development Kit)**: Primary development tool
+- **Bundler**: Ruby dependency management
+- **RSpec**: Unit testing framework
+- **puppet-litmus**: Acceptance testing (if available)
+
+### Code Quality Tools
+- **RuboCop**: Ruby code style enforcement
+- **puppet-lint**: Puppet-specific linting
+- **puppet-syntax**: Puppet syntax validation
+- **metadata-json-lint**: Metadata validation
+
+### Version Control and Documentation
+- **Git**: Version control with GitHub/GitLab hosting
+- **GitHub Changelog Generator**: Automated changelog generation
+- **puppet-strings**: Documentation generation (if available)
+
+## Development Setup
+
+### Local Environment Requirements
+```bash
+# Install PDK
+# Install Ruby 2.4.5+ or 2.5.7+
+# Clone repository
+bundle install --without system_tests
+```
+
+### Common Development Commands
+```bash
+# Run all validations
+pdk validate
+
+# Run unit tests
+pdk test unit
+
+# Syntax check
+bundle exec rake syntax
+
+# Linting
+bundle exec rake lint
+
+# Full test suite
+bundle exec rake
+```
+
+## CI/CD Pipeline
+
+### Continuous Integration Platforms
+- **Travis CI**: Linux testing with Ruby 2.4.5/2.5.7, Puppet 5.x/6.x matrix
+- **GitLab CI**: Containerized testing with Ruby 2.5.7, Puppet 6.x
+- **AppVeyor**: Windows compatibility testing
+
+### Test Matrix
+- **Ruby Versions**: 2.4.5, 2.5.7
+- **Puppet Versions**: ~> 5.0, ~> 6.0
+- **Platforms**: Linux (primary), Windows (compatibility)
+
+### Pipeline Stages
+1. **Static Analysis**: syntax, lint, metadata_lint, rubocop
+2. **Unit Testing**: parallel_spec execution
+3. **Deployment**: Automated forge deployment on version tags
+
+## Operating System Support
+
+### Supported Platforms
+- **RedHat/CentOS**: 6, 7
+- **Darwin (macOS)**: 14, 15, 16
+
+### OS-Specific Configuration
+- **Hiera Hierarchy**: OS-family specific parameter resolution
+- **Service Providers**: Platform-specific service management
+- **Path Conventions**: Filesystem layout variations
+- **Permission Models**: Different user/group handling
+
+## Testing Strategy
+
+### Unit Testing
+- **Framework**: RSpec with Puppet helpers
+- **Coverage**: Classes, defined types, facts, and custom functions
+- **Mock Data**: Comprehensive fact fixtures in [`spec/default_facts.yml`](spec/default_facts.yml)
+
+### Test Configuration
+- **Spec Helper**: Custom configuration in [`spec/spec_helper_local.rb`](spec/spec_helper_local.rb)
+- **Fixtures**: `.fixtures.yml` for dependency management
+- **Mock Facts**: Version-specific Antelope facts for testing
+
+### Quality Assurance
+- **Syntax Validation**: puppet-syntax for DSL correctness
+- **Style Enforcement**: puppet-lint with module-specific rules
+- **Ruby Standards**: RuboCop with relaxed metrics for Puppet modules
+
+## Configuration Management
+
+### Hiera Integration
+- **Version**: Hiera 5 with YAML backend
+- **Hierarchy**: OS-specific → OS-family → common
+- **Data Directory**: [`data/`](data/) with OS-specific overrides
+- **Configuration**: [`hiera.yaml`](hiera.yaml) with path-based lookups
+
+### Parameter Management
+- **Default Values**: Centralized in [`data/common.yaml`](data/common.yaml)
+- **OS Overrides**: Platform-specific values in [`data/os/`](data/os/)
+- **Type Safety**: Custom Puppet data types for validation
+
+## Module Architecture Patterns
+
+### Resource Management
+- **Autorequires**: Automatic dependency resolution
+- **Service Providers**: Abstracted platform handling
+- **File Templates**: ERB-based configuration generation
+- **Concat Fragments**: Modular fact file assembly
+
+### Custom Extensions
+- **Data Types**: Strongly typed parameters in [`types/`](types/)
+- **Facter Facts**: System discovery in [`lib/facter/`](lib/facter/)
+- **Utility Functions**: Reusable logic in [`lib/facter/util/`](lib/facter/util/)
+
+## Development Constraints
+
+### Puppet Version Compatibility
+- **Minimum**: Puppet 4.10.0 for modern data types
+- **Maximum**: Puppet 6.x (not yet 7.x compatible)
+- **Features**: Uses Puppet 4+ typed parameters and Hiera 5
+
+### Ruby Compatibility
+- **Target Version**: Ruby 2.1+ (RuboCop configuration)
+- **Testing Versions**: 2.4.5, 2.5.7
+- **Platform Support**: POSIX systems primarily
+
+### Licensing and Distribution
+- **License**: BSD-2-Clause
+- **Distribution**: Puppet Forge compatible
+- **Versioning**: Semantic versioning (SemVer)
