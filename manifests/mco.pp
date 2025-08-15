@@ -13,7 +13,7 @@
 # the "libdir".
 #
 # *mco_etc* is where MCollective config files are kept
-class antelope::mco(
+class antelope::mco (
   Stdlib::Absolutepath      $plugin_basedir = '/usr/libexec/mcollective',
   Stdlib::Absolutepath      $mco_etc        = '/etc/mcollective',
   Enum['present', 'absent'] $ensure         = 'present',
@@ -22,7 +22,6 @@ class antelope::mco(
   String                    $mode           = '0644',
   Boolean                   $client_only    = false,
 ) {
-
   validate_re($ensure, '(present|absent)')
 
   $server_ensure = $client_only ? {
@@ -38,14 +37,13 @@ class antelope::mco(
   }
 
   # Installed on MCO clients (management stations) and servers
-  file {"${plugin_basedir}/agent/antelope.ddl":
+  file { "${plugin_basedir}/agent/antelope.ddl":
     source => 'puppet:///modules/antelope/mco/antelope.ddl',
   }
 
   # Only install this on servers
-  file {"${plugin_basedir}/agent/antelope.rb":
+  file { "${plugin_basedir}/agent/antelope.rb":
     ensure => $server_ensure,
     source => 'puppet:///modules/antelope/mco/antelope.rb',
   }
-
 }

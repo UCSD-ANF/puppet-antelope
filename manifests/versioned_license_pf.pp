@@ -71,7 +71,7 @@ define antelope::versioned_license_pf (
   Optional[String]                  $content              = undef,
   Optional[Variant[String, Array]]  $license_keys         = undef,
 ) {
-  include '::antelope'
+  include 'antelope'
 
   $file_ensure = $ensure
   $file_path = pick($path, "/opt/antelope/${version}/data/pf/license.pf")
@@ -105,5 +105,4 @@ define antelope::versioned_license_pf (
     group   => $file_group,
     mode    => $file_mode,
   }
-
 }

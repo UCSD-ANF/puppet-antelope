@@ -36,7 +36,7 @@
 # Defaults to undef. Example value is /opt/anf
 # Can also be specified with the global variable $::antelope_site_tree
 #
-class antelope::sync(
+class antelope::sync (
   Enum['present', 'absent']    $ensure,
   Antelope::User               $user,
   Antelope::User               $owner,
@@ -48,7 +48,7 @@ class antelope::sync(
   Optional[String]             $site_tree = undef,
   Optional[Antelope::Synchost] $host      = undef, # must be set if ensure is present
 ) {
-  include ::antelope
+  include antelope
 
   ### Validate variables
 
@@ -67,10 +67,9 @@ class antelope::sync(
   ### The following variables are used in template evaluation
   $confdir   = "${basedir}/etc"
   $bindir    = "${basedir}/bin"
-  $sync_dirs = flatten(['/opt/antelope', $site_tree ])
+  $sync_dirs = flatten(['/opt/antelope', $site_tree])
   $sync_host = $host
   $sync_user = $user
-
 
   ### Managed resources
 
@@ -94,11 +93,11 @@ class antelope::sync(
     'rsync_exclude':
       path   => "${confdir}/rsync_exclude",
       source => 'puppet:///modules/antelope/sync/rsync_exclude',
-    ;
+      ;
     'rsync_include':
       path   => "${confdir}/rsync_include",
       source => 'puppet:///modules/antelope/sync/rsync_include',
-    ;
+      ;
     default:
       ensure  => $manage_file_ensure,
       mode    => $manage_file_data_mode,

@@ -137,7 +137,6 @@ class antelope (
   Optional[Antelope::Dirs]      $dirs,
   Optional[Antelope::Instances] $instances,
 ) {
-
   ### Sanity check
 
   # verify that dirs and instances weren't both specified
@@ -160,7 +159,7 @@ class antelope (
 
   $manage_service_ensure = $disable ? {
     true    => 'stopped',
-    default =>  $absent ? {
+    default => $absent ? {
       true    => 'stopped',
       default => 'running',
     },
@@ -220,7 +219,7 @@ class antelope (
       "${service_name}" => {
         dirs   => $dirs,
         ensure => $manage_instance_ensure,
-      }
+      },
     }
   } else {
     $instances_real = undef
@@ -255,5 +254,4 @@ class antelope (
   } else {
     notice('Neither managing a singleton nor plural instance of Antelope.')
   }
-
 }

@@ -11,14 +11,14 @@
 #
 # [*owner*]
 #  The ownername that the real-time system should run as. Defaults to 'rt'
-define antelope::rtsystemdir(
+define antelope::rtsystemdir (
   Antelope::User  $owner = lookup('antelope::user'),
   Antelope::Group $group = lookup('antelope::group'),
   String          $dir_mode = lookup('antelope::rtsystem_dir_mode'),
   String          $rtexec_mode = lookup('antelope::rtsystem_rtexec_mode'),
   String          $path = $title,
 ) {
-  include '::antelope'
+  include 'antelope'
 
   $manage_file_owner = $owner
   $manage_file_group = $group

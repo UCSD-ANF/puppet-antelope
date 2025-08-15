@@ -8,8 +8,8 @@
 class antelope::php (
   Antelope::Version         $version,
   Enum['present', 'absent'] $ensure
-){
-  php::config{ 'antelope':
+) {
+  php::config { 'antelope':
     ensure  => $ensure,
     content => template('antelope/php.erb'),
   }

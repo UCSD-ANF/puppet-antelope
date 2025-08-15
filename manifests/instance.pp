@@ -65,7 +65,7 @@
 #        ],
 #    }
 #
-define antelope::instance(
+define antelope::instance (
   Enum['present', 'absent'] $ensure = lookup('antelope::instance_ensure'),
   Antelope::User            $user = lookup('antelope::user'),
   Integer                   $delay = lookup('antelope::delay'),
@@ -78,8 +78,7 @@ define antelope::instance(
   Optional[Boolean]         $manage_rtsystemdirs = lookup('antelope::manage_rtsystemdirs'),
 
 ) {
-
-  include '::antelope'
+  include 'antelope'
 
   # Sanity test parameters
   if $dirs == undef {
@@ -92,13 +91,11 @@ define antelope::instance(
     fail('delay parameter must be an integer')
   }
 
-
   # Set local variables based on the desired state
   # In our management model, we do not ensure the service is running
   $file_ensure    = $ensure ? { 'present' => 'file', default => $ensure }
   $link_ensure    = $ensure ? { 'present' => 'link', default => $ensure }
   $service_enable = $ensure ? { 'present' => true  , default => false }
-
 
   # Set variables that require the antelope class
   $manage_fact_real = $manage_fact ? {
@@ -116,9 +113,9 @@ define antelope::instance(
 
   # Generate a shutdown reason that we may or may not use later.
   $reason = join([
-    "Puppet ${module_name}: pause ${servicename} (per refresh of",
-    join($subscriptions,', '),
-    "), using ${initfilename}.",
+      "Puppet ${module_name}: pause ${servicename} (per refresh of",
+      join($subscriptions,', '),
+      "), using ${initfilename}.",
   ], ' ')
   $stop_reason = shellquote($reason)
 
@@ -131,7 +128,6 @@ define antelope::instance(
   } else {
     $real_dirs = undef
   }
-
 
   ### Managed resources
 
@@ -154,11 +150,11 @@ define antelope::instance(
     enable     => $service_enable,
     hasrestart => false,
     hasstatus  => false,
-    provider   => $::antelope::service_provider,
+    provider   => $antelope::service_provider,
   }
 
   if $manage_fact_real {
-    include ::antelope::service_fact
+    include antelope::service_fact
 
     concat::fragment { "${antelope::service_fact::file}_${name}":
       target  => $antelope::service_fact::file,
@@ -185,7 +181,7 @@ define antelope::instance(
         refreshonly => true,
       }
     }
-    if $::osfamily == 'RedHat' {
+    if $facts['os']['family'] == 'RedHat' {
       # chkconfig is kinda dumb, try to force it to do the right thing
       exec { "chkconfig ${servicename} reset":
         path        => '/sbin',
