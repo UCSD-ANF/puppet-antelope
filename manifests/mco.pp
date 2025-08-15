@@ -22,8 +22,6 @@ class antelope::mco (
   String                    $mode           = '0644',
   Boolean                   $client_only    = false,
 ) {
-  validate_re($ensure, '(present|absent)')
-
   $server_ensure = $client_only ? {
     true         => 'absent',
     default      => $ensure,
