@@ -13,7 +13,7 @@
 #   Utility functions for working with Antelope
 module Facter::Util::Antelope
   VALID_KERNELS = ['Linux', 'SunOS', 'Darwin'].freeze
-  ANTELOPE_BASEDIR = '/opt/antelope'.freeze
+  ANTELOPE_BASEDIR = '/opt/antelope'
   RE_VERSION = %r{^(\d+)\.(\d+)(-64)?(pre|post|p)?$}
 
   # Return a list of all Antelope versions installed on this system
@@ -23,7 +23,7 @@ module Facter::Util::Antelope
 
     dirs.each do |dir|
       dir = dir.chomp
-      next unless dir =~ RE_VERSION
+      next unless RE_VERSION.match?(dir)
       next unless File.exist?(File.join(ANTELOPE_BASEDIR, dir, 'setup.sh'))
       versions.insert(-1, dir)
     end
