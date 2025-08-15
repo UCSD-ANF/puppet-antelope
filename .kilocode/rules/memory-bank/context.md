@@ -22,6 +22,11 @@ The puppet-antelope module is a **mature, production-ready Puppet module** curre
 - **Enterprise Documentation**: Added detailed YARD documentation throughout
 - **Code Standards**: Removed deprecated Puppet validation functions for 8.x compatibility
 
+**Development Infrastructure Improvements (August 2025):**
+- **Kilo Code Integration**: Added `.kilocode/mcp.json` exclusion to `.gitignore`
+- **PDK Protection**: Configured `.sync.yml` with `unmanaged: true` for `.gitignore` to prevent PDK from removing custom entries
+- **Development Workflow**: Secured development tool configuration against automated overwrites
+
 ## Next Steps
 The new shared utility architecture provides a foundation for future improvements:
 - **Puppet 7.x/8.x Support**: Leverage modern shared patterns for compatibility updates

@@ -21,3 +21,5 @@ Gemfile:
     ':development':
       - gem: 'byebug'
         version: '~> 11.1'
+.gitignore:
+  unmanaged: true
