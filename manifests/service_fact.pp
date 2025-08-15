@@ -1,6 +1,7 @@
 # Autorequires: File[$facts_dir]
 # Installs a service fact for Antelope services
 # Sets up a basic concat resource that other classes can add to
+# @param facts_dir The directory where custom facts should be stored. Typically '/etc/facter/facts.d'.
 class antelope::service_fact (
   Stdlib::Absolutepath  $facts_dir,
 ) {

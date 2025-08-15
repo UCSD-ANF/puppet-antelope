@@ -13,6 +13,13 @@
 # the "libdir".
 #
 # *mco_etc* is where MCollective config files are kept
+# @param plugin_basedir The base directory where MCollective plugins are installed. Typically '/usr/libexec/mcollective'.
+# @param mco_etc The MCollective configuration directory path. Typically '/etc/mcollective'.
+# @param ensure Whether the MCollective integration should be present or absent. Defaults to 'present'.
+# @param owner The file owner for MCollective plugin files. Defaults to 'root'.
+# @param group The file group for MCollective plugin files. Defaults to 'root'.
+# @param mode The file permissions for MCollective plugin files. Defaults to '0644'.
+# @param client_only Whether to install only client-side MCollective components. Defaults to false for full agent installation.
 class antelope::mco (
   Stdlib::Absolutepath      $plugin_basedir = '/usr/libexec/mcollective',
   Stdlib::Absolutepath      $mco_etc        = '/etc/mcollective',

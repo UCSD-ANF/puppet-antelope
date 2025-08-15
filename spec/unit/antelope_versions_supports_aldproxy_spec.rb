@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'facter/antelope_versions_supports_aldproxy'
+require 'facter/antelope/versions_supports_aldproxy'
 require 'facter/util/antelope'
 
 ['antelope_versions_supports_aldproxy', 'antelope_versions_supports_aldproxy_array'].each do |a|

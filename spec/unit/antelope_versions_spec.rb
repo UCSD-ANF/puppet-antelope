@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'facter/antelope_versions'
+require 'facter/antelope/versions'
 require 'facter/util/antelope'
 
 describe 'Antelope Version Facts' do

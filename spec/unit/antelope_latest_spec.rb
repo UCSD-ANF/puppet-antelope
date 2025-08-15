@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'facter/antelope_latest'
+require 'facter/antelope/latest'
 
 describe 'antelope_latest_perl fact', type: :fact do
   subject(:antelope_latest_perl) { fact.value }

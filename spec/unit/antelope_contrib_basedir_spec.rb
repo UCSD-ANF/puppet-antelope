@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'facter/antelope_contrib_basedir'
+require 'facter/antelope/contrib_basedir'
 # require 'facter/util/antelope'
 require 'byebug'
 
@@ -24,7 +24,6 @@ describe 'Antelope Contrib Basedir Specs' do
         allow(Facter::Antelope::Contrib).to receive(:contrib_subdir_exists?)\
           .with(version).at_least(:once).and_return(dir_exists)
       end
-      Facter::Antelope::Contrib.add_facts
     end
   end
 

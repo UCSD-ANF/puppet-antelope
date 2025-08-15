@@ -58,13 +58,24 @@
 #      replace => true,
 #    }
 #
+# @param ensure Whether the license.pf file should be present or absent. Defaults to 'present'.
+# @param replace Whether to replace an existing license.pf file. Defaults to false.
+# @param expiration_warnings Whether to enable license expiration warnings in the configuration. Defaults to true.
+# @param owner The file owner for the license.pf file. Defaults to lookup value.
+# @param group The file group for the license.pf file. Defaults to lookup value.
+# @param mode The file permissions for the license.pf file. Defaults to lookup value.
+# @param version The Antelope version for this license configuration. Defaults to the resource name.
+# @param path The full path where the license.pf file should be created. If not specified, will be auto-generated based on version.
+# @param source The source location for the license.pf file (puppet:// URI). Mutually exclusive with content parameter.
+# @param content The literal content for the license.pf file. Mutually exclusive with source parameter.
+# @param license_keys License key data as string or array to include in the license.pf file when using template generation.
 define antelope::versioned_license_pf (
   Enum['present', 'absent']         $ensure               = 'present',
   Boolean                           $replace              = false,
   Boolean                           $expiration_warnings  = true,
-  Antelope::User                    $owner                = lookup('antelope::user'),
-  Antelope::Group                   $group                = lookup('antelope::group'),
-  String                            $mode                 = lookup('antelope::dist_mode'),
+  Optional[Antelope::User]          $owner                = undef,
+  Optional[Antelope::Group]         $group                = undef,
+  Optional[String]                  $mode                 = undef,
   Antelope::Version                 $version              = $title,
   Optional[Stdlib::Absolutepath]    $path                 = undef,
   Optional[String]                  $source               = undef,
@@ -72,6 +83,11 @@ define antelope::versioned_license_pf (
   Optional[Variant[String, Array]]  $license_keys         = undef,
 ) {
   include 'antelope'
+
+  # Use lookup() inside the define body to get defaults from Hiera
+  $owner_real = pick($owner, lookup('antelope::user'))
+  $group_real = pick($group, lookup('antelope::group'))
+  $mode_real = pick($mode, lookup('antelope::license_pf_mode'))
 
   $file_ensure = $ensure
   $file_path = pick($path, "/opt/antelope/${version}/data/pf/license.pf")
@@ -89,9 +105,9 @@ define antelope::versioned_license_pf (
   }
 
   $file_replace = $replace
-  $file_owner = $owner
-  $file_group = $group
-  $file_mode = $mode
+  $file_owner = $owner_real
+  $file_group = $group_real
+  $file_mode = $mode_real
 
   ### Managed resources
 

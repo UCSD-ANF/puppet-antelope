@@ -22,6 +22,8 @@ antelope::instances: null
 antelope::instance_ensure: present
 antelope::rtsystem_dir_mode: '0775'
 antelope::rtsystem_rtexec_mode: '0664'
+antelope::license_pf_mode: '0644'
+antelope::site_pf_mode: '0644'
 
 antelope::php::version: "%{alias('antelope::version')}"
 antelope::php::ensure: absent

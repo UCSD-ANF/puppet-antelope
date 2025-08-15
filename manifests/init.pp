@@ -114,6 +114,11 @@
 #
 #  [*dist_mode*] - file mode for files in the $ANTELOPE tree. Default is 0644
 #
+# @param user The user account under which Antelope services will run. Can be a username string or numeric UID.
+# @param group The group under which Antelope services will run. Can be a group name string or numeric GID.
+# @param service_name The name of the Antelope service for single instance mode.
+# @param manage_rtsystemdirs Whether to manage real-time system directories and their permissions.
+# @param version The specific Antelope version to manage. Defaults to the latest available version detected by facts.
 class antelope (
   Boolean                       $absent,
   Boolean                       $debug,
@@ -132,10 +137,10 @@ class antelope (
   Antelope::User                $dist_owner,
   Antelope::Group               $dist_group,
   String                        $dist_mode,
-  Antelope::Version             $version = $facts['antelope_latest_version'],
-  Optional[String]              $service_provider,
-  Optional[Antelope::Dirs]      $dirs,
   Optional[Antelope::Instances] $instances,
+  Optional[Antelope::Dirs]      $dirs,
+  Antelope::Version             $version = $facts['antelope_latest_version'],
+  Optional[String]              $service_provider = undef,
 ) {
   ### Sanity check
 

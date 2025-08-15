@@ -36,6 +36,12 @@
 # Defaults to undef. Example value is /opt/anf
 # Can also be specified with the global variable $::antelope_site_tree
 #
+# @param owner The file owner for synchronized Antelope files.
+# @param group The file group for synchronized Antelope files.
+# @param exec_mode The file permissions for executable files during synchronization.
+# @param data_mode The file permissions for data files during synchronization.
+# @param basedir The base directory for Antelope installations.
+# @param rsync_bin The path to the rsync binary executable.
 class antelope::sync (
   Enum['present', 'absent']    $ensure,
   Antelope::User               $user,

@@ -65,20 +65,29 @@
 #        ],
 #    }
 #
+# @param group The group under which this Antelope instance will run. Can be a group name string or numeric GID. If not specified, will use the user's primary group.
 define antelope::instance (
-  Enum['present', 'absent'] $ensure = lookup('antelope::instance_ensure'),
-  Antelope::User            $user = lookup('antelope::user'),
-  Integer                   $delay = lookup('antelope::delay'),
-  Integer                   $shutdownwait = lookup('antelope::shutdownwait'),
-  Array                     $subscriptions = lookup('antelope::instance_subscribe'),
+  Optional[Antelope::Dirs]  $dirs                               = undef,
+  Enum['present', 'absent'] $ensure = 'present',
+  Optional[Antelope::User]  $user = undef,
+  Optional[Integer]         $delay = undef,
+  Optional[Integer]         $shutdownwait = undef,
+  Optional[Array]           $subscriptions = undef,
   String                    $servicename = $title,
-  Optional[Antelope::Dirs]  $dirs,
-  Optional[Antelope::Group] $group = lookup('antelope::group'),
-  Optional[Boolean]         $manage_fact = lookup('antelope::manage_service_fact'),
-  Optional[Boolean]         $manage_rtsystemdirs = lookup('antelope::manage_rtsystemdirs'),
+  Optional[Antelope::Group] $group = undef,
+  Optional[Boolean]         $manage_fact = undef,
+  Optional[Boolean]         $manage_rtsystemdirs = undef,
 
 ) {
   include 'antelope'
+
+  # Use lookup() inside the define body to get defaults from Hiera
+  $ensure_real = $ensure
+  $user_real = pick($user, lookup('antelope::user'))
+  $delay_real = pick($delay, lookup('antelope::delay'))
+  $shutdownwait_real = pick($shutdownwait, lookup('antelope::shutdownwait'))
+  $subscriptions_real = pick($subscriptions, lookup('antelope::instance_subscribe'))
+  $group_real = pick($group, lookup('antelope::group'))
 
   # Sanity test parameters
   if $dirs == undef {
@@ -94,15 +103,8 @@ define antelope::instance (
   $service_enable = $ensure ? { 'present' => true  , default => false }
 
   # Set variables that require the antelope class
-  $manage_fact_real = $manage_fact ? {
-    undef   => $antelope::manage_service_fact,
-    default => $manage_fact,
-  }
-
-  $manage_rtsystemdirs_real = $manage_rtsystemdirs ? {
-    undef   => $antelope::manage_rtsystemdirs,
-    default => $manage_rtsystemdirs,
-  }
+  $manage_fact_real = pick($manage_fact, lookup('antelope::manage_service_fact'))
+  $manage_rtsystemdirs_real = pick($manage_rtsystemdirs, lookup('antelope::manage_rtsystemdirs'))
 
   # Determine the path to the init script
   $initfilename = "/etc/init.d/${servicename}"
@@ -110,7 +112,7 @@ define antelope::instance (
   # Generate a shutdown reason that we may or may not use later.
   $reason = join([
       "Puppet ${module_name}: pause ${servicename} (per refresh of",
-      join($subscriptions,', '),
+      join($subscriptions_real,', '),
       "), using ${initfilename}.",
   ], ' ')
   $stop_reason = shellquote($reason)
@@ -130,8 +132,8 @@ define antelope::instance (
   # Create the rtsystemdir resources
   if ( $real_dirs != undef and $manage_rtsystemdirs_real ) {
     antelope::rtsystemdir { $real_dirs :
-      owner => $user,
-      group => $group,
+      owner => $user_real,
+      group => $group_real,
     }
   }
 
@@ -162,7 +164,7 @@ define antelope::instance (
   if ($ensure == 'present') {
     # declare relations based on desired behavior
     File[$initfilename] ~> Service[$servicename]
-    User[$user]         -> Service[$servicename]
+    User[$user_real]         -> Service[$servicename]
 
     # If we were handed something to "subscribe" to, ensure our
     # new service is off when it is refreshed and on afterward.

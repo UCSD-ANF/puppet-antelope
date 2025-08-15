@@ -11,20 +11,29 @@
 #
 # [*owner*]
 #  The ownername that the real-time system should run as. Defaults to 'rt'
+# @param group The group that should own the real-time system directory. Can be a group name string or numeric GID.
+# @param dir_mode The file permissions for the real-time system directory. Defaults to lookup value.
+# @param rtexec_mode The file permissions for the rtexec executable within the directory. Defaults to lookup value with setgid.
 define antelope::rtsystemdir (
-  Antelope::User  $owner = lookup('antelope::user'),
-  Antelope::Group $group = lookup('antelope::group'),
-  String          $dir_mode = lookup('antelope::rtsystem_dir_mode'),
-  String          $rtexec_mode = lookup('antelope::rtsystem_rtexec_mode'),
-  String          $path = $title,
+  Optional[Antelope::User]  $owner = undef,
+  Optional[Antelope::Group] $group = undef,
+  Optional[String]          $dir_mode = undef,
+  Optional[String]          $rtexec_mode = undef,
+  String                    $path = $title,
 ) {
   include 'antelope'
 
-  $manage_file_owner = $owner
-  $manage_file_group = $group
+  # Use lookup() inside the define body to get defaults from Hiera
+  $owner_real = pick($owner, lookup('antelope::user'))
+  $group_real = pick($group, lookup('antelope::group'))
+  $dir_mode_real = pick($dir_mode, lookup('antelope::rtsystem_dir_mode'))
+  $rtexec_mode_real = pick($rtexec_mode, lookup('antelope::rtsystem_rtexec_mode'))
+
+  $manage_file_owner = $owner_real
+  $manage_file_group = $group_real
   $manage_file_ensure = 'present'
 
-  $manage_rtexec_mode     = $rtexec_mode
+  $manage_rtexec_mode     = $rtexec_mode_real
   $manage_rtexec_filename = "${path}/rtexec.pf"
   $manage_rtexec_replace  = false
 
