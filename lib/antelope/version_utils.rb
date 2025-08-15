@@ -45,7 +45,8 @@
 #
 # @since 1.2.0
 #
-module Antelope::VersionUtils
+module Antelope
+  module VersionUtils
     #
     # Regular expression for parsing Antelope version strings.
     #
@@ -390,4 +391,4 @@ module Antelope::VersionUtils
       end
     end
   end
-end
+  end
