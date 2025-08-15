@@ -50,6 +50,24 @@ Located in [`lib/facter/`](lib/facter/):
 
 ### Utility Library
 - **[`lib/facter/util/antelope.rb`](lib/facter/util/antelope.rb)** - Core utility functions for version sorting, system interaction
+- **[`lib/antelope/version_utils.rb`](lib/antelope/version_utils.rb)** - Shared version comparison utilities used by both Puppet and Facter
+
+## Shared Utility Architecture
+
+### Version Comparison Synchronization
+As of version 1.2.0, the module implements a sophisticated shared utility pattern for version comparison:
+
+- **[`Antelope::VersionUtils`](lib/antelope/version_utils.rb)** - Centralized version comparison logic
+  - Handles 64-bit architecture transition at version 5.5
+  - Supports pre/post/p release suffix ordering
+  - Provides thread-safe implementation for both Puppet and Facter contexts
+  - Comprehensive YARD documentation with 393 lines of enterprise-grade code
+
+### Cross-Component Integration
+- **[`antelope::version_compare`](lib/puppet/functions/antelope/version_compare.rb)** - Puppet function using shared logic
+- **[`Facter::Util::Antelope`](lib/facter/util/antelope.rb)** - Facter utility extending shared module
+- **Consistent API**: Both components use identical `compare_antelope_versions` method
+- **Bug Fixes**: Resolved bit suffix comparison logic affecting version ordering
 
 ## Key Design Patterns
 
@@ -80,9 +98,16 @@ Located in [`lib/facter/`](lib/facter/):
 ## Critical Implementation Paths
 
 ### System Discovery Flow
-1. **[`Facter::Util::Antelope.versions`](lib/facter/util/antelope.rb:20)** - Scans `/opt/antelope` for valid installations
-2. **Version sorting** - Custom algorithm handles pre/post releases and 64-bit variants
+1. **[`Facter::Util::Antelope.versions`](lib/facter/util/antelope.rb:140)** - Scans `/opt/antelope` for valid installations
+2. **Version sorting** - Uses shared `Antelope::VersionUtils.sort_antelope_versions` method
 3. **Facts generation** - Creates both string and array format facts for compatibility
+
+### Version Comparison Architecture
+1. **Shared Logic**: `Antelope::VersionUtils` provides consistent version comparison
+2. **64-bit Transition**: Handles complex logic where 5.5+ versions treat no suffix as newer
+3. **Suffix Ordering**: Implements `pre < release < post/p` ordering rules
+4. **Format Validation**: Strict regex validation with descriptive error messages
+5. **Cross-Validation**: 87 comprehensive test cases ensuring Puppet/Facter consistency
 
 ### Instance Deployment Flow
 1. **Parameter validation** - Ensures exclusive use of `dirs` vs `instances`

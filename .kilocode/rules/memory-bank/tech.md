@@ -107,13 +107,21 @@ bundle exec rake
 
 ### Unit Testing
 - **Framework**: RSpec with Puppet helpers
-- **Coverage**: Classes, defined types, facts, and custom functions
+- **Coverage**: Classes, defined types, facts, custom functions, and shared utilities
 - **Mock Data**: Comprehensive fact fixtures in [`spec/default_facts.yml`](spec/default_facts.yml)
+- **Shared Testing**: Comprehensive test suite for `Antelope::VersionUtils` with 87 test cases
+
+### Advanced Testing Patterns
+- **Cross-Validation Testing**: Ensures Puppet functions and Facter utilities use identical logic
+- **Integration Testing**: Tests shared utility module in both Puppet and Facter contexts
+- **Version Comparison Coverage**: Exhaustive testing of 64-bit transition and suffix logic
+- **Enterprise Test Documentation**: Detailed test descriptions with expected behaviors
 
 ### Test Configuration
 - **Spec Helper**: Custom configuration in [`spec/spec_helper_local.rb`](spec/spec_helper_local.rb)
 - **Fixtures**: `.fixtures.yml` for dependency management
 - **Mock Facts**: Version-specific Antelope facts for testing
+- **Shared Utility Tests**: Dedicated test suite in [`spec/unit/antelope/version_utils_spec.rb`](spec/unit/antelope/version_utils_spec.rb)
 
 ### Quality Assurance
 - **Syntax Validation**: puppet-syntax for DSL correctness
@@ -145,6 +153,20 @@ bundle exec rake
 - **Data Types**: Strongly typed parameters in [`types/`](types/)
 - **Facter Facts**: System discovery in [`lib/facter/`](lib/facter/)
 - **Utility Functions**: Reusable logic in [`lib/facter/util/`](lib/facter/util/)
+- **Shared Utilities**: Cross-component logic in [`lib/antelope/`](lib/antelope/)
+
+### Shared Utility Pattern
+- **Module Design**: `Antelope::VersionUtils` as includable module
+- **Thread Safety**: Safe for concurrent use in Puppet and Facter
+- **Consistent API**: Same method signatures across components
+- **Error Handling**: Comprehensive validation with descriptive messages
+- **Documentation**: Enterprise-grade YARD documentation with examples
+
+### Development Standards
+- **Version Comparison**: All version logic must use `Antelope::VersionUtils`
+- **Documentation**: YARD documentation required for new utilities
+- **Testing**: Cross-validation testing for shared components
+- **Compatibility**: Maintain backward compatibility in public APIs
 
 ## Development Constraints
 
