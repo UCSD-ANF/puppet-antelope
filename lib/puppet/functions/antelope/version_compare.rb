@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'antelope/version_utils'
+require_relative '../../../antelope/version_utils'
 
 #
 # Puppet function for comparing Antelope version strings with comprehensive versioning rules.
@@ -144,8 +144,6 @@ Puppet::Functions.create_function(:'antelope::version_compare') do
   #
   # @since 1.2.0
   #
-  include Antelope::VersionUtils
-
   dispatch :compare do
     param 'String', :version1
     param 'String', :version2
@@ -171,6 +169,8 @@ Puppet::Functions.create_function(:'antelope::version_compare') do
   # @since 1.2.0
   #
   def compare(version1, version2)
+    # Include the shared utility module and use its methods
+    extend Antelope::VersionUtils
     # Use the shared utility method for consistent comparison logic
     compare_antelope_versions(version1, version2)
   end
