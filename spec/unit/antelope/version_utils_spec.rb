@@ -211,11 +211,10 @@ describe Antelope::VersionUtils do
         bc_result = instance.compare_antelope_versions(version_b, version_c)
         ac_result = instance.compare_antelope_versions(version_a, version_c)
 
-        if ab_result <= 0 && bc_result <= 0
-          expect(ac_result).to be <= 0,
-                               "Transitivity violation: #{version_a} <= #{version_b} <= #{version_c} " \
-                               "but #{version_a} not <= #{version_c} (#{ac_result})"
-        end
+        next unless ab_result <= 0 && bc_result <= 0
+        expect(ac_result).to be <= 0,
+                             "Transitivity violation: #{version_a} <= #{version_b} <= #{version_c} " \
+                             "but #{version_a} not <= #{version_c} (#{ac_result})"
       end
     end
 
@@ -229,7 +228,7 @@ describe Antelope::VersionUtils do
 
   describe 'regular expression validation' do
     it 'correctly identifies valid version patterns' do
-      valid_versions = %w[4.9 5.0 5.1 5.1-64 4.9pre 4.9post 4.11p 5.2-64p]
+      valid_versions = ['4.9', '5.0', '5.1', '5.1-64', '4.9pre', '4.9post', '4.11p', '5.2-64p']
       valid_versions.each do |version|
         expect(Antelope::VersionUtils::RE_VERSION.match(version)).not_to be_nil,
                                                                       "Version #{version} should match regex"
@@ -248,10 +247,10 @@ describe Antelope::VersionUtils do
   describe 'error handling' do
     it 'raises ArgumentError for invalid version formats in comparison' do
       expect { instance.compare_antelope_versions('invalid', '5.1') }
-        .to raise_error(ArgumentError, /Invalid Antelope version format: 'invalid'/)
-      
+        .to raise_error(ArgumentError, %r{Invalid Antelope version format: 'invalid'})
+
       expect { instance.compare_antelope_versions('5.1', 'also-invalid') }
-        .to raise_error(ArgumentError, /Invalid Antelope version format: 'also-invalid'/)
+        .to raise_error(ArgumentError, %r{Invalid Antelope version format: 'also-invalid'})
     end
 
     it 'does not raise error for valid version formats' do
@@ -262,7 +261,7 @@ describe Antelope::VersionUtils do
 
     it 'raises ArgumentError for invalid versions in sorting' do
       expect { instance.sort_antelope_versions(['5.1', 'invalid', '5.2']) }
-        .to raise_error(ArgumentError, /Invalid Antelope version format: 'invalid'/)
+        .to raise_error(ArgumentError, %r{Invalid Antelope version format: 'invalid'})
     end
   end
 end
