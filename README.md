@@ -342,6 +342,37 @@ system.
 Returns an comma-delimited string of all system versions of Antelope that support the Antelope License Proxy.
 E.G.
 ```
+
+## Functions
+
+### `antelope::version_compare`
+
+Compares two Antelope version strings according to Antelope's special versioning rules.
+
+This function handles Antelope's non-standard version comparison requirements:
+1. During the 32-bit to 64-bit transition, versions like "5.1-64" should be compared properly against later versions like "5.5"
+2. Pre/post suffixes: "4.9pre" < "4.9" < "4.9post" < "4.10"
+
+**Parameters:**
+- `version1` (String): First version to compare
+- `version2` (String): Second version to compare
+
+**Returns:** Integer (-1 if version1 < version2, 0 if equal, 1 if version1 > version2)
+
+**Examples:**
+```puppet
+# Basic version comparison
+antelope::version_compare('5.1', '5.2')      # => -1
+
+# 64-bit transition handling
+antelope::version_compare('5.1-64', '5.5')   # => -1
+antelope::version_compare('5.1', '5.1-64')   # => -1
+
+# Pre/post suffix handling
+antelope::version_compare('4.9pre', '4.9')   # => -1
+antelope::version_compare('4.9', '4.9post')  # => -1
+antelope::version_compare('4.9post', '4.10') # => -1
+```
 '5.3,5.4,5.5'
 ```
 
