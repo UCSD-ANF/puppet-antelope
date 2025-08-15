@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Puppet module pre-commit hook
+# Runs PDK validation to catch syntax and style issues before commit
+#
+
+# Output to stderr
+exec 1>&2
+
+# Check if PDK is available
+if ! command -v pdk >/dev/null 2>&1; then
+    echo "Error: PDK is not installed or not in PATH"
+    echo "Please install PDK or ensure it's in your PATH"
+    exit 1
+fi
+
+echo "Running PDK validation..."
+
+# Run PDK validate
+if ! pdk validate; then
+    echo ""
+    echo "Pre-commit validation failed!"
+    echo "Please fix the above issues before committing."
+    echo ""
+    echo "To bypass this check (not recommended), use:"
+    echo "  git commit --no-verify"
+    exit 1
+fi
+
+echo "✓ All validations passed!"
+exit 0
