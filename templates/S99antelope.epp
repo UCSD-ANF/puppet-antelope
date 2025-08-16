@@ -1,0 +1,252 @@
+<%- |
+  String $osfamily,
+  String $antelope_latest_perl,
+  String $title,
+  Variant[String, Array[String]] $real_dirs,
+  String $user,
+  Integer $delay,
+  Integer $shutdownwait
+| -%>
+<% if $osfamily == 'RedHat' { -%>
+#!/opt/antelope/<%= $antelope_latest_perl %>/bin/perl
+<% } else { -%>
+: # use perl
+eval 'exec /opt/antelope/<%= $antelope_latest_perl %>/bin/perl -S $0 "$@"'
+if 0;
+<% } -%>
+
+##----------------------------------------------------------------------------
+## !! WARNING !!
+## This file is managed by Puppet. Any changes will be unceremoniously
+## removed at the next Puppet run.
+##----------------------------------------------------------------------------
+# chkconfig: 345 99 1
+# description: Antelope Real-Time System Instace <%= $title %>
+# To restart systems on reboot
+#  1) edit @dirs and $user below to fill in the directories
+#     where systems are running and the user who runs them.
+#     edit $sleep to cause a delay of $sleep seconds between
+#     startups in multiple directories.
+#
+#  2) install this script as
+#	/etc/init.d/antelope
+#     and
+#	/etc/rc[01].d/K01_antelope
+#     and
+#	/etc/rc3.d/S99antelope or /etc/init.d/rc5.d/S99antelope on SuSE Linux
+#
+#  3) test it by executing "/etc/init.d/antelope stop"  as root.
+#
+#  4) test it by executing "/etc/init.d/antelope start"  as root.
+
+<% if $real_dirs =~ Array {
+  $dirsout = $real_dirs.map |$d| { "\"${d}\"" }.join(', ')
+} elsif $real_dirs != '' {
+  $dirsout = "\"${real_dirs}\""
+} else {
+  $dirsout = ''
+} -%>
+@dirs = ( <%= $dirsout %> );    #actual directories of rtexec.pf, eg:
+		#      @dirs = ("/home/rt/knet", "/home/rt/anza") ;
+$user = "<%= $user %>" ;  # actual user that runs rtexec
+@remote = () ;  # remote machines on which to run /etc/init.d/antelope (like @dirs above).
+$rsh = "ssh" ;  # command to get a remote shell without password prompting
+$sleep = <%= $delay %> ;    # specify # seconds to delay between startups.
+$shutdownwait = <%= $shutdownwait %>;    # specify number of seconds to wait for shutdown
+$lockfile = "/var/lock/subsys/antelope";    # lockfile for init.d 
+
+if ( -x "/bin/logger" ) {
+    $Logger = "/bin/logger" ;
+} elsif ( -x "/usr/bin/logger" ) {
+    $Logger = "/usr/bin/logger" ;
+} else {
+    &syslog("S99antelope: can't find 'logger' program" ) ;
+}
+
+&syslog ("$0 @ARGV" ) ;
+
+$usage = "Usage: $0 { start | stop [reason] }\n" ;
+if ( @ARGV < 1 ) {
+    &syslog($usage) ;
+    exit 1 ;
+}
+
+($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell,$expire)
+    = getpwnam($user) ;
+
+if ( $< != 0 ) {
+    &syslog("\007  must be root to run $0\n") ;
+    exit 1 ;
+}
+
+$action = shift ;
+if ( $action eq "stop" ) {
+    if (@ARGV) {
+	$why = "@ARGV" ;
+    } elsif ( -t STDIN ) {
+        open ( OUT, ">/dev/tty" ) ;
+	print OUT "Why shutdown Antelope? " ;
+        close OUT ;
+        open ( IN, "/dev/tty" ) ;
+	$why = <IN> ;
+        close (IN) ;
+	chomp($why) ;
+    } else {
+	$who = ($< == 0) ? "root" : $user ;
+	$why = "Shutdown by $who from $0"
+    }
+    $whyfile = "/tmp/why$$" ;
+    open (WHY, ">$whyfile" ) ;
+    print WHY $why ;
+    close WHY ;
+}
+
+if ( @dirs > 0 && $sleep > 0 && $action eq "start" ) {
+    if ( $pid = fork ) {
+	exit 0 ;
+    }
+}
+
+if ( $action eq "start" ) {
+    <%- if $osfamily == 'RedHat' { -%>
+    # create lockfile
+    open LOCKFILE, '>', $lockfile and close LOCKFILE or die "Failed to create $lockfile: $!";
+    <%- } -%>
+    foreach $dir ( @dirs ) {
+	&syslog ( "starting Antelope realtime system in $dir as $user." ) ;
+	    if ( -d $dir && -x $dir ) {
+	    $logfile = "$dir/logs/auto_start" ;
+	    if ( $< == 0 ) {
+		if ( $shell =~ /csh$/ ) {
+		    $pid = bkg ( "su - $user -c '(cd $dir ; date ; rtexec  -fs) >>&! $logfile'" )  ;
+		} else {
+		    $pid = bkg ( "su - $user -c '(. .profile ; cd $dir ; date ; rtexec  -fs) >> $logfile'" )  ;
+		}
+	    } else {
+		chdir $dir ;
+		&touch($logfile) ;
+		$pid = bkg ( "$ENV{ANTELOPE}/bin/rtexec -fs >> $logfile 2>&1" )  ;
+	    }
+	    $dir{$pid} = "$dir" ;
+	    sleep $sleep if ($sleep > 0 && $dir ne $dirs[$#dirs]) ;
+	} else {
+	    &syslog( "No directory $dir to start up!!" ) ;
+	}
+    }
+
+    foreach $remote ( @remote ) {
+	&syslog ( "starting Antelope realtime system on $remote as $user." ) ;
+        if ( $< == 0 ) {
+	    $pid = bkg ( "su - $user -c '$rsh $remote /etc/init.d/antelope start'" ) ;
+	} else {
+	    $pid = bkg ( "$rsh $remote /etc/init.d/antelope start" ) ;
+	}
+	sleep $sleep if ($sleep > 0 && $remote ne $remote[$#remote]) ;
+	$dir{$pid} = "$remote" ;
+    }
+
+} elsif ( $action eq "stop" ) {
+    <%- if $osfamily == 'RedHat' { -%>
+    # Remove lockfile
+    unlink $lockfile;
+    <%- } -%>
+    foreach $dir ( @dirs ) {
+	if ( -d $dir && -x $dir ) {
+	    &syslog ( "system shutting down -- Antelope stopping realtime system in $dir as $user." ) ;
+	    $logfile = "$dir/logs/auto_stop" ;
+	    if ( $< == 0 ) {
+		if ( $shell =~ /csh$/ ) {
+		    $pid = bkg ( "su - $user -c '(cd $dir ; date ; rtexec -fk -u root -w $whyfile) >>&! $logfile'" ) ;
+		} else {
+		    $pid = bkg ( "su - $user -c '(. .profile ; cd $dir ; date ; rtexec -fk -u root -w $whyfile) >> $logfile'" ) ;
+		}
+	    } else {
+		chdir $dir ;
+		&touch($logfile) ;
+		$pid = bkg ( "$ENV{ANTELOPE}/bin/rtexec -fk -w $whyfile >> $logfile 2>&1 < /dev/null" ) ;
+	    }
+	    $dir{$pid} = "$dir" ;
+	} else {
+	    &syslog("No directory $dir to shut down" ) ;
+	}
+    }
+    foreach $remote ( @remote ) {
+	&syslog ( "stopping Antelope realtime system on $remote" ) ;
+        if ( $< == 0 ) {
+	    $pid = bkg ( "su - $user -c '$rsh $remote /etc/init.d/antelope stop \"$why\"'" ) ;
+	} else {
+	    $pid = bkg ( "$rsh $remote /etc/init.d/antelope stop \"$why\"" ) ;
+	}
+	sleep $sleep if ($sleep > 0 && $remote ne $remote[$#remote]) ;
+	$dir{$pid} = "$remote" ;
+    }
+
+    eval {
+	$SIG{ALRM} = sub { die "timed out\n" ; } ;
+	alarm $shutdownwait ;	# wait no more than shutdownwait seconds
+	for ( $pid = wait() ; $pid > 0 ; $pid = wait() ) {
+	    $status = $? ;
+	    if ( defined $dir{$pid} ) {
+		if ( $status >> 8 ) {
+		    &syslog ( "Some rtexec failure in directory $dir{$pid}" ) ;
+		} else {
+		    &syslog ( "Antelope terminated in directory $dir{$pid}" ) ;
+		}
+		delete $dir{$pid} ;
+	    }
+	}
+	alarm 0 ;
+    } ;
+    if ( $@ ) {
+	@dirs = values %dir ;
+	&syslog ( "Antelope shutdown problems in @dirs" ) ;
+	foreach $dir ( @dirs ) {
+	    &syslog ( "Antelope shutdown timed out in directory $dir " ) ;
+	}
+    }
+
+} else {
+    &syslog($usage) ;
+}
+
+sub bkg {
+    my ( $cmd ) = @_ ;
+    my ( $pid ) ;
+    &syslog ( "running $cmd" ) ;
+    if ( $pid = fork ) {
+        return  $pid ;
+    } elsif ( defined $pid ) {
+        if ( $] > 5 ) {
+            eval "setpgrp 0" ;
+        } else {
+            setpgrp (0, $$) ;
+        }
+	open(STDIN, "/dev/null") ;
+        $SIG{'TERM'} = 'IGNORE' ;
+        exec "$cmd" ;
+    } else {
+        &syslog ( "Can't fork '$cmd'\n") ;
+        exit 1 ;
+    }
+}
+
+sub syslog {
+    my (@msg) = @_ ;
+    if ( defined $Logger ) {
+	open ( LOG, "|$Logger -p alert" ) ;
+	print LOG "@msg\n" ;
+	close LOG ;
+	if ( -t STDIN ) {
+	    print STDERR "@msg\n" ;
+	}
+    } else {
+	print STDERR "@msg\n" ;
+    }
+}
+
+sub touch {
+    my ($filename, $user) = @_ ;
+    open ( TOUCH, ">>$filename" ) ;
+    close TOUCH;
+    chown $uid, $gid, $filename ;
+}
