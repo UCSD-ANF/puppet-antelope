@@ -3,8 +3,8 @@
 ## Core Technologies
 
 ### Puppet Infrastructure
-- **Puppet Version Support**: 4.10.0 through 6.x
-- **PDK Version**: 1.18.0 (Puppet Development Kit)
+- **Puppet Version Support**: 7.0.0 through 8.x
+- **PDK Version**: 3.4.0 (Puppet Development Kit)
 - **Hiera Version**: 5.x with YAML backend
 - **Module Structure**: Modern Puppet 4+ patterns with typed parameters
 
@@ -43,6 +43,7 @@
 
 ### Version Control and Documentation
 - **Git**: Version control with GitHub/GitLab hosting
+- **GitHub CLI**: Automated GitHub release creation
 - **GitHub Changelog Generator**: Automated changelog generation
 - **puppet-strings**: Documentation generation (if available)
 
@@ -72,6 +73,11 @@ bundle exec rake lint
 
 # Full test suite
 bundle exec rake
+
+# GitHub release automation
+pdk bundle exec rake ghrelease:preview[patch]
+pdk bundle exec rake ghrelease:validate
+pdk bundle exec rake ghrelease:create[minor,"feat: new feature"]
 ```
 
 ## CI/CD Pipeline
@@ -184,3 +190,52 @@ bundle exec rake
 - **License**: BSD-2-Clause
 - **Distribution**: Puppet Forge compatible
 - **Versioning**: Semantic versioning (SemVer)
+
+## GitHub Release Automation
+
+### Release Management Tools
+- **`ghrelease:create[type,message]`** - Complete GitHub release automation with semantic versioning
+- **`ghrelease:preview[type]`** - Preview next version increment without making changes
+- **`ghrelease:validate`** - Comprehensive validation of release prerequisites
+- **`ghrelease`** - Convenient alias for `ghrelease:create`
+
+### Automation Features
+- **Semantic Versioning**: Automatic version increment (major/minor/patch) in metadata.json
+- **Safety Validation**: Multi-layer validation (git status, PDK, GitHub CLI availability)
+- **Flexible Input**: Multiple commit message methods (CLI parameter, environment variable, interactive editor)
+- **Professional Output**: Auto-generated release notes with technical details and installation instructions
+- **Workflow Integration**: Complements existing puppet-blacksmith module:release for Puppet Forge publishing
+
+### Dependencies
+- **`semantic` gem**: For semantic versioning operations (added to Gemfile)
+- **GitHub CLI (`gh`)**: For creating GitHub releases (external dependency)
+- **PDK environment**: All operations run within PDK bundle context
+
+### Usage Patterns
+```bash
+# Preview next version
+pdk bundle exec rake ghrelease:preview[minor]
+
+# Validate release prerequisites
+pdk bundle exec rake ghrelease:validate
+
+# Create releases with different increment types
+pdk bundle exec rake ghrelease:create[patch,"fix: resolve template issue"]
+pdk bundle exec rake ghrelease:create[minor,"feat: add new configuration"]
+pdk bundle exec rake ghrelease:create[major,"feat!: breaking API change"]
+
+# Interactive commit message via editor
+pdk bundle exec rake ghrelease:create[patch]
+```
+
+### Safety Features
+- **Clean Working Directory**: Validates no uncommitted changes before release
+- **PDK Validation**: Runs full PDK validation suite before proceeding
+- **GitHub CLI Check**: Ensures GitHub CLI is installed and authenticated
+- **Remote Configuration**: Validates git remote is properly configured
+- **Error Handling**: Comprehensive error checking with descriptive messages
+
+### Integration with Existing Workflow
+- **Puppet Forge**: Use `module:release` for Puppet Forge publishing
+- **GitHub Releases**: Use `ghrelease:create` for GitHub releases
+- **Combined Workflow**: Both tools can be used together for complete release automation

@@ -1,7 +1,7 @@
 # Current Context
 
 ## Project State
-The puppet-antelope module is a **mature, production-ready Puppet module** currently at version **1.1.9**. It's actively maintained by UCSD-ANF and uses modern Puppet development practices with PDK (Puppet Development Kit) version 1.18.0.
+The puppet-antelope module is a **mature, production-ready Puppet module** currently at version **4.1.4**. It's actively maintained by UCSD-ANF and uses modern Puppet development practices with PDK (Puppet Development Kit) version 3.4.0.
 
 ## Current Work Focus
 - **Architectural Modernization**: Focus has shifted to improving maintainability and consistency
@@ -33,6 +33,23 @@ The puppet-antelope module is a **mature, production-ready Puppet module** curre
 - **Kilo Code Integration**: Added `.kilocode/mcp.json` exclusion to `.gitignore`
 - **PDK Protection**: Configured `.sync.yml` with `unmanaged: true` for `.gitignore` to prevent PDK from removing custom entries
 - **Development Workflow**: Secured development tool configuration against automated overwrites
+
+**Comprehensive Fact Consolidation and EPP Template Modernization (August 2025 - v4.1.4):**
+- **Template Modernization**: Converted S99antelope.erb to modern S99antelope.epp with explicit parameter passing
+- **Fact System Consolidation**: Merged all Antelope facts from lib/facter/antelope/* into single lib/facter/antelope.rb
+- **Perl Version Detection Fix**: Resolved original issue where S99antelope template couldn't find Perl version facts
+- **Testing Streamlined**: Consolidated 4 separate test files into comprehensive spec/unit/antelope_facts_spec.rb
+- **Code Quality**: Fixed RuboCop style issues and ensured clean validation
+- **Reliability Improvements**: Enhanced error handling and fact loading consistency
+
+**GitHub Release Automation Implementation (August 2025 - Latest):**
+- **Complete Automation**: Added comprehensive `ghrelease` Rake task for GitHub release workflow
+- **Semantic Versioning**: Automatic version increment (major/minor/patch) in metadata.json
+- **Safety Validation**: Multi-layer validation (git status, PDK, GitHub CLI, remote config)
+- **Flexible Input**: Multiple commit message methods (CLI, environment variable, interactive editor)
+- **Professional Output**: Auto-generated release notes with technical details and installation instructions
+- **Workflow Integration**: Complements existing puppet-blacksmith module:release for Puppet Forge
+- **Documentation**: Comprehensive README_GHRELEASE.md with examples and troubleshooting
 
 ## Next Steps
 The new shared utility architecture provides a foundation for future improvements:
