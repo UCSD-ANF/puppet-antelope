@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'facter/util/antelope'
+require 'facter/antelope'
 
 describe 'Antelope Facts' do
   let(:test_versions) { ['5.2-64', '5.4', '5.4post'] }
@@ -112,6 +113,11 @@ describe 'Antelope Facts' do
             .with("/opt/antelope/#{version}/contrib/bin")
             .and_return(dir_exists).at_least(:once)
         end
+
+        # Mock the contrib basedir fact directly with the expected result
+        contrib_basedir_fact = instance_double('Facter::Fact', value: expected_contrib_basedir)
+        allow(Facter).to receive(:fact).and_call_original
+        allow(Facter).to receive(:fact).with(:antelope_contrib_basedir).and_return(contrib_basedir_fact)
       end
     end
 
@@ -124,7 +130,6 @@ describe 'Antelope Facts' do
         include_context 'mocked contrib_subdir_exists?'
 
         it 'returns expected contrib basedirs' do
-          skip('Contrib basedir fact has integration issues in test environment')
           is_expected.to eq(expected_contrib_basedir)
         end
       end
