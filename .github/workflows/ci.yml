@@ -93,7 +93,7 @@ jobs:
         env:
           PDK_PUPPET_VERSION: '8'
         run: |
-          pdk bundle exec rake check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint
+          bundle exec rake check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint
 
   comprehensive-tests:
     name: Comprehensive Test Suite
