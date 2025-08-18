@@ -37,8 +37,8 @@ jobs:
       fail-fast: false
       matrix:
         puppet_version:
-          - '~> 7.0'
-          - '~> 8.0'
+          - '7'
+          - '8'
         ruby_version:
           - '2.7.8'
           - '3.1.4'
@@ -91,7 +91,7 @@ jobs:
 
       - name: Run static analysis checks
         env:
-          PDK_PUPPET_VERSION: '~> 8.0'
+          PDK_PUPPET_VERSION: '8'
         run: |
           pdk bundle exec rake check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint
 
@@ -118,7 +118,7 @@ jobs:
 
       - name: Run full Rake test suite
         env:
-          PDK_PUPPET_VERSION: '~> 7.0'
+          PDK_PUPPET_VERSION: '7'
         run: pdk bundle exec rake
 
       - name: Test shared utility module loading
@@ -141,19 +141,19 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        puppet_version: ['~> 7.0', '~> 8.0']
+        puppet_version: ['7', '8']
         include:
           - os: ubuntu-latest
-            puppet_version: '~> 7.0'
+            puppet_version: '7'
             ruby_version: '2.7.8'
           - os: ubuntu-latest
-            puppet_version: '~> 8.0'
+            puppet_version: '8'
             ruby_version: '3.1.4'
           - os: macos-latest
-            puppet_version: '~> 7.0'
+            puppet_version: '7'
             ruby_version: '2.7.8'
           - os: macos-latest
-            puppet_version: '~> 8.0'
+            puppet_version: '8'
             ruby_version: '3.1.4'
     runs-on: ${{ matrix.os }}
     env:
