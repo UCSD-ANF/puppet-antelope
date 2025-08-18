@@ -48,7 +48,7 @@ jobs:
             ruby_version: '3.1.4'
     runs-on: ubuntu-latest
     env:
-      PUPPET_GEM_VERSION: ${{ matrix.puppet_version }}
+      PDK_PUPPET_VERSION: ${{ matrix.puppet_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -65,10 +65,6 @@ jobs:
           sudo dpkg -i puppet-tools-release-focal.deb
           sudo apt-get update
           sudo apt-get install -y pdk
-
-      - name: Install dependencies
-        run: |
-          pdk bundle install --jobs 4 --retry 3 --without system_tests
 
       - name: Run unit tests
         run: pdk test unit --parallel
@@ -93,13 +89,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pdk
 
-      - name: Install dependencies
-        run: |
-          pdk bundle install --jobs 4 --retry 3 --without system_tests
-
       - name: Run static analysis checks
         env:
-          PUPPET_GEM_VERSION: '~> 8.0'
+          PDK_PUPPET_VERSION: '~> 8.0'
         run: |
           pdk bundle exec rake check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint
 
@@ -124,13 +116,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pdk
 
-      - name: Install dependencies
-        run: |
-          pdk bundle install --jobs 4 --retry 3 --without system_tests
-
       - name: Run full Rake test suite
         env:
-          PUPPET_GEM_VERSION: '~> 7.0'
+          PDK_PUPPET_VERSION: '~> 7.0'
         run: pdk bundle exec rake
 
       - name: Test shared utility module loading
@@ -169,7 +157,7 @@ jobs:
             ruby_version: '3.1.4'
     runs-on: ${{ matrix.os }}
     env:
-      PUPPET_GEM_VERSION: ${{ matrix.puppet_version }}
+      PDK_PUPPET_VERSION: ${{ matrix.puppet_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -192,10 +180,6 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install puppetlabs/puppet/pdk
-
-      - name: Install dependencies
-        run: |
-          pdk bundle install --jobs 4 --retry 3 --without system_tests
 
       - name: Run syntax validation
         run: pdk validate syntax
