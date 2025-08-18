@@ -175,6 +175,8 @@ jobs:
       - name: Test Facter facts on platform
         run: |
           bundle exec ruby -I lib -e "
+            require 'facter'
+            Facter.clear
             require 'facter/antelope'
             puts 'Facter facts load correctly on ${{ matrix.os }}'
           "
