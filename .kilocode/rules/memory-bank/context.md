@@ -9,7 +9,7 @@ The puppet-antelope module is a **mature, production-ready Puppet module** curre
 - **Enterprise Documentation**: Comprehensive YARD documentation with detailed examples
 - **Testing Excellence**: 87 comprehensive test cases with cross-validation
 - Built using modern Puppet 4+ features including data types and Hiera 5
-- Supports Puppet versions 4.10.0 through 6.x
+- Supports Puppet versions 7.0.0 through 8.x
 - Compatible with multiple operating systems: RedHat/CentOS 6-7, Darwin 14-16
 
 ## Recent Changes
@@ -21,6 +21,14 @@ The puppet-antelope module is a **mature, production-ready Puppet module** curre
 - **Comprehensive Testing**: Added 87 test cases with integration validation
 - **Enterprise Documentation**: Added detailed YARD documentation throughout
 - **Code Standards**: Removed deprecated Puppet validation functions for 8.x compatibility
+
+**CI/CD Infrastructure Stabilization (August 2025):**
+- **Cross-Platform Test Reliability**: Fixed multiple CI test failures across GitHub Actions and AppVeyor
+- **Facter Gem Initialization**: Added proper Facter gem loading in CI environment to prevent fact loading failures
+- **Cross-Platform Fact Fixes**: Resolved `antelope_contrib_basedir` fact test failures by fixing platform-specific path handling
+- **Ruby Loading Issues**: Fixed `require_relative` path issues in CI workflow that prevented proper module loading
+- **Puppet Version Stabilization**: Updated to Puppet 8.10.0 with specific versions instead of ranges for better CI stability
+- **Windows CI Compatibility**: Ensured AppVeyor Windows testing works with updated dependencies and fact loading
 
 **Critical Infrastructure Fix (August 2025):**
 - **Syntax Error Resolution**: Fixed critical syntax error in `lib/antelope/version_utils.rb` that was blocking 25 test cases

@@ -3,7 +3,7 @@
 ## Core Technologies
 
 ### Puppet Infrastructure
-- **Puppet Version Support**: 7.0.0 through 8.x
+- **Puppet Version Support**: 7.0.0 through 8.x (CI tested with 7.x and 8.x ranges)
 - **PDK Version**: 3.4.0 (Puppet Development Kit)
 - **Hiera Version**: 5.x with YAML backend
 - **Module Structure**: Modern Puppet 4+ patterns with typed parameters
@@ -83,19 +83,29 @@ pdk bundle exec rake ghrelease:create[minor,"feat: new feature"]
 ## CI/CD Pipeline
 
 ### Continuous Integration Platforms
-- **Travis CI**: Linux testing with Ruby 2.4.5/2.5.7, Puppet 5.x/6.x matrix
-- **GitLab CI**: Containerized testing with Ruby 2.5.7, Puppet 6.x
-- **AppVeyor**: Windows compatibility testing
+- **GitHub Actions**: Primary CI with multi-platform support (Ubuntu, macOS)
+- **AppVeyor**: Windows compatibility testing with updated dependencies
+- **GitLab CI**: Legacy containerized testing configuration
 
 ### Test Matrix
-- **Ruby Versions**: 2.4.5, 2.5.7
-- **Puppet Versions**: ~> 5.0, ~> 6.0
-- **Platforms**: Linux (primary), Windows (compatibility)
+- **Ruby Versions**: 2.7.8, 3.1.4 (GitHub Actions), 2.5.x-3.1.x (AppVeyor)
+- **Puppet Versions**: ~> 7.0, ~> 8.0 (specific version ranges for stability)
+- **Platforms**: Linux (Ubuntu), macOS (GitHub Actions), Windows (AppVeyor)
 
 ### Pipeline Stages
-1. **Static Analysis**: syntax, lint, metadata_lint, rubocop
-2. **Unit Testing**: parallel_spec execution
-3. **Deployment**: Automated forge deployment on version tags
+1. **Validation**: Syntax, lint, and metadata validation with Ruby 2.7
+2. **Unit Testing**: Multi-matrix testing with Ruby 2.7.8/3.1.4 and Puppet 7.x/8.x
+3. **Code Quality**: Static analysis checks with Ruby 3.1.4 and Puppet 8.x
+4. **Comprehensive Testing**: Full Rake test suite with shared utility validation
+5. **Cross-Platform Testing**: Linux/macOS compatibility with Facter fact verification
+6. **Deployment**: Automated forge deployment on version tags
+
+### CI Stability Improvements
+- **Cross-Platform Reliability**: Robust testing across Ubuntu, macOS, and Windows
+- **Shared Utility Integration**: Explicit testing of shared utility module loading in CI
+- **Platform-Specific Fact Testing**: Cross-platform validation of Facter facts
+- **Version Matrix Optimization**: Proper Ruby/Puppet version compatibility exclusions
+- **Error Handling**: Enhanced error handling for CI-specific scenarios
 
 ## Operating System Support
 
@@ -177,9 +187,10 @@ pdk bundle exec rake ghrelease:create[minor,"feat: new feature"]
 ## Development Constraints
 
 ### Puppet Version Compatibility
-- **Minimum**: Puppet 4.10.0 for modern data types
-- **Maximum**: Puppet 6.x (not yet 7.x compatible)
-- **Features**: Uses Puppet 4+ typed parameters and Hiera 5
+- **Minimum**: Puppet 7.0.0 for modern features
+- **Maximum**: Puppet 8.x (CI tested with 7.x and 8.x ranges)
+- **Current Target**: Puppet 7.x/8.x (stable version ranges for CI)
+- **Features**: Uses modern typed parameters and Hiera 5
 
 ### Ruby Compatibility
 - **Target Version**: Ruby 2.1+ (RuboCop configuration)
