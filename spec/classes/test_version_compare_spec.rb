@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'test_version_compare' do
+describe 'antelope::test_version_compare' do
   on_supported_os.each do |os, os_facts|
     context "on #{os}" do
       let(:facts) { os_facts }
