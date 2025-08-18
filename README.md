@@ -11,7 +11,7 @@ Geoff Davis <gadavis@ucsd.edu>
 
 ## Requirements
 
-* Puppet version >= 3
+* Puppet version >= 7.0.0
 * [puppetlabs-stdlib][puppetlabs-stdlib] module from PuppetLabs. Ships with
  Puppet Enterprise, also available on the Module Forge and on Github
 * `osfamily` fact. Supported by Facter 1.6.1+. Or you can use the code blurb
@@ -382,5 +382,41 @@ Returns an array of all system versions of Antelope that support the Antelope Li
 E.G.
 ```
 ['5.3','5.4','5.5']
+```
+
+## Testing
+
+This module has been tested on:
+
+- RedHat 6
+- RedHat 7
+- CentOS 6
+- CentOS 7
+- Darwin 14
+- Darwin 15
+- Darwin 16
+
+### Continuous Integration
+
+The module uses GitHub Actions for continuous integration testing across:
+
+- **Puppet Versions**: 7.x, 8.x
+- **Ruby Versions**: 2.7.8, 3.1.4
+- **Platforms**: Ubuntu Linux, macOS
+- **Test Types**: Validation, unit tests, quality checks, cross-platform compatibility
+
+### Local Testing
+
+Testing is done with [PDK](https://puppet.com/docs/pdk/1.x/pdk.html) bundle.
+
+```bash
+# Run all validations
+pdk validate
+
+# Run unit tests
+pdk test unit
+
+# Run full test suite
+pdk bundle exec rake
 ```
 
