@@ -116,10 +116,11 @@ jobs:
 
       - name: Test shared utility module loading
         run: |
-          bundle exec ruby -e "
-            require_relative 'lib/antelope/version_utils'
+          bundle exec ruby -I lib -e "
+            require 'antelope/version_utils'
+            extend Antelope::VersionUtils
             puts 'Shared utility module loads correctly'
-            result = Antelope::VersionUtils.compare_antelope_versions('5.4-64', '5.5')
+            result = compare_antelope_versions('5.4-64', '5.5')
             puts \"Version comparison test: #{result}\"
           "
 
@@ -173,7 +174,7 @@ jobs:
 
       - name: Test Facter facts on platform
         run: |
-          bundle exec ruby -e "
-            require_relative 'lib/facter/antelope'
+          bundle exec ruby -I lib -e "
+            require 'facter/antelope'
             puts 'Facter facts load correctly on ${{ matrix.os }}'
           "
