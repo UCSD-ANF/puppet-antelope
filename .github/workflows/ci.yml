@@ -20,15 +20,17 @@ jobs:
           ruby-version: '2.7'
           bundler-cache: true
 
-      - name: Install PDK
-        run: |
-          wget https://apt.puppet.com/puppet-tools-release-focal.deb
-          sudo dpkg -i puppet-tools-release-focal.deb
-          sudo apt-get update
-          sudo apt-get install -y pdk
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
 
-      - name: PDK Validate
-        run: pdk validate --parallel
+      - name: Run syntax validation
+        run: bundle exec rake syntax
+
+      - name: Run lint validation
+        run: bundle exec rake lint
+
+      - name: Run metadata validation
+        run: bundle exec rake metadata_lint
 
   unit-tests:
     name: Unit Tests
@@ -44,11 +46,9 @@ jobs:
           - '3.1.4'
         exclude:
           # Puppet 7 doesn't support Ruby 3.1
-          - puppet_version: '~> 7.0'
+          - puppet_version: '7'
             ruby_version: '3.1.4'
     runs-on: ubuntu-latest
-    env:
-      PDK_PUPPET_VERSION: ${{ matrix.puppet_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -59,15 +59,14 @@ jobs:
           ruby-version: ${{ matrix.ruby_version }}
           bundler-cache: true
 
-      - name: Install PDK
-        run: |
-          wget https://apt.puppet.com/puppet-tools-release-focal.deb
-          sudo dpkg -i puppet-tools-release-focal.deb
-          sudo apt-get update
-          sudo apt-get install -y pdk
+      - name: Configure Puppet version
+        run: bundle config set PUPPET_GEM_VERSION '~> ${{ matrix.puppet_version }}.0'
+
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
 
       - name: Run unit tests
-        run: pdk test unit --parallel
+        run: bundle exec rake parallel_spec
 
   quality:
     name: Code Quality
@@ -82,16 +81,13 @@ jobs:
           ruby-version: '3.1.4'
           bundler-cache: true
 
-      - name: Install PDK
-        run: |
-          wget https://apt.puppet.com/puppet-tools-release-focal.deb
-          sudo dpkg -i puppet-tools-release-focal.deb
-          sudo apt-get update
-          sudo apt-get install -y pdk
+      - name: Configure Puppet version
+        run: bundle config set PUPPET_GEM_VERSION '~> 8.0'
+
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
 
       - name: Run static analysis checks
-        env:
-          PDK_PUPPET_VERSION: '8'
         run: |
           bundle exec rake check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop syntax lint metadata_lint
 
@@ -109,21 +105,18 @@ jobs:
           ruby-version: '2.7.8'
           bundler-cache: true
 
-      - name: Install PDK
-        run: |
-          wget https://apt.puppet.com/puppet-tools-release-focal.deb
-          sudo dpkg -i puppet-tools-release-focal.deb
-          sudo apt-get update
-          sudo apt-get install -y pdk
+      - name: Configure Puppet version
+        run: bundle config set PUPPET_GEM_VERSION '~> 7.0'
+
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
 
       - name: Run full Rake test suite
-        env:
-          PDK_PUPPET_VERSION: '7'
-        run: pdk bundle exec rake
+        run: bundle exec rake
 
       - name: Test shared utility module loading
         run: |
-          pdk bundle exec ruby -e "
+          bundle exec ruby -e "
             require_relative 'lib/antelope/version_utils'
             puts 'Shared utility module loads correctly'
             result = Antelope::VersionUtils.compare_antelope_versions('5.4-64', '5.5')
@@ -132,7 +125,7 @@ jobs:
 
       - name: Verify GitHub release automation
         run: |
-          pdk bundle exec rake ghrelease:validate || echo "GitHub CLI not available in CI - this is expected"
+          bundle exec rake ghrelease:validate || echo "GitHub CLI not available in CI - this is expected"
 
   cross-platform:
     name: Cross-platform Tests
@@ -156,8 +149,6 @@ jobs:
             puppet_version: '8'
             ruby_version: '3.1.4'
     runs-on: ${{ matrix.os }}
-    env:
-      PDK_PUPPET_VERSION: ${{ matrix.puppet_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -168,28 +159,21 @@ jobs:
           ruby-version: ${{ matrix.ruby_version }}
           bundler-cache: true
 
-      - name: Install PDK (Ubuntu)
-        if: runner.os == 'Linux'
-        run: |
-          wget https://apt.puppet.com/puppet-tools-release-focal.deb
-          sudo dpkg -i puppet-tools-release-focal.deb
-          sudo apt-get update
-          sudo apt-get install -y pdk
+      - name: Configure Puppet version
+        run: bundle config set PUPPET_GEM_VERSION '~> ${{ matrix.puppet_version }}.0'
 
-      - name: Install PDK (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install puppetlabs/puppet/pdk
+      - name: Install dependencies
+        run: bundle install --jobs 4 --retry 3
 
       - name: Run syntax validation
-        run: pdk validate syntax
+        run: bundle exec rake syntax
 
       - name: Run unit tests (subset)
-        run: pdk test unit --tests=spec/unit/
+        run: bundle exec rspec spec/unit/
 
       - name: Test Facter facts on platform
         run: |
-          pdk bundle exec ruby -e "
+          bundle exec ruby -e "
             require_relative 'lib/facter/antelope'
             puts 'Facter facts load correctly on ${{ matrix.os }}'
           "
